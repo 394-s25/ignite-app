@@ -40,16 +40,18 @@ export async function writeCompanyData(name, introduction, email, matchedSkills)
     });   
 }
 
-export function readUserDataByEmail(email) {
+export async function readUserDataByEmail(email) {
     const hashedEmail = SHA256(email).toString();
     const userRef = ref(db, 'users/' + hashedEmail);
-    get(userRef)
+    return get(userRef)
     .then((snapshot) => {
         if (snapshot.exists()) {
             const user = snapshot.val();
-            console.log(`User information: ${user.username}\nEmail: ${user.email}`);
+            console.log("Retrieved user data: ", user);
+            return user;
         } else {
             console.log("User does not exist");
+            return null;
         }
     })
     .catch((error) => {
@@ -57,16 +59,18 @@ export function readUserDataByEmail(email) {
     })
 }
 
-export function readCompanyDataByEmail(email) {
+export async function readCompanyDataByEmail(email) {
     const hashedEmail = SHA256(email).toString();
     const companyRef = ref(db, 'companies/' + hashedEmail);
-    get(companyRef)
+    return get(companyRef)
     .then((snapshot) => {
         if (snapshot.exists()) {
             const company = snapshot.val();
-            console.log(`Company information: ${company.name}\nIntroduction: ${company.introduction}\nEmail: ${company.email}\nMatched Skills: ${company.matchedSkills}`);
+            console.log("Retrieved company data: ", company);
+            return company;
         } else {
             console.log("Company does not exist");
+            return null;
         }
     })
     .catch((error) => {
