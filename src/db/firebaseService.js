@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, push, get, query, orderByChild, equalTo } from "firebase/database";
+import SHA256 from "crypto-js/sha256";
 
 const firebaseConfig = {
     databaseURL: "https://ignite-app-red-default-rtdb.firebaseio.com"
@@ -9,9 +10,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-export function writeUserData(name, email) {
-    const userId = push(ref(db, 'users')).key;
-    set(ref(db, 'users/' + userId), {
+export async function writeUserData(name, email) {
+    const hashedEmail = SHA256(email).toString();
+    return set(ref(db, 'users/' + hashedEmail), {
         username: name,
         email: email
     })
@@ -23,11 +24,12 @@ export function writeUserData(name, email) {
     });
 }
 
-export function writeCompanyData(name, introduction, matchedSkills) {
-    const companyId = push(ref(db, 'companies')).key;
-    set(ref(db, 'companies/' + companyId), {
+export async function writeCompanyData(name, introduction, email, matchedSkills) {
+    const hashedEmail = SHA256(email).toString();
+    return set(ref(db, 'companies/' + hashedEmail), {
         name: name,
         introduction: introduction,
+        email: email,
         matchedSkills: matchedSkills
     })
     .then(() => {
@@ -38,18 +40,14 @@ export function writeCompanyData(name, introduction, matchedSkills) {
     });   
 }
 
-export function readUserDataByName(name) {
-    const dbUsers = ref(db, 'users');
-    const nameQuery = query(dbUsers, orderByChild('username'), equalTo(name));
-    get(nameQuery)
+export function readUserDataByEmail(email) {
+    const hashedEmail = SHA256(email).toString();
+    const userRef = ref(db, 'users/' + hashedEmail);
+    get(userRef)
     .then((snapshot) => {
         if (snapshot.exists()) {
-            const usersFound = snapshot.val();
-            for (const userId in usersFound) {
-                const user = usersFound[userId];
-                const email = user.email;
-                console.log(`User email: ${email}`);
-            }
+            const user = snapshot.val();
+            console.log(`User information: ${user.username}\nEmail: ${user.email}`);
         } else {
             console.log("User does not exist");
         }
@@ -59,19 +57,14 @@ export function readUserDataByName(name) {
     })
 }
 
-export function readCompanyDataByName(name) {
-    const dbCompanies = ref(db, 'companies');
-    const nameQuery = query(dbCompanies, orderByChild('name'), equalTo(name));
-    get(nameQuery)
+export function readCompanyDataByEmail(email) {
+    const hashedEmail = SHA256(email).toString();
+    const companyRef = ref(db, 'companies/' + hashedEmail);
+    get(companyRef)
     .then((snapshot) => {
         if (snapshot.exists()) {
-            const companiesFound = snapshot.val();
-            for (const companyId in companiesFound) {
-                const company = companiesFound[companyId];
-                const introduction = company.introduction;
-                const skills = company.matchedSkills;
-                console.log(`Company information: ${introduction}\nMatched skills: ${skills}`);
-            }
+            const company = snapshot.val();
+            console.log(`Company information: ${company.name}\nIntroduction: ${company.introduction}\nEmail: ${company.email}\nMatched Skills: ${company.matchedSkills}`);
         } else {
             console.log("Company does not exist");
         }
