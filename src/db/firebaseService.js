@@ -206,3 +206,59 @@ export async function readCompanyDataByCompanyId(companyId) {
         console.error("Error reading data: ", error);
     })
 }
+
+// Company Post Jobs
+export async function postJob(companyId, jobTitle, jobDescription, jobSkills, jobContacts) {
+    const companyJobsRef = ref(db, `jobs`);
+    const newJobRef = push(companyJobsRef);
+    return set(newJobRef, {
+        companyId: companyId,
+        title: jobTitle,
+        description: jobDescription,
+        skills: jobSkills,
+        contacts: jobContacts
+    })
+    .then(() => {
+        console.log("Job posted successfully.");
+    })
+    .catch((error) => {
+        console.error("Error posting job: ", error);
+    });
+}
+
+export async function getJobsByCompanyId(companyId) {
+    const jobsRef = ref(db, 'jobs');
+    const jobsQuery = query(jobsRef, orderByChild('companyId'), equalTo(companyId));
+    return get(jobsQuery)
+    .then((snapshot) => {
+        if (snapshot.exists()) {
+            const jobs = snapshot.val();
+            console.log("Retrieved jobs: ", jobs);
+            return jobs;
+        } else {
+            console.log("No jobs found for this company.");
+            return null;
+        }
+    })
+    .catch((error) => {
+        console.error("Error retrieving jobs: ", error);
+    });
+}
+
+export async function getAllJobs() {
+    const jobsRef = ref(db, 'jobs');
+    return get(jobsRef)
+    .then((snapshot) => {
+        if (snapshot.exists()) {
+            const jobs = snapshot.val();
+            console.log("Retrieved all jobs: ", jobs);
+            return jobs;
+        } else {
+            console.log("No jobs found.");
+            return null;
+        }
+    })
+    .catch((error) => {
+        console.error("Error retrieving jobs: ", error);
+    });
+}
