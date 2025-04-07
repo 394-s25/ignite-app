@@ -17,7 +17,6 @@ const db = getDatabase(app);
 const skillsArr = ['JavaScript', 'Logo Design', 'Product Management'];
 const preferencesArr = ['1-10 Employees', '10-50 Employees', 'Healthcare Sector'];
 
-
 export async function initializeSkillsPrefs(skillsArray, prefsArray) {
     const skillsRef = ref(db, 'skills/');
     const prefsRef = ref(db, 'preferences/');   
@@ -44,9 +43,85 @@ export async function initializeSkillsPrefs(skillsArray, prefsArray) {
     });
 }
 
+export async function getSkillIdByName(skillName) {
+    const skillsRef = ref(db, 'skills/');
+    const skillQuery = query(skillsRef, orderByChild('skill'), equalTo(skillName));
+    return get(skillQuery)
+    .then((snapshot) => {
+        if (snapshot.exists()) {
+            const skill = snapshot.val();
+            const skillId = Object.keys(skill)[0];
+            console.log(`Retrieved ID for skill ${skillName}: ${skillId}`);
+            return skillId;
+        } else {
+            console.log(`No ID found for skill ${skillName}.`);
+            return null;
+        }
+    })
+    .catch((error) => {
+        console.error(`Error in retrieving ID for skill ${skillName}: ${error}`);
+    });
+}
+
+export async function getSkillNameById(skillId) {
+    const skillRef = ref(db, `skills/${skillId}`);
+    return get(skillRef)
+    .then((snapshot) => {
+        if (snapshot.exists()) {
+            const skillRet = snapshot.val();
+            const skillName = skillRet.skill;
+            console.log(`Retrieved skill for ID ${skillId}: ${skillName}`);
+            return skillName;
+        } else {
+            console.log(`No skill found for ID ${skillId}.`);
+            return null;
+        }
+    })
+    .catch((error) => {
+        console.error(`Error in retrieving skill for ID ${skillId}: ${error}`);
+    });
+}
+
+export async function getPrefIdByName(prefName) {
+    const prefsRef = ref(db, 'preferences/');
+    const prefQuery = query(prefsRef, orderByChild('pref'), equalTo(prefName));
+    return get(prefQuery)
+    .then((snapshot) => {
+        if (snapshot.exists()) {
+            const pref = snapshot.val();
+            const prefId = Object.keys(pref)[0];
+            console.log(`Retrieved ID for preference ${prefName}: ${prefId}`);
+            return prefId;
+        } else {
+            console.log(`No ID found for preference ${prefName}.`);
+            return null;
+        }
+    })
+    .catch((error) => {
+        console.error(`Error in retrieving ID for preference ${prefName}: ${error}`);
+    });
+}
+
+export async function getPrefNameById(prefId) {
+    const prefRef = ref(db, `preferences/${prefId}`);
+    return get(prefRef)
+    .then((snapshot) => {
+        if (snapshot.exists()) {
+            const prefRet = snapshot.val();
+            const prefName = prefRet.pref;
+            console.log(`Retrieved preference for ID ${prefId}: ${prefName}`);
+            return prefName;
+        } else {
+            console.log(`No prefence found for ID ${prefId}.`);
+            return null;
+        }
+    })
+    .catch((error) => {
+        console.error(`Error in retrieving preference for ID ${prefId}: ${error}`);
+    });
+}
+
 export async function userFirstWrite(name, email, phoneNumber) {
-    const hashedEmail = SHA256(email).toString();
-    
     // initialize the first ID as 80000
     return get(ref(db, 'metadata/userCounter'))
         .then((snapshot) => {
@@ -80,14 +155,15 @@ export async function userFirstWrite(name, email, phoneNumber) {
         });
 }
 
-export async function userSecondWrite(userid, major, bio, skills, preferences) {
+export async function userSecondWrite(userId, major, bio, skills, preferences) {
     // make sure to add the entry with the same key as userFirstWrite
-    const userRef = ref(db, 'users/' + userid)  // user id is key
-    //const userRef = ref(db, 'users/' + hashedEmail);  // hashed email is key
+    const userRef = ref(db, 'users/' + userId)  // user id is key
     
     return update(userRef, {  // update the existing entry
         major: major,
-        bio: bio
+        bio: bio,
+        skills: skills, // this is assuming that skills will be inputted into this function in index and not string format
+        preferences: preferences // same w prefs ^^
     })
     .then(() => {
         console.log("User second write successful.")
