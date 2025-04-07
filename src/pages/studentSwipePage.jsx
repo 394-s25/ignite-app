@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CompanySwipeCard from "../components/companySwipeCard";
 import logo from "/AlpimeHealth.png";
 
 const StudentSwipePage = () => {
-  // List of all companies
   const [companies, setCompanies] = useState([
     {
-      id: 1,
+      id: 0,
       companyName: "Alpime Health",
       companyLogo: logo,
       companyDescription:
@@ -19,37 +18,50 @@ const StudentSwipePage = () => {
         "tahiragrewal2026@u.northwestern.edu, isaacmeite2026@u.northwestern.edu, admin@alpimehealth.com",
     },
     {
-      id: 2,
-      companyName: "123",
-      companyLogo: logo,
-      companyDescription: "123123123123123123123123123123",
-      roleName: "ML Developer",
-      roleDescription: "123123123123123123123123123123",
-      roleSkills: ["Python", "Communication", "NLP Experience", "Teamwork"],
+      id: 1,
+      companyName: "Purple Pantry",
+      companyDescription:
+        "Purple Pantry is a student-led initiative tackling food insecurity on campus by connecting surplus food from events and dining halls to students in need. Through a simple mobile app, students can get real-time updates on available meals.",
+      roleName: "Frontend Developer",
+      roleDescription:
+        "We're looking for a frontend developer to help improve our mobile UI and integrate real-time notifications using React Native and Firebase. Bonus points for experience with accessibility standards!",
+      roleSkills: ["React Native", "Firebase", "UI/UX", "Team Collaboration"],
       contactInfo:
-        "tahiragrewal2026@u.northwestern.edu, isaacmeite2026@u.northwestern.edu, admin@alpimehealth.com",
+        "founders@purplepantry.northwestern.edu, team@purplepantry.northwestern.edu",
+    },
+    {
+      id: 2,
+      companyName: "StudyBuddy AI",
+      companyDescription:
+        "StudyBuddy AI is an AI-powered platform that matches students with personalized study partners based on learning style, course load, and academic goals. Built by a team of McCormick and Weinberg students.",
+      roleName: "Machine Learning Engineer",
+      roleDescription:
+        "We're seeking an ML engineer to improve our matching algorithm and work on integrating GPT-powered tutor suggestions. Experience with Python and collaborative filtering is ideal.",
+      roleSkills: ["Python", "ML", "Data Analysis", "OpenAI API"],
+      contactInfo:
+        "studybuddyteam@u.northwestern.edu, contact@studybuddyai.com",
     },
     {
       id: 3,
-      companyName: "123",
-      companyLogo: logo,
-      companyDescription: "123123123123123123123123123123",
-      roleName: "ahhhhhhhhh",
-      roleDescription: "123123123123123123123123123123",
-      roleSkills: ["Python", "Communication", "NLP Experience", "Teamwork"],
-      contactInfo:
-        "tahiragrewal2026@u.northwestern.edu, isaacmeite2026@u.northwestern.edu, admin@alpimehealth.com",
+      companyName: "ReVerve",
+      companyDescription:
+        "ReVerve is building a sustainable fashion marketplace where students can rent and lend clothes for events, interviews, or everyday wear. Think Rent the Runway meets campus closets.",
+      roleName: "Product Designer",
+      roleDescription:
+        "We’re looking for a product designer who loves solving real student problems. You’ll work on refining our mobile experience, design user flows, and conduct lightweight usability tests.",
+      roleSkills: ["Figma", "User Research", "Design Systems", "Empathy"],
+      contactInfo: "design@reverve.northwestern.edu, founders@reverve.app",
     },
     {
       id: 4,
-      companyName: "12fdsfdsdfsd3",
-      companyLogo: logo,
-      companyDescription: "123fdsfsdfdsfdsfsf123123123123123123123123123",
-      roleName: "ahhhdsfdsfdsfdsfdsfsfhhhhhh",
-      roleDescription: "1231231dsfsdfsd23123123123123123123123",
-      roleSkills: ["Python", "Communication", "NLP Experience", "Teamwork"],
-      contactInfo:
-        "tahiragrewal2026@u.northwestern.edu, isaacmeite2026@u.northwestern.edu, admin@alpimehealth.com",
+      companyName: "HealthHacks",
+      companyDescription:
+        "HealthHacks empowers underrepresented communities to take control of their health using gamified health education and culturally tailored resources. Started by Northwestern pre-med and CS students.",
+      roleName: "Full-Stack Developer",
+      roleDescription:
+        "We're building a React + Node.js platform to host interactive health education games and track user progress. Looking for someone passionate about social impact and scalable tech.",
+      roleSkills: ["React", "Node.js", "MongoDB", "REST APIs"],
+      contactInfo: "apply@healthhacks.northwestern.edu, dev@healthhacks.org",
     },
   ]);
 
