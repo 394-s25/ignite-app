@@ -15,30 +15,33 @@ const db = getDatabase(app);
 // sample skills and preferences, longer list will be made later
 const skillsArr = ['JavaScript', 'Logo Design', 'Product Management'];
 const preferencesArr = ['1-10 Employees', '10-50 Employees', 'Healthcare Sector'];
-const skillsRef = ref(db, 'skills/');
-const prefsRef = ref(db, 'preferences/');
 
-skillsArr.forEach((skill) => {
-    const newSkillRef = push(skillsRef);
-    set(newSkillRef, { skill: skill })
-    .then(() => {
-        console.log(`${skill} written successfully.`);
-    })
-    .catch((error) => {
-        console.error(`Could not write ${skill} to database: ${error}`);
-    });
-});
 
-preferencesArr.forEach((pref) => {
-    const newPrefRef = push(prefsRef);
-    set(newPrefRef, { pref: pref })
-    .then(() => {
-        console.log(`${pref} written successfully.`);
-    })
-    .catch((error) => {
-        console.error(`Could not write ${pref} to database: ${error}`);
+export async function initializeSkillsPrefs(skillsArray, prefsArray) {
+    const skillsRef = ref(db, 'skills/');
+    const prefsRef = ref(db, 'preferences/');   
+    skillsArray.forEach((skill) => {
+        const newSkillRef = push(skillsRef);
+        set(newSkillRef, { skill: skill })
+        .then(() => {
+            console.log(`${skill} written successfully.`);
+        })
+        .catch((error) => {
+            console.error(`Could not write ${skill} to database: ${error}`);
+        });
     });
-});
+    
+    prefsArray.forEach((pref) => {
+        const newPrefRef = push(prefsRef);
+        set(newPrefRef, { pref: pref })
+        .then(() => {
+            console.log(`${pref} written successfully.`);
+        })
+        .catch((error) => {
+            console.error(`Could not write ${pref} to database: ${error}`);
+        });
+    });
+}
 
 export async function userFirstWrite(name, email) {
     const hashedEmail = SHA256(email).toString();
