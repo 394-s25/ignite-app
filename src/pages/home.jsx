@@ -10,7 +10,7 @@ const Home = () => {
         <p class="text-3xl font-bold">Hello Friends!</p>
         <p>
           <button onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
+            count is: {count} !!!
           </button>
         </p>
         <p>
