@@ -56,8 +56,8 @@ const StudentLikes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-700 via-purple-600 to-purple-800 py-10 px-4">
-      <h1 className="text-4xl font-extrabold text-white text-center mb-10 drop-shadow-lg">
+    <div className="min-h-screen bg-white py-10 px-4">
+      <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
         Companies That Liked You
       </h1>
       <div className="space-y-6">
