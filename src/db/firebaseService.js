@@ -173,6 +173,42 @@ export async function userSecondWrite(userId, major, bio, skills, preferences) {
     })
 }
 
+export async function writeUserData(name, email, phoneNumber, major, bio, lookingFor, skills, preferences) {
+    const hashedEmail = SHA256(email).toString();
+    
+    return get(ref(db, 'metadata/userCounter'))
+        .then((snapshot) => {
+            let userId = 80000;
+            
+            if (snapshot.exists()) {
+                userId = snapshot.val();
+            }
+            
+            return set(ref(db, 'users/' + userId), {
+                username: name,
+                email: email,
+                phoneNumber: phoneNumber,
+                major: major,
+                bio: bio,
+                skills: skills,
+                preferences: preferences,
+                lookingFor: lookingFor,
+                userId: userId
+            })
+
+            .then(() => {
+                return set(ref(db, 'metadata/userCounter'), userId + 1);
+            })
+            .then(() => {
+                console.log("Data written successfully.");
+            });
+        })
+        .catch((error) => {
+            console.error("Error writing data: ", error);
+        });
+
+}
+
 export async function writeCompanyData(name, introduction, email, matchedSkills) {
     const hashedEmail = SHA256(email).toString();
     
