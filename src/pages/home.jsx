@@ -1,20 +1,13 @@
-import { useState } from "react";
-import CompanySwipeCard from "../components/companySwipeCard";
-import StudentSwipeCard from "../components/studentSwipeCard";
-import logo from "/AlpimeHealth.png";
-import peppa from "/peppa.jpg";
 import "../App.css";
+import CompanyCard from "../components/companyCard";
 
 const Home = () => {
   return (
     <div className="w-full bg-gray-100 flex flex-col gap-10 items-center">
-      <CompanySwipeCard
-        companyName={"Alpime Health"}
-        companyLogo={logo}
+      <CompanyCard
         companyDescription={
           "Alpime Health offers a reliable, secure, and efficient electronic medical record system, following a three-pronged objective of data storage for healthcare administrators, data representation for doctors and patients, and data analytics for hospitals starting in Côte d'Ivoire and expanding to neighboring West African countries."
         }
-        roleName={"ML Developer"}
         roleDescription={
           "We're looking for ML Developers who have hands-on experience with natural language processing, especially in areas like context-aware validation and disambiguation. If you've worked with computer vision technologies such as optical character recognition (OCR) or form parsing, that's a big plus!"
         }
@@ -22,24 +15,6 @@ const Home = () => {
         contactInfo={
           "tahiragrewal2026@u.northwestern.edu, isaacmeite2026@u.northwestern.edu, admin@alpimehealth.com"
         }
-      />
-      <StudentSwipeCard
-        studentName={"Peppa Pig"}
-        studentPhoto={peppa}
-        studentMajor={"Computer Science"}
-        studentBio={
-          "Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate!"
-        }
-        lookingFor={
-          "Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good!"
-        }
-        studentSkills={[
-          "Python",
-          "Communication",
-          "NLP Experience",
-          "Teamwork",
-        ]}
-        contactInfo={"peppapig@u.northwestern.edu"}
       />
     </div>
   );
