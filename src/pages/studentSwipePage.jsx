@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
-import CompanySwipeCard from "../components/companySwipeCard";
+import CompanyCard from "../components/companyCard";
 import logo from "/AlpimeHealth.png";
 import { getAllJobs, readCompanyDataByCompanyId } from "../db/firebaseService";
+import ActionButtons from "../components/actionButtons";
+import CompanyHeader from "../components/companyHeader";
+
 const StudentSwipePage = () => {
   const [companies, setCompanies] = useState([]);
   const [accepted, setAccepted] = useState([]);
   const [rejected, setRejected] = useState([]);
 
-  const fetchJobs = async() => {
+  const fetchJobs = async () => {
     const jobs = await getAllJobs();
     const mappedJobs = await Promise.all(
       jobs.map(async (job) => {
         const company = await readCompanyDataByCompanyId(job.companyId);
-  
+
         return {
           companyName: company?.name || "Unknown Company",
           companyLogo: company?.logoURL || logo,
@@ -24,9 +27,9 @@ const StudentSwipePage = () => {
         };
       })
     );
-    
+
     setCompanies(mappedJobs);
-  }
+  };
   useEffect(() => {
     fetchJobs();
   }, []);
@@ -52,22 +55,26 @@ const StudentSwipePage = () => {
   console.log(accepted);
 
   return (
-    <div className="w-full h-screen bg-gray-100 flex flex-col gap-10 justify-center items-center py-8">
+    <div className="w-full h-screen max-h-screen flex flex-col md:flex-row bg-gray-50 justify-center md:items-right items-center overflow-hidden">
       {companies.length > 0 ? (
-        <CompanySwipeCard
-          key={companies[0].id}
-          companyName={companies[0].companyName}
-          companyLogo={companies[0].companyLogo}
-          companyDescription={companies[0].companyDescription}
-          roleName={companies[0].roleName}
-          roleDescription={companies[0].roleDescription}
-          roleSkills={companies[0].roleSkills}
-          contactInfo={companies[0].contactInfo}
-          onAccept={handleAccept}
-          onReject={handleReject}
-        />
+        <div className="md:mx-20 xl:mx-32 h-full flex flex-col flex-grow overflow-hidden">
+          <CompanyHeader
+            companyName={companies[0].companyName}
+            roleName={companies[0].roleName}
+          />
+          <div className="flex-grow overflow-hidden">
+            <CompanyCard
+              key={companies[0].id}
+              companyDescription={companies[0].companyDescription}
+              roleDescription={companies[0].roleDescription}
+              roleSkills={companies[0].roleSkills}
+              contactInfo={companies[0].contactInfo}
+            />
+          </div>
+          <ActionButtons onAccept={handleAccept} onReject={handleReject} />
+        </div>
       ) : (
-        <div className="text-center m-8 p-8 bg-white">
+        <div className="text-center m-8 p-8 w-full">
           <h2 className="text-2xl font-bold mb-4">
             No more companies to review
           </h2>
