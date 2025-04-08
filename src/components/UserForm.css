@@ -1,0 +1,36 @@
+.UserForm {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 800px;
+    padding: 24px;
+    border-radius: 16px;
+    margin: 40px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 2px solid #f0eaff;
+    gap: 20px;
+}
+
+h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+    font-weight: bold;
+}
+
+.SkillsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 10px 0;
+    width: 100%;
+}
+
+.skill-tag {
+    padding: 6px 12px;
+    background-color: #f3efff;
+    color: #6739cf;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+}

@@ -1,0 +1,92 @@
+/* .UserProfileCard {
+    width: 500px;
+    height: 500px;
+    background-color: grey;
+}
+
+#profilePic {
+    border-radius: 20px;
+} */
+
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid #f0eaff;
+    padding: 24px;
+    max-width: 800px;
+    margin: 40px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    font-family: sans-serif;
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .left-section {
+    display: flex;
+  }
+  
+  .profile-pic-wrapper {
+    margin-right: 16px;
+    text-align: center;
+  }
+  
+  .profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .profile-placeholder {
+    width: 80px;
+    height: 80px;
+    background-color: #f0eaff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 24px;
+    color: #3a2f7d;
+  }
+  
+  .user-info h2 {
+    margin: 0;
+    font-size: 24px;
+  }
+  
+  .user-info p {
+    margin: 4px 0;
+    color: #555;
+  }
+  
+  .right-section {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .edit-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+   }
+
+   .edit-btn:hover{
+    transform: translateY(-5px);
+   }
+  
+  
+  .card-footer {
+    margin-top: 16px;
+    color: #333;
+    font-size: 14px;
+  }
+  

@@ -1,0 +1,75 @@
+.Header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.EditableSection {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.EditableSection h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+    font-weight: bold;
+}
+
+.EditableSection p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    margin: 0;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.edit-btn:hover {
+    background-color: #f5f0ff;
+    transform: translateY(-2px);
+}
+
+.save-btn {
+    border-radius: 5px;
+    background-color: #b197fc;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.save-btn:hover {
+    background-color: #9775fa;
+    transform: translateY(-2px);
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0d6ff;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+}
