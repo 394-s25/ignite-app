@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import CompanySwipeCard from "../components/companySwipeCard";
+import CompanyCard from "../components/companyCard";
 import logo from "/AlpimeHealth.png";
+import ActionButtons from "../components/actionButtons";
+import CompanyHeader from "../components/companyHeader";
 
 const StudentSwipePage = () => {
   const [companies, setCompanies] = useState([
@@ -9,10 +11,10 @@ const StudentSwipePage = () => {
       companyName: "Alpime Health",
       companyLogo: logo,
       companyDescription:
-        "Alpime Health offers a reliable, secure, and efficient electronic medical record system, following a three-pronged objective of data storage for healthcare administrators, data representation for doctors and patients, and data analytics for hospitals starting in Côte d'Ivoire and expanding to neighboring West African countries.",
+        "Alpime Health offers a reliable, secure, and efficient electronic medical record system, following a three-pronged objective of data storage for healthcare administrators, data representation for doctors and patients, and data analytics for hospitals starting in Côte d'Ivoire and expanding to neighboring West African countries. Alpime Health offers a reliable, secure, and efficient electronic medical record system, following a three-pronged objective of data storage for healthcare administrators, data representation for doctors and patients, and data analytics for hospitals starting in Côte d'Ivoire and expanding to neighboring West African countries. Alpime Health offers a reliable, secure, and efficient electronic medical record system, following a three-pronged objective of data storage for healthcare administrators, data representation for doctors and patients, and data analytics for hospitals starting in Côte d'Ivoire and expanding to neighboring West African countries. Alpime Health offers a reliable, secure, and efficient electronic medical record system, following a three-pronged objective of data storage for healthcare administrators, data representation for doctors and patients, and data analytics for hospitals starting in Côte d'Ivoire and expanding to neighboring West African countries.",
       roleName: "ML Developer",
       roleDescription:
-        "We're looking for ML Developers who have hands-on experience with natural language processing, especially in areas like context-aware validation and disambiguation. If you've worked with computer vision technologies such as optical character recognition (OCR) or form parsing, that's a big plus!",
+        "We're looking for ML Developers who have hands-on experience with natural language processing, especially in areas like context-aware validation and disambiguation. If you've worked with computer vision technologies such as optical character recognition (OCR) or form parsing, that's a big plus! We're looking for ML Developers who have hands-on experience with natural language processing, especially in areas like context-aware validation and disambiguation. If you've worked with computer vision technologies such as optical character recognition (OCR) or form parsing, that's a big plus! We're looking for ML Developers who have hands-on experience with natural language processing, especially in areas like context-aware validation and disambiguation. If you've worked with computer vision technologies such as optical character recognition (OCR) or form parsing, that's a big plus! We're looking for ML Developers who have hands-on experience with natural language processing, especially in areas like context-aware validation and disambiguation. If you've worked with computer vision technologies such as optical character recognition (OCR) or form parsing, that's a big plus! We're looking for ML Developers who have hands-on experience with natural language processing, especially in areas like context-aware validation and disambiguation. If you've worked with computer vision technologies such as optical character recognition (OCR) or form parsing, that's a big plus!",
       roleSkills: ["Python", "Communication", "NLP Experience", "Teamwork"],
       contactInfo:
         "tahiragrewal2026@u.northwestern.edu, isaacmeite2026@u.northwestern.edu, admin@alpimehealth.com",
@@ -48,7 +50,7 @@ const StudentSwipePage = () => {
         "ReVerve is building a sustainable fashion marketplace where students can rent and lend clothes for events, interviews, or everyday wear. Think Rent the Runway meets campus closets.",
       roleName: "Product Designer",
       roleDescription:
-        "We’re looking for a product designer who loves solving real student problems. You’ll work on refining our mobile experience, design user flows, and conduct lightweight usability tests.",
+        "We're looking for a product designer who loves solving real student problems. You'll work on refining our mobile experience, design user flows, and conduct lightweight usability tests.",
       roleSkills: ["Figma", "User Research", "Design Systems", "Empathy"],
       contactInfo: "design@reverve.northwestern.edu, founders@reverve.app",
     },
@@ -89,22 +91,26 @@ const StudentSwipePage = () => {
   console.log(accepted);
 
   return (
-    <div className="w-full h-screen bg-gray-100 flex flex-col gap-10 justify-center items-center py-8">
+    <div className="w-full h-screen max-h-screen flex flex-col md:flex-row bg-gray-50 justify-center md:items-right items-center overflow-hidden">
       {companies.length > 0 ? (
-        <CompanySwipeCard
-          key={companies[0].id}
-          companyName={companies[0].companyName}
-          companyLogo={companies[0].companyLogo}
-          companyDescription={companies[0].companyDescription}
-          roleName={companies[0].roleName}
-          roleDescription={companies[0].roleDescription}
-          roleSkills={companies[0].roleSkills}
-          contactInfo={companies[0].contactInfo}
-          onAccept={handleAccept}
-          onReject={handleReject}
-        />
+        <div className="md:mx-20 xl:mx-32 h-full flex flex-col flex-grow overflow-hidden">
+          <CompanyHeader
+            companyName={companies[0].companyName}
+            roleName={companies[0].roleName}
+          />
+          <div className="flex-grow overflow-hidden">
+            <CompanyCard
+              key={companies[0].id}
+              companyDescription={companies[0].companyDescription}
+              roleDescription={companies[0].roleDescription}
+              roleSkills={companies[0].roleSkills}
+              contactInfo={companies[0].contactInfo}
+            />
+          </div>
+          <ActionButtons onAccept={handleAccept} onReject={handleReject} />
+        </div>
       ) : (
-        <div className="text-center m-8 p-8 bg-white">
+        <div className="text-center m-8 p-8 w-full">
           <h2 className="text-2xl font-bold mb-4">
             No more companies to review
           </h2>
