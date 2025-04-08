@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './EditableSection.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { Pen } from "lucide-react";
 
 const EditableSection = ({title, content}) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -20,7 +19,7 @@ const EditableSection = ({title, content}) => {
             <div className='Header'>
                 <h2>{title}</h2>
                 <button className="edit-btn" onClick={handleEditClick}>
-                    <FontAwesomeIcon icon={faPen} style={{ color: '#b197fc' }}/>
+                    <Pen  className="w-8 h-8" color="violet"/>
                 </button>
             </div>
 

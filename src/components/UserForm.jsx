@@ -1,8 +1,6 @@
 import React from 'react';
 import './UserForm.css';
 import EditableSection from './EditableSection'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
 
 const UserForm = ({
     studentBio,
