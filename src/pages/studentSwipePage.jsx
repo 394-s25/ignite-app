@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import CompanySwipeCard from "../components/companySwipeCard";
 import logo from "/AlpimeHealth.png";
 import { getAllJobs, readCompanyDataByCompanyId } from "../db/firebaseService";
+import peppa from "/peppa.jpg";
+
 const StudentSwipePage = () => {
   const [companies, setCompanies] = useState([]);
   const [accepted, setAccepted] = useState([]);
@@ -12,15 +14,14 @@ const StudentSwipePage = () => {
     const mappedJobs = await Promise.all(
       jobs.map(async (job) => {
         const company = await readCompanyDataByCompanyId(job.companyId);
-  
         return {
           companyName: company?.name || "Unknown Company",
-          companyLogo: company?.logoURL || logo,
+          companyLogo: company?.logoURL || peppa,
           companyDescription: company?.introduction || "",
           roleName: job.title || "Open Role",
           roleDescription: job.description || "",
           roleSkills: job.skills || [],
-          contactInfo: company?.email || "",
+          contactInfo: job.contacts || "",
         };
       })
     );
