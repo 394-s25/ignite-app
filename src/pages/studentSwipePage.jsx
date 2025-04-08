@@ -5,6 +5,8 @@ import { getAllJobs, readCompanyDataByCompanyId } from "../db/firebaseService";
 import ActionButtons from "../components/actionButtons";
 import CompanyHeader from "../components/companyHeader";
 
+import peppa from "/peppa.jpg";
+
 const StudentSwipePage = () => {
   const [companies, setCompanies] = useState([]);
   const [accepted, setAccepted] = useState([]);
@@ -18,12 +20,12 @@ const StudentSwipePage = () => {
 
         return {
           companyName: company?.name || "Unknown Company",
-          companyLogo: company?.logoURL || logo,
+          companyLogo: company?.logoURL || peppa,
           companyDescription: company?.introduction || "",
           roleName: job.title || "Open Role",
           roleDescription: job.description || "",
           roleSkills: job.skills || [],
-          contactInfo: company?.email || "",
+          contactInfo: job.contacts || "",
         };
       })
     );
