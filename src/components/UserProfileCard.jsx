@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './UserProfileCard.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { Pen } from "lucide-react";
 
 const UserProfileCard = ({studentName, studentMajor, contactInfo,}) => {
   const [profilePic, setProfilePic] = useState(null);
@@ -34,7 +33,7 @@ const UserProfileCard = ({studentName, studentMajor, contactInfo,}) => {
         </div>
 
         <div className="right-section">
-          <button className="edit-btn"><FontAwesomeIcon icon={faPen} style={{ color: '#b197fc' }}/></button>
+          <button className="edit-btn"><Pen  className="w-20 h-20" color="violet"/></button>
         </div>
       </div>
 
