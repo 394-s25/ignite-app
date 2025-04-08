@@ -16,6 +16,7 @@ const Home = () => {
           "tahiragrewal2026@u.northwestern.edu, isaacmeite2026@u.northwestern.edu, admin@alpimehealth.com"
         }
       />
+      <NavBar/>
     </div>
   );
 };

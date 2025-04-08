@@ -1,5 +1,5 @@
-import UserProfileCard from '../components/UserProfileCard'
-import UserForm from '../components/UserForm'
+import UserProfileCard from './UserProfileCard'
+import UserForm from './UserForm'
 
 const UserProfile = ({
     studentName,
