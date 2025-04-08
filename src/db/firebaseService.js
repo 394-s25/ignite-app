@@ -328,7 +328,8 @@ export async function getAllJobs() {
         if (snapshot.exists()) {
             const jobs = snapshot.val();
             console.log("Retrieved all jobs: ", jobs);
-            return jobs;
+            const jobsList = Object.values(jobs);
+            return jobsList;
         } else {
             console.log("No jobs found.");
             return null;
