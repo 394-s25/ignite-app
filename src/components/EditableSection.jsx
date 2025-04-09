@@ -19,7 +19,7 @@ const EditableSection = ({title, content}) => {
             <div className='Header'>
                 <h2>{title}</h2>
                 <button className="edit-btn" onClick={handleEditClick}>
-                    <Pen  className="w-20 h-20" color="violet"/>
+                    <Pen className="text-violet-600"/>
                 </button>
             </div>
 

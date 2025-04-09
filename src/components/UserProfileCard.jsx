@@ -33,7 +33,7 @@ const UserProfileCard = ({studentName, studentMajor, contactInfo,}) => {
         </div>
 
         <div className="right-section">
-          <button className="edit-btn"><Pen  className="w-20 h-20" color="violet"/></button>
+          <button className="edit-btn"><Pen  className="w-20 h-20 text-violet-600"/></button>
         </div>
       </div>
 
