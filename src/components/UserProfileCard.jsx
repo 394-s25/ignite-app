@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './UserProfileCard.css';
 import { Pen } from "lucide-react";
+import EditUserProfileCard from './editUserProfileCard';
 
 const UserProfileCard = ({studentName, studentMajor, contactInfo,}) => {
   const [profilePic, setProfilePic] = useState(null);
@@ -33,6 +34,7 @@ const UserProfileCard = ({studentName, studentMajor, contactInfo,}) => {
         </div>
 
         <div className="right-section">
+          <EditUserProfileCard/>
           <button className="edit-btn"><Pen  className="w-20 h-20 text-violet-600"/></button>
         </div>
       </div>

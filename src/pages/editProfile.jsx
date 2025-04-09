@@ -1,6 +1,6 @@
 import UserProfile from "../components/UserProfile";
 
-const DummyInfo = [{
+const students = [{
     studentName: "Peppa Pig",
     // studentPhoto: peppa, Add this later
     studentMajor: "Computer Science",
@@ -15,15 +15,15 @@ const DummyInfo = [{
 const EditProfile = () => {
     return (
         <div>
-            {DummyInfo.map((info) => (
+            {students.map((student) => (
                 <UserProfile 
-                    key={info.contactInfo}
-                    studentName={info.studentName}
-                    studentMajor={info.studentMajor}
-                    studentBio={info.studentBio}
-                    lookingFor={info.lookingFor}
-                    studentSkills={info.studentSkills}
-                    contactInfo={info.contactInfo}
+                    key={student.contactInfo}
+                    studentName={student.studentName}
+                    studentMajor={student.studentMajor}
+                    studentBio={student.studentBio}
+                    lookingFor={student.lookingFor}
+                    studentSkills={student.studentSkills}
+                    contactInfo={student.contactInfo}
                 />
             ))}
         </div>
