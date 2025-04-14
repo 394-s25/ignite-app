@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const StudentProfileCard = ({ person, onRemove }) => {
   const [liked, setLiked] = useState(false);
@@ -11,13 +11,15 @@ const StudentProfileCard = ({ person, onRemove }) => {
       {/* Top: Profile Info */}
       <div className="flex items-center gap-4 mb-4">
         <img
-          src={person.image || 'https://via.placeholder.com/80'}
+          src={person.image || "https://via.placeholder.com/80"}
           alt={person.name}
           className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
         />
         <div className="flex flex-col">
           <h2 className="text-xl font-bold text-purple-800">{person.name}</h2>
-          <p className="text-sm text-purple-700">Grad Year: {person.gradYear}</p>
+          <p className="text-sm text-purple-700">
+            Grad Year: {person.gradYear}
+          </p>
           <p className="text-sm text-purple-700">Major: {person.major}</p>
         </div>
       </div>
@@ -25,9 +27,13 @@ const StudentProfileCard = ({ person, onRemove }) => {
       {/* Bottom: Buttons */}
       <div className="flex justify-end gap-3">
         {liked ? (
-          <button className="px-4 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition">
+          <a
+            className="px-6 py-2 text-xl rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+            href="https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"
+            target="_blank"
+          >
             Schedule Interview
-          </button>
+          </a>
         ) : (
           <>
             <button

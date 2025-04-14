@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import CompanyProfileCard from "../components/companyProfileCard";
 
 const initialCompanies = [
@@ -6,52 +6,54 @@ const initialCompanies = [
     companyName: "Stripe",
     industry: "Payments Infrastructure",
     location: "San Francisco, CA",
-    logo: "https://logo.clearbit.com/stripe.com"
+    logo: "https://logo.clearbit.com/stripe.com",
   },
   {
     companyName: "Spotify",
     industry: "Music Streaming",
     location: "Stockholm, Sweden",
-    logo: "https://logo.clearbit.com/spotify.com"
+    logo: "https://logo.clearbit.com/spotify.com",
   },
   {
     companyName: "Netflix",
     industry: "Entertainment",
     location: "Los Gatos, CA",
-    logo: "https://logo.clearbit.com/netflix.com"
+    logo: "https://logo.clearbit.com/netflix.com",
   },
   {
     companyName: "Slack Technologies",
     industry: "Team Collaboration",
     location: "San Francisco, CA",
-    logo: "https://logo.clearbit.com/slack.com"
+    logo: "https://logo.clearbit.com/slack.com",
   },
   {
     companyName: "Dropbox",
     industry: "Cloud Storage",
     location: "San Francisco, CA",
-    logo: "https://logo.clearbit.com/dropbox.com"
+    logo: "https://logo.clearbit.com/dropbox.com",
   },
   {
     companyName: "Shopify",
     industry: "E-commerce",
     location: "Ottawa, Canada",
-    logo: "https://logo.clearbit.com/shopify.com"
+    logo: "https://logo.clearbit.com/shopify.com",
   },
   {
     companyName: "Airbnb",
     industry: "Travel & Hospitality",
     location: "San Francisco, CA",
-    logo: "https://logo.clearbit.com/airbnb.com"
-  }
+    logo: "https://logo.clearbit.com/airbnb.com",
+  },
 ];
 
 const StudentLikes = () => {
   const [companies, setCompanies] = useState(initialCompanies);
 
   const handleRemoveCompany = (companyToRemove) => {
-    setCompanies(prev =>
-      prev.filter(company => company.companyName !== companyToRemove.companyName)
+    setCompanies((prev) =>
+      prev.filter(
+        (company) => company.companyName !== companyToRemove.companyName
+      )
     );
   };
 

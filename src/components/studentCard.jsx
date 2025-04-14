@@ -8,7 +8,7 @@ const StudentCard = ({
   contactInfo,
 }) => {
   return (
-    <section className="h-full bg-white overflow-y-auto p-8 md:px-12 flex flex-col gap-12">
+    <section className="h-full w-full bg-white overflow-y-auto p-8 md:px-12 flex flex-col gap-12">
       {/* about */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">

@@ -90,7 +90,7 @@ const CompanySwipePage = () => {
   return (
     <div className="w-full h-screen max-h-screen flex flex-col md:flex-row bg-gray-50 justify-center md:items-right items-center overflow-hidden">
       {students.length > 0 ? (
-        <div className="md:mx-20 xl:mx-32 h-full flex flex-col flex-grow overflow-hidden">
+        <div className="md:mx-20 xl:mx-32 h-full text-left flex flex-col flex-grow overflow-hidden">
           <StudentHeader
             studentName={students[0].studentName}
             studentMajor={students[0].studentMajor}

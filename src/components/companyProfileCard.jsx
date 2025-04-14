@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const CompanyProfileCard = ({ company, onRemove }) => {
   const [liked, setLiked] = useState(false);
@@ -11,23 +11,33 @@ const CompanyProfileCard = ({ company, onRemove }) => {
       {/* Top: Logo + Info */}
       <div className="flex items-center gap-4 mb-4">
         <img
-          src={company.logo || 'https://via.placeholder.com/80'}
+          src={company.logo || "https://via.placeholder.com/80"}
           alt={`${company.companyName} logo`}
           className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
         />
         <div className="flex flex-col">
-          <h2 className="text-xl font-bold text-purple-800">{company.companyName}</h2>
-          <p className="text-sm text-purple-700">Industry: {company.industry}</p>
-          <p className="text-sm text-purple-700">Location: {company.location}</p>
+          <h2 className="text-xl font-bold text-purple-800">
+            {company.companyName}
+          </h2>
+          <p className="text-sm text-purple-700">
+            Industry: {company.industry}
+          </p>
+          <p className="text-sm text-purple-700">
+            Location: {company.location}
+          </p>
         </div>
       </div>
 
       {/* Bottom: Buttons */}
       <div className="flex justify-end gap-3">
         {liked ? (
-          <button className="px-4 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition">
+          <a
+            className="px-6 py-2 text-xl rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+            href="https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"
+            target="_blank"
+          >
             Schedule Interview
-          </button>
+          </a>
         ) : (
           <>
             <button

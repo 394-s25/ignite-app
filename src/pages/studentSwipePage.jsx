@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import CompanyCard from "../components/companyCard";
-import logo from "/AlpimeHealth.png";
 import { getAllJobs, readCompanyDataByCompanyId } from "../db/firebaseService";
 import ActionButtons from "../components/actionButtons";
 import CompanyHeader from "../components/companyHeader";
@@ -59,7 +58,7 @@ const StudentSwipePage = () => {
   return (
     <div className="w-full h-screen max-h-screen flex flex-col md:flex-row bg-gray-50 justify-center md:items-right items-center overflow-hidden">
       {companies.length > 0 ? (
-        <div className="md:mx-20 xl:mx-32 h-full flex flex-col flex-grow overflow-hidden">
+        <div className="w-full md:mx-20 xl:mx-32 h-full flex flex-col text-left flex-grow overflow-hidden">
           <CompanyHeader
             companyName={companies[0].companyName}
             roleName={companies[0].roleName}
