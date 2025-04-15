@@ -2,16 +2,23 @@ import React, { useState } from 'react';
 import './UserProfileCard.css';
 import { Pen } from "lucide-react";
 
-const UserProfileCard = ({studentName, studentMajor, contactInfo,}) => {
+const UserProfileCard = ({studentName, studentMajor, contactInfo}) => {
   const [profilePic, setProfilePic] = useState(null);
   const [location, setLocation] = useState('Evanston, IL');
-
   const handlePicChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setProfilePic(URL.createObjectURL(file));
     }
   };
+  // TODO: When updating name, we need to setNameAbbreviation
+  const [nameAbbreviation, setNameAbbreviation] = useState(
+    studentName
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase())
+      .join('')
+  );
+  
 
   return (
     <div className="profile-card">
@@ -21,7 +28,7 @@ const UserProfileCard = ({studentName, studentMajor, contactInfo,}) => {
             {profilePic ? (
               <img src={profilePic} alt="Profile" className="profile-pic" />
             ) : (
-              <div className="profile-placeholder">JT</div>
+              <div className="profile-placeholder">{nameAbbreviation}</div>
             )}
             <input type="file" accept="image/*" onChange={handlePicChange} />
           </div>
