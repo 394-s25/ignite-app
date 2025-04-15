@@ -1,15 +1,17 @@
 import { handleGoogleLogin } from "../db/firebaseAuth";
 import { userFirstWrite } from "../db/firebaseService";
-
-const onSuccessRoute = async () => {
-    const user = await handleGoogleLogin()
-    if (user) {
-        userFirstWrite(user.displayName, user.email, user.phoneNumber, user.uid)
-        window.location.href = "/studentswipe";
-    }
-}
+import { useUser } from "../contexts/UserContext";
 
 const LoginPage = () => {
+    const {setUser} = useUser();
+    const onSuccessRoute = async () => {
+        const user = await handleGoogleLogin()
+        if (user) {
+            setUser(user);
+            await userFirstWrite(user.displayName, user.email, user.phoneNumber, user.uid)
+            window.location.href = "/studentswipe";
+        }
+    }
     return (
         <div className="flex flex-col items-center justify-center h-screen">
             <h1 className="text-3xl font-bold mb-4">Welcome to Ignite -- Northwestern Garage Job Matching Website</h1>
