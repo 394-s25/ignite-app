@@ -1,37 +1,37 @@
 import React from "react";
-import { CakeSlice, BookOpen, Code } from "lucide-react";
+import { Code, Briefcase, Building } from "lucide-react";
 
-const StudentCard = ({
-  studentBio,
-  lookingFor,
-  studentSkills = [],
+const CompanySwipeCard = ({
+  companyDescription,
+  roleDescription,
+  roleSkills = [],
   contactInfo,
 }) => {
   return (
-    <section className="h-full w-full bg-white overflow-y-auto p-8 md:px-12 flex flex-col gap-12">
-      {/* about */}
+    <section className="h-full bg-white overflow-y-auto p-8 md:px-12 flex flex-col gap-12">
+      {/* company desc */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-violet-600" />
+          <Building className="w-4 h-4 text-violet-600" />
           <h2 className="text-sm font-medium uppercase text-violet-600">
-            About
+            Company
           </h2>
         </div>
-        <p className="text-gray-700">{studentBio}</p>
+        <p className="text-gray-700">{companyDescription}</p>
       </div>
 
-      {/* looking for */}
+      {/* role desc */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <CakeSlice className="w-4 h-4 text-violet-600" />
+          <Briefcase className="w-4 h-4 text-violet-600" />
           <h2 className="text-sm font-medium uppercase text-violet-600">
-            Looking For
+            Role
           </h2>
         </div>
-        <p className="text-gray-700">{lookingFor}</p>
+        <p className="text-gray-700">{roleDescription}</p>
       </div>
 
-      {/* skills */}
+      {/* role skills */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <Code className="w-4 h-4 text-violet-600" />
@@ -40,7 +40,7 @@ const StudentCard = ({
           </h2>
         </div>
         <div className="flex flex-wrap gap-2">
-          {studentSkills.map((skill, index) => (
+          {roleSkills.map((skill, index) => (
             <span
               key={index}
               className="px-3 py-1 bg-violet-50 text-violet-900 rounded-md text-sm font-medium"
@@ -51,7 +51,7 @@ const StudentCard = ({
         </div>
       </div>
 
-      {/* Contact */}
+      {/* contact */}
       <div className="flex flex-col gap-3">
         <h2 className="text-sm font-medium uppercase text-violet-600">
           Contact Information
@@ -62,4 +62,4 @@ const StudentCard = ({
   );
 };
 
-export default StudentCard;
+export default CompanySwipeCard;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CompanyProfileCard from "../components/companyProfileCard";
+import CompanyProfileCard from "../components/likedCards/companyProfileCard";
 
 const initialCompanies = [
   {

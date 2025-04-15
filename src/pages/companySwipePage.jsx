@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import StudentCard from "../components/studentCard";
+import StudentSwipeCard from "../components/swipeCards/studentSwipeCard";
 import peppa from "/peppa.jpg";
-import ActionButtons from "../components/actionButtons";
-import StudentHeader from "../components/studentHeader";
+import ActionButtons from "../components/swipeCards/actionButtons";
+import StudentHeader from "../components/swipeCards/studentHeader";
 
 const CompanySwipePage = () => {
   const [students, setStudents] = useState([
@@ -97,7 +97,7 @@ const CompanySwipePage = () => {
             studentPhoto={students[0].studentPhoto}
           />
           <div className="flex-grow overflow-hidden">
-            <StudentCard
+            <StudentSwipeCard
               key={students[0].id}
               studentBio={students[0].studentBio}
               lookingFor={students[0].lookingFor}

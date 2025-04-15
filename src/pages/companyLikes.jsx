@@ -1,56 +1,56 @@
-import React, { useState } from 'react';
-import StudentProfileCard from '../components/studentProfileCard';
+import React, { useState } from "react";
+import StudentProfileCard from "../components/likedCards/studentProfileCard";
 
 const initialPeople = [
   {
     name: "Emma Johnson",
     gradYear: "2025",
     major: "Computer Science",
-    image: "https://randomuser.me/api/portraits/women/65.jpg"
+    image: "https://randomuser.me/api/portraits/women/65.jpg",
   },
   {
     name: "Liam Thompson",
     gradYear: "2024",
     major: "Music Technology",
-    image: "https://randomuser.me/api/portraits/men/45.jpg"
+    image: "https://randomuser.me/api/portraits/men/45.jpg",
   },
   {
     name: "Sophia Martinez",
     gradYear: "2023",
     major: "Film and Media Studies",
-    image: "https://randomuser.me/api/portraits/women/72.jpg"
+    image: "https://randomuser.me/api/portraits/women/72.jpg",
   },
   {
     name: "Noah Kim",
     gradYear: "2024",
     major: "Human-Computer Interaction",
-    image: "https://randomuser.me/api/portraits/men/36.jpg"
+    image: "https://randomuser.me/api/portraits/men/36.jpg",
   },
   {
     name: "Ava Patel",
     gradYear: "2025",
     major: "Information Systems",
-    image: "https://randomuser.me/api/portraits/women/21.jpg"
+    image: "https://randomuser.me/api/portraits/women/21.jpg",
   },
   {
     name: "Jackson Lee",
     gradYear: "2023",
     major: "Business and Tech",
-    image: "https://randomuser.me/api/portraits/men/12.jpg"
+    image: "https://randomuser.me/api/portraits/men/12.jpg",
   },
   {
     name: "Mia Nguyen",
     gradYear: "2022",
     major: "Hospitality and Tourism",
-    image: "https://randomuser.me/api/portraits/women/33.jpg"
-  }
+    image: "https://randomuser.me/api/portraits/women/33.jpg",
+  },
 ];
 
 const CompanyLikes = () => {
   const [people, setPeople] = useState(initialPeople);
 
   const handleRemove = (personToRemove) => {
-    setPeople(prev => prev.filter(p => p.name !== personToRemove.name));
+    setPeople((prev) => prev.filter((p) => p.name !== personToRemove.name));
   };
 
   return (

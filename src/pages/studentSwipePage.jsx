@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import CompanyCard from "../components/companyCard";
-import { listenToAllJobs, readCompanyDataByCompanyId } from "../db/firebaseService";
-import ActionButtons from "../components/actionButtons";
-import CompanyHeader from "../components/companyHeader";
+import CompanySwipeCard from "../components/swipeCards/companySwipeCard";
+import {
+  listenToAllJobs,
+  readCompanyDataByCompanyId,
+} from "../db/firebaseService";
+import ActionButtons from "../components/swipeCards/actionButtons";
+import CompanyHeader from "../components/swipeCards/companyHeader";
 import peppa from "/peppa.jpg";
 
 const StudentSwipePage = () => {
@@ -59,7 +62,7 @@ const StudentSwipePage = () => {
             roleName={companies[0].roleName}
           />
           <div className="flex-grow overflow-hidden">
-            <CompanyCard
+            <CompanySwipeCard
               key={companies[0].id}
               companyDescription={companies[0].companyDescription}
               roleDescription={companies[0].roleDescription}
