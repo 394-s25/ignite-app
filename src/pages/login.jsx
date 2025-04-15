@@ -1,9 +1,10 @@
 import { handleGoogleLogin } from "../db/firebaseAuth";
+import { userFirstWrite } from "../db/firebaseService";
 
 const onSuccessRoute = async () => {
     const user = await handleGoogleLogin()
-    console.log(user);
     if (user) {
+        userFirstWrite(user.displayName, user.email, user.phoneNumber, user.uid)
         window.location.href = "/studentswipe";
     }
 }
