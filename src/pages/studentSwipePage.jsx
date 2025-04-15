@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import CompanyCard from "../components/companyCard";
-import { getAllJobs, readCompanyDataByCompanyId } from "../db/firebaseService";
+import { listenToAllJobs, readCompanyDataByCompanyId } from "../db/firebaseService";
 import ActionButtons from "../components/actionButtons";
 import CompanyHeader from "../components/companyHeader";
-
 import peppa from "/peppa.jpg";
 
 const StudentSwipePage = () => {
@@ -11,28 +10,24 @@ const StudentSwipePage = () => {
   const [accepted, setAccepted] = useState([]);
   const [rejected, setRejected] = useState([]);
 
-  const fetchJobs = async () => {
-    const jobs = await getAllJobs();
-    const mappedJobs = await Promise.all(
-      jobs.map(async (job) => {
-        const company = await readCompanyDataByCompanyId(job.companyId);
-
-        return {
-          companyName: company?.name || "Unknown Company",
-          companyLogo: company?.logoURL || peppa,
-          companyDescription: company?.introduction || "",
-          roleName: job.title || "Open Role",
-          roleDescription: job.description || "",
-          roleSkills: job.skills || [],
-          contactInfo: job.contacts || "",
-        };
-      })
-    );
-
-    setCompanies(mappedJobs);
-  };
   useEffect(() => {
-    fetchJobs();
+    listenToAllJobs(async (jobs) => {
+      const mappedJobs = await Promise.all(
+        jobs.map(async (job) => {
+          const company = await readCompanyDataByCompanyId(job.companyId);
+          return {
+            companyName: company?.name || "Unknown Company",
+            companyLogo: company?.logoURL || peppa,
+            companyDescription: company?.introduction || "",
+            roleName: job.title || "Open Role",
+            roleDescription: job.description || "",
+            roleSkills: job.skills || [],
+            contactInfo: job.contacts || "",
+          };
+        })
+      );
+      setCompanies(mappedJobs);
+    });
   }, []);
 
   const handleAccept = () => {

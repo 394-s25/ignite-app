@@ -2,8 +2,8 @@ import { handleGoogleLogin } from "../db/firebaseAuth";
 
 const onSuccessRoute = async () => {
     const user = await handleGoogleLogin()
+    console.log(user);
     if (user) {
-        // Redirect to the appropriate page based on user type
         window.location.href = "/studentswipe";
     }
 }

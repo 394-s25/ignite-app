@@ -353,21 +353,20 @@ export async function getJobsByCompanyId(companyId) {
     });
 }
 
-export async function getAllJobs() {
+export function listenToAllJobs(callback) {
     const jobsRef = ref(db, 'jobs');
-    return get(jobsRef)
-    .then((snapshot) => {
+
+    onValue(jobsRef, (snapshot) => {
         if (snapshot.exists()) {
             const jobs = snapshot.val();
             console.log("Retrieved all jobs: ", jobs);
             const jobsList = Object.values(jobs);
-            return jobsList;
+            callback(jobsList);
         } else {
             console.log("No jobs found.");
-            return null;
+            callback([]);
         }
-    })
-    .catch((error) => {
+    }, (error) => {
         console.error("Error retrieving jobs: ", error);
     });
 }
