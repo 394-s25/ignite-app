@@ -7,13 +7,14 @@ import CompanyLikes from "./pages/companyLikes";
 import StudentLikes from "./pages/studentlikes.jsx";
 import NavBar from "./components/navbar.jsx";
 import EditProfile from "./pages/editProfile.jsx";
+import LoginPage from "./pages/login.jsx";
 
 const App = () => {
   return (
     <Router>
       <div className="App">
       <Routes>
-        <Route path="/" element={<StudentSwipePage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/studentswipe" element={<StudentSwipePage />} />
         <Route path="/companyswipe" element={<CompanySwipePage />} />
         <Route path="/companylikes" element={<CompanyLikes />} />
