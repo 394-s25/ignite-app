@@ -1,15 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, push, get, query, orderByChild, equalTo } from "firebase/database";
+import { getDatabase, ref, set, push, get, query, orderByChild, equalTo, onValue } from "firebase/database";
 import { update } from "firebase/database";
 import SHA256 from "crypto-js/sha256";
+import { app } from "./firebaseConfig";
 // import { L } from "vitest/dist/chunks/reporters.d.CqBhtcTq";
 
-const firebaseConfig = {
-    databaseURL: "https://ignite-app-red-default-rtdb.firebaseio.com"
-}
-
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // initialize skills and preferences dictionaries
