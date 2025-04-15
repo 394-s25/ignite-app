@@ -117,38 +117,18 @@ export async function getPrefNameById(prefId) {
     });
 }
 
-export async function userFirstWrite(name, email, phoneNumber) {
-    // initialize the first ID as 80000
-    return get(ref(db, 'metadata/userCounter'))
-        .then((snapshot) => {
-            let userId = 80000; // default starting value
-            
-            // if already initialized, get the last one
-            if (snapshot.exists()) {
-                userId = snapshot.val();
-            }
-            
-            // make sure to add the entry with the same key as userSecondWrite
-            //return set(ref(db, 'users/' + hashedEmail), {  // hashed email is key
-            return set(ref(db, 'users/' + userId), {  // user id is key
-                username: name,
-                email: email,
-                phoneNumber: phoneNumber,
-                userId: userId  // incremental ID calculated for each new user
-            })
-
-            .then(() => {
-                // increment counter for next user
-                return set(ref(db, 'metadata/userCounter'), userId + 1);
-            })
-            .then(() => {
-                console.log("Data written successfully.");
-                //return userId;
-            });
-        })
-        .catch((error) => {
-            console.error("Error writing data: ", error);
+export async function userFirstWrite(name, email, phoneNumber, userId) {
+    try {
+        const userRef = ref(db, 'users/' + userId)
+        await set(userRef, {
+            username: name,
+            email: email,
+            phoneNumber: phoneNumber || "",
+            userId: userId
         });
+    } catch (error){
+        console.error("Error writing data: ", error);
+    }
 }
 
 export async function userSecondWrite(userId, major, bio, skills, preferences) {
