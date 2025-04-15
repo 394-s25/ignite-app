@@ -118,27 +118,17 @@ export async function getPrefNameById(prefId) {
 }
 
 export async function userFirstWrite(name, email, phoneNumber, userId) {
-    // initialize the first ID as 80000
-    return get(ref(db, 'users/' + userId))
-        .then((snapshot) => {
-            // if user already existed, do nothing
-            if (snapshot.exists()) {
-                return
-            }
-            
-            return set(ref(db, 'users/' + userId), {  // user id is key
-                username: name,
-                email: email,
-                phoneNumber: phoneNumber || "",
-                userId: userId
-            })
-            .then(() => {
-                console.log("Data written successfully.");
-            });
-        })
-        .catch((error) => {
-            console.error("Error writing data: ", error);
+    try {
+        const userRef = ref(db, 'users/' + userId)
+        await set(userRef, {
+            username: name,
+            email: email,
+            phoneNumber: phoneNumber || "",
+            userId: userId
         });
+    } catch (error){
+        console.error("Error writing data: ", error);
+    }
 }
 
 export async function userSecondWrite(userId, major, bio, skills, preferences) {
