@@ -7,6 +7,7 @@ import {
 import ActionButtons from "../components/swipeCards/actionButtons";
 import CompanyHeader from "../components/swipeCards/companyHeader";
 import peppa from "/peppa.jpg";
+import NavBar from "../components/NavBar";
 
 const StudentSwipePage = () => {
   const [companies, setCompanies] = useState([]);
@@ -54,34 +55,37 @@ const StudentSwipePage = () => {
   console.log(accepted);
 
   return (
-    <div className="w-full h-screen max-h-screen flex flex-col md:flex-row bg-gray-50 justify-center md:items-right items-center overflow-hidden">
-      {companies.length > 0 ? (
-        <div className="w-full md:mx-20 xl:mx-32 h-full flex flex-col text-left flex-grow overflow-hidden">
-          <CompanyHeader
-            companyName={companies[0].companyName}
-            roleName={companies[0].roleName}
-          />
-          <div className="flex-grow overflow-hidden">
-            <CompanySwipeCard
-              key={companies[0].id}
-              companyDescription={companies[0].companyDescription}
-              roleDescription={companies[0].roleDescription}
-              roleSkills={companies[0].roleSkills}
-              contactInfo={companies[0].contactInfo}
+    <div>
+      <NavBar></NavBar>
+      <div className="w-full h-screen max-h-screen flex flex-col md:flex-row bg-gray-50 justify-center md:items-right items-center overflow-hidden">
+        {companies.length > 0 ? (
+          <div className="w-full md:mx-20 xl:mx-32 h-full flex flex-col text-left flex-grow overflow-hidden">
+            <CompanyHeader
+              companyName={companies[0].companyName}
+              roleName={companies[0].roleName}
             />
+            <div className="flex-grow overflow-hidden">
+              <CompanySwipeCard
+                key={companies[0].id}
+                companyDescription={companies[0].companyDescription}
+                roleDescription={companies[0].roleDescription}
+                roleSkills={companies[0].roleSkills}
+                contactInfo={companies[0].contactInfo}
+              />
+            </div>
+            <ActionButtons onAccept={handleAccept} onReject={handleReject} />
           </div>
-          <ActionButtons onAccept={handleAccept} onReject={handleReject} />
-        </div>
-      ) : (
-        <div className="text-center m-8 p-8 w-full">
-          <h2 className="text-2xl font-bold mb-4">
-            No more companies to review
-          </h2>
-          <p className="text-gray-700">
-            Check your "Liked By" page to see who wants to work with you!
-          </p>
-        </div>
-      )}
+        ) : (
+          <div className="text-center m-8 p-8 w-full">
+            <h2 className="text-2xl font-bold mb-4">
+              No more companies to review
+            </h2>
+            <p className="text-gray-700">
+              Check your "Liked By" page to see who wants to work with you!
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { auth } from "../db/firebaseAuth";
 import { readUserDataByUserId } from "../db/firebaseService";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
+import NavBar from "../components/NavBar";
 
 const EditProfile = () => {
     const { user } = useUser();
@@ -25,6 +26,7 @@ const EditProfile = () => {
     console.log(userData)
     return (
         <div>
+            <NavBar></NavBar>
             <UserProfile 
                 key={userData.uid}
                 studentName={userData.username}

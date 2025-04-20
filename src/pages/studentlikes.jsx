@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CompanyProfileCard from "../components/likedCards/companyProfileCard";
+import NavBar from "../components/NavBar";
 
 const initialCompanies = [
   {
@@ -58,18 +59,21 @@ const StudentLikes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-10 px-4">
-      <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
-        Companies That Liked You
-      </h1>
-      <div className="space-y-6">
-        {companies.map((company, index) => (
-          <CompanyProfileCard
-            key={index}
-            company={company}
-            onRemove={handleRemoveCompany}
-          />
-        ))}
+    <div>
+      <NavBar></NavBar>
+      <div className="min-h-screen bg-white py-10 px-4">
+        <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
+          Companies That Liked Me
+        </h1>
+        <div className="space-y-6">
+          {companies.map((company, index) => (
+            <CompanyProfileCard
+              key={index}
+              company={company}
+              onRemove={handleRemoveCompany}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

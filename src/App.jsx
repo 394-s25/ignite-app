@@ -4,7 +4,6 @@ import StudentSwipePage from "./pages/studentSwipePage";
 import CompanySwipePage from "./pages/companySwipePage";
 import CompanyLikes from "./pages/companyLikes";
 import StudentLikes from "./pages/studentlikes.jsx";
-import NavBar from "./components/navbar.jsx";
 import EditProfile from "./pages/editProfile.jsx";
 import LoginPage from "./pages/login.jsx";
 
@@ -21,7 +20,6 @@ const App = () => {
           <Route path="/editProfile" element={<EditProfile />} />
         </Routes>
 
-        <NavBar />
       </div>
     </Router>
   );
