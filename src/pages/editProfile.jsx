@@ -1,4 +1,4 @@
-import UserProfile from "../components/UserProfile";
+import UserProfile from "../components/userProfile/UserProfile";
 import { auth } from "../db/firebaseAuth";
 import { readUserDataByUserId } from "../db/firebaseService";
 import { useUser } from "../contexts/UserContext";
