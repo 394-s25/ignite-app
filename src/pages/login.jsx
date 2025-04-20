@@ -9,7 +9,7 @@ const LoginPage = () => {
         if (user) {
             setUser(user);
             await userFirstWrite(user.displayName, user.email, user.phoneNumber, user.uid)
-            window.location.href = "/studentswipe";
+            window.location.href = "/editProfile";
         }
     }
     return (
