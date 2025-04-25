@@ -6,6 +6,7 @@ import CompanyLikes from "./pages/companyLikes";
 import StudentLikes from "./pages/studentlikes.jsx";
 import EditProfile from "./pages/editProfile.jsx";
 import LoginPage from "./pages/login.jsx";
+import TestModalPage from "./pages/testModal.jsx";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/companylikes" element={<CompanyLikes />} />
           <Route path="/studentlikes" element={<StudentLikes />} />
           <Route path="/editProfile" element={<EditProfile />} />
+          <Route path="/testmodal" element={<TestModalPage />} />
         </Routes>
 
       </div>
