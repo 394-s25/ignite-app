@@ -1,21 +1,18 @@
 // testing page for front end to see functionality of backend
-import { auth } from "../db/firebaseAuth";
-import { readUserDataByUserId, getSkillById } from "../db/firebaseService";
-import { getStudentSkills } from "../utility/sorting";
+import {
+  readUserDataByUserId,
+  getSkillById,
+  getPrefNameById,
+} from "../db/firebaseService";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
 
-// -OOYVAxO-PXgIrcafUzx; // react
-// -OOYVAxP4cer63tyrcAq; // user research
-// -OOYVAxO-PXgIrcafV-5; // uiux design
-
-const UtilityPage = () => {
+const TestProfile = () => {
   const { user } = useUser();
   const [userData, setUserData] = useState(null);
   const [userSkills, setUserSkills] = useState([]);
-  const [skillInput, setSkillInput] = useState("");
-  const [currentSkill, setCurrentSkill] = useState(null);
+  const [userPrefs, setUserPrefs] = useState({});
 
   const fetchData = async () => {
     if (user?.uid) {
@@ -38,27 +35,41 @@ const UtilityPage = () => {
     }
   };
 
-  // Fetch user data on mount
+  const checkStudentPrefs = async () => {
+    if (!userData?.preferences) return;
+    try {
+      const prefs = {};
+
+      for (const [prefType, prefIds] of Object.entries(userData.preferences)) {
+        if (!Array.isArray(prefIds)) continue;
+
+        prefs[prefType] = [];
+        for (const prefId of prefIds) {
+          const name = await getPrefNameById(prefType, prefId);
+          prefs[prefType].push(name);
+        }
+      }
+
+      setUserPrefs(prefs);
+    } catch (error) {
+      console.error("Error loading preferences:", error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, [user?.uid]);
 
-  // Load skills when userData changes
   useEffect(() => {
     if (userData) {
       checkStudentSkills();
+      checkStudentPrefs();
     }
-  }, [userData]); // Runs when userData updates
+  }, [userData]);
 
   if (!userData) {
     return <div>Loading profile...</div>;
   }
-
-  const checkSkill = async (e) => {
-    e.preventDefault();
-    const skill = await getSkillById(skillInput);
-    setCurrentSkill(skill);
-  };
 
   return (
     <div>
@@ -71,27 +82,21 @@ const UtilityPage = () => {
           <p>bio: {userData.bio}</p>
           <p>skills: {userSkills.map((skill) => skill).join(", ")}</p>
           <p>email: {userData.email}</p>
-          <div>
-            <h3>Preferences</h3>
-            <ul>
-              <li>
-                <strong>Culture:</strong>{" "}
-                {userData.preferences.culture || "Not specified"}
-              </li>
-              <li>
-                <strong>Industry:</strong>{" "}
-                {userData.preferences.industry || "Not specified"}
-              </li>
-              <li>
-                <strong>Opportunities:</strong>{" "}
-                {userData.preferences.opportunities || "Not specified"}
-              </li>
-            </ul>
-          </div>
+          {userPrefs &&
+            Object.entries(userPrefs).map(([prefType, prefNames]) => (
+              <div key={prefType}>
+                <h4>{prefType}:</h4>
+                <ul>
+                  {prefNames.map((name, i) => (
+                    <li key={`${prefType}-${i}`}>{name}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default UtilityPage;
+export default TestProfile;

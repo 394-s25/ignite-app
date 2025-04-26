@@ -1,7 +1,6 @@
 import UserProfile from "../components/userProfile/UserProfile";
 import { auth } from "../db/firebaseAuth";
 import { readUserDataByUserId, getSkillById } from "../db/firebaseService";
-import { getStudentSkills } from "../utility/sorting";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";

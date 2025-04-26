@@ -6,7 +6,7 @@ import CompanyLikes from "./pages/companyLikes";
 import StudentLikes from "./pages/studentlikes.jsx";
 import EditProfile from "./pages/editProfile.jsx";
 import LoginPage from "./pages/login.jsx";
-import UtilityPage from "./pages/utility.jsx";
+import TestProfile from "./pages/testProfile.jsx";
 
 const App = () => {
   return (
@@ -19,7 +19,7 @@ const App = () => {
           <Route path="/companylikes" element={<CompanyLikes />} />
           <Route path="/studentlikes" element={<StudentLikes />} />
           <Route path="/editProfile" element={<EditProfile />} />
-          <Route path="/utility" element={<UtilityPage />} />
+          <Route path="/utility" element={<TestProfile />} />
         </Routes>
       </div>
     </Router>

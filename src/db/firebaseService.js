@@ -126,23 +126,23 @@ export async function getPrefIdByName(prefName) {
     });
 }
 
-export async function getPrefNameById(prefId) {
-  const prefRef = ref(db, `preferences/${prefId}`);
+export async function getPrefNameById(prefType, prefId) {
+  const prefRef = ref(db, `preferences/${prefType}/${prefId}`);
   return get(prefRef)
     .then((snapshot) => {
       if (snapshot.exists()) {
-        const prefRet = snapshot.val();
-        const prefName = prefRet.pref;
-        console.log(`Retrieved preference for ID ${prefId}: ${prefName}`);
-        return prefName;
+        console.log(
+          `Retrieved preference ${prefType} for ID ${prefId}: ${snapshot.val()}`
+        );
+        return snapshot.val();
       } else {
-        console.log(`No prefence found for ID ${prefId}.`);
+        console.log(`No prefence ${prefType} found for ID ${prefId}.`);
         return null;
       }
     })
     .catch((error) => {
       console.error(
-        `Error in retrieving preference for ID ${prefId}: ${error}`
+        `Error in retrieving preference ${prefType} for ID ${prefId}: ${error}`
       );
     });
 }
