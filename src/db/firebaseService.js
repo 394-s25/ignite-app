@@ -13,11 +13,8 @@ import {
 } from "firebase/database";
 import { update } from "firebase/database";
 import SHA256 from "crypto-js/sha256";
-import { app } from "./firebaseConfig";
+import { db } from "./firebaseConfig";
 // import { L } from "vitest/dist/chunks/reporters.d.CqBhtcTq";
-
-// Initialize Firebase
-const db = getDatabase(app);
 
 // helper for clearing any field
 export function clearField(path) {
@@ -131,9 +128,7 @@ export async function getPrefNameById(prefType, prefId) {
   return get(prefRef)
     .then((snapshot) => {
       if (snapshot.exists()) {
-        console.log(
-          `Retrieved preference ${prefType} for ID ${prefId}: ${snapshot.val()}`
-        );
+        console.log();
         return snapshot.val();
       } else {
         console.log(`No prefence ${prefType} found for ID ${prefId}.`);

@@ -1,24 +1,29 @@
-import { useState } from "react";
-import { handleGoogleLogin } from "../db/firebaseAuth";
-import { userFirstWrite } from "../db/firebaseService";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
 const LoginPage = () => {
-  const { setUser } = useUser();
+  const { user, login } = useUser();
+  const navigate = useNavigate();
 
-  const onSuccessRoute = async () => {
-    const user = await handleGoogleLogin();
-    if (user) {
-      setUser(user);
-      await userFirstWrite(
-        user.displayName,
-        user.email,
-        user.phoneNumber,
-        user.uid
-      );
-      window.location.href = "/editProfile";
+  const handleLogin = async () => {
+    try {
+      await login();
+      navigate("/testprofile");
+    } catch (error) {
+      if (error.message.includes("Northwestern email")) {
+        console.error("Please use a Northwestern email to login");
+      }
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/testprofile");
+    } else {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
@@ -26,7 +31,7 @@ const LoginPage = () => {
         Welcome to Ignite -- Northwestern Garage Job Matching Website
       </h1>
       <button
-        onClick={onSuccessRoute}
+        onClick={handleLogin}
         className="bg-purple-600 text-white px-4 py-2 rounded"
       >
         Sign in with Google

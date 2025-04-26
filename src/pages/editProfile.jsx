@@ -1,5 +1,5 @@
 import UserProfile from "../components/userProfile/UserProfile";
-import { auth } from "../db/firebaseAuth";
+import { auth } from "../db/firebaseConfig";
 import { readUserDataByUserId, getSkillById } from "../db/firebaseService";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";

@@ -1,24 +1,24 @@
 import { getDatabase, ref, get, set, update } from "firebase/database";
-import { app } from "../db/firebaseConfig";
+import { app } from "./firebaseConfig";
 
 const db = getDatabase(app);
 
-// export async function getStudentSkills(studentId) {
-//   try {
-//     const skillsSnapshot = await get(ref(db, `users/${studentId}/skills`));
-//     if (skillsSnapshot.exists()) {
-//       return skillsSnapshot.val();
-//     } else {
-//       console.log("no student skills found");
-//       return [];
-//     }
-//   } catch (error) {
-//     console.error("error fetching student skill:", error);
-//     return null;
-//   }
-// }
+export async function getStudentSkills(studentId) {
+  try {
+    const skillsSnapshot = await get(ref(db, `users/${studentId}/skills`));
+    if (skillsSnapshot.exists()) {
+      return skillsSnapshot.val();
+    } else {
+      console.log("no student skills found");
+      return [];
+    }
+  } catch (error) {
+    console.error("error fetching student skill:", error);
+    return null;
+  }
+}
 
-async function getJobSkills(jobId) {
+export async function getJobSkills(jobId) {
   const skillsSnapshot = await get(ref(db, `jobs/${jobId}/skills`));
   const jobSkills = skillsSnapshot.exists() ? skillsSnapshot.val() : [];
   return jobSkills;
