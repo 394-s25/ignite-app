@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import {
   getProfile,
-  updateApplicantProfile,
+  updateStudentProfile,
   updateCompanyProfile,
 } from "../db/firebaseAuth";
 import { mapPrefs, mapSkills, mapDescriptors } from "../db/mappingIds";
@@ -29,12 +29,13 @@ export const ProfileProvider = ({ children }) => {
         const userInfo = await getProfile(authUser.uid, authUser.displayName);
         if (userInfo) {
           setProfile(userInfo);
-          setProfileType(
-            userInfo.hasOwnProperty("major") ? "applicant" : "company"
-          );
+          // Determine profile type based on profile fields
+          const type = userInfo.major !== undefined ? "student" : "company";
+          setProfileType(type);
+          console.log("Profile type:", type);
 
-          if (userInfo.hasOwnProperty("major")) {
-            // Applicant-specific data - only map skills
+          // Map skills for student profiles
+          if (type === "student" && userInfo.skills) {
             const mappedSkills = await mapSkills(userInfo);
             setUserSkills(mappedSkills);
           }
@@ -56,13 +57,11 @@ export const ProfileProvider = ({ children }) => {
 
     try {
       const updateFn =
-        profileType === "applicant"
-          ? updateApplicantProfile
-          : updateCompanyProfile;
+        profileType === "student" ? updateStudentProfile : updateCompanyProfile;
       const updatedProfile = await updateFn(authUser.uid, profileData);
       setProfile(updatedProfile);
 
-      if (profileType === "applicant") {
+      if (profileType === "student") {
         setUserSkills(await mapSkills(updatedProfile));
       }
 
@@ -78,7 +77,7 @@ export const ProfileProvider = ({ children }) => {
       value={{
         profile,
         profileType,
-        userSkills: profileType === "applicant" ? userSkills : [],
+        userSkills: profileType === "student" ? userSkills : [],
         updateProfile,
       }}
     >

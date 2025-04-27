@@ -48,14 +48,14 @@ export const handleGoogleLogout = async () => {
 // see if user is company/user, then fetch their profile; if new user [TODO]
 const checkProfile = async (uid, name) => {
   try {
-    const applicantRef = ref(db, `users/${uid}`);
-    const applicantSnapshot = await get(applicantRef);
+    const studentRef = ref(db, `users/${uid}`);
+    const studentSnapshot = await get(studentRef);
     const companyRef = ref(db, `companies/${uid}`);
     const companySnapshot = await get(companyRef);
 
-    if (applicantSnapshot.exists()) {
+    if (studentSnapshot.exists()) {
       console.log(`accessed user profile for ${name} with id ${uid}`);
-      return applicantSnapshot.val();
+      return studentSnapshot.val();
     } else if (companySnapshot.exists()) {
       console.log(`accessed company profile for ${name} with id ${uid}`);
       return companySnapshot.val();
@@ -71,19 +71,20 @@ const checkProfile = async (uid, name) => {
 
 // create new profile given type (company/user)
 const makeNewProfile = async (uid, name, type) => {
+  console.log(type);
   try {
-    if (type == "user") {
-      const applicantRef = ref(db, `users/${uid}`);
-      const newApplicant = {
+    if (type == "student") {
+      const studentRef = ref(db, `users/${uid}`);
+      const newStudent = {
         uid: uid,
         name: name || "Unknown Northwestern Student",
         bio: "",
         major: "",
         skills: [],
       };
-      await set(applicantRef, newApplicant);
-      console.log(`created new applicant profile for ${name} with id ${uid}`);
-      return newApplicant;
+      await set(studentRef, newStudent);
+      console.log(`created new student profile for ${name} with id ${uid}`);
+      return newStudent;
     } else if (type == "company") {
       const companyRef = ref(db, `companies/${uid}`);
       const newCompany = {
@@ -91,6 +92,7 @@ const makeNewProfile = async (uid, name, type) => {
         name: `${name}'s Startup` || "Unknown Northwestern Startup",
         about: "",
         descriptors: [],
+        skills: [],
       };
       await set(companyRef, newCompany);
       console.log(`created new company profile for ${name} with id ${uid}`);
@@ -112,7 +114,7 @@ export const getProfile = async (uid, displayName, type = null) => {
       return existingProfile;
     }
 
-    if (type === "applicant" || type === "company") {
+    if (type === "student" || type === "company") {
       return await makeNewProfile(uid, displayName, type);
     }
     return null;
@@ -122,14 +124,13 @@ export const getProfile = async (uid, displayName, type = null) => {
   }
 };
 
-// Update applicant profile with validation
-export const updateApplicantProfile = async (uid, profileData) => {
+export const updateStudentProfile = async (uid, profileData) => {
   try {
-    const applicantRef = ref(db, `users/${uid}`);
-    const snapshot = await get(applicantRef);
+    const studentRef = ref(db, `users/${uid}`);
+    const snapshot = await get(studentRef);
 
     if (!snapshot.exists()) {
-      throw new Error("Applicant profile not found");
+      throw new Error("student profile not found");
     }
 
     // Validate and process plain text fields
@@ -151,14 +152,13 @@ export const updateApplicantProfile = async (uid, profileData) => {
       ...snapshot.val(),
       ...plainTextFields,
       skills,
-      // No descriptors for applicants
     };
 
-    await set(applicantRef, updatedProfile);
-    console.log(`Updated applicant profile for ${updatedProfile.name}`);
+    await set(studentRef, updatedProfile);
+    console.log(`Updated student profile for ${updatedProfile.name}`);
     return updatedProfile;
   } catch (error) {
-    console.error("Error updating applicant profile:", error);
+    console.error("Error updating student profile:", error);
     throw error;
   }
 };
@@ -178,6 +178,7 @@ export const updateCompanyProfile = async (uid, profileData) => {
       name: profileData.name || snapshot.val().name,
       about: profileData.about || snapshot.val().about,
       descriptors: profileData.descriptors || [],
+      skills: profileData.skills || [],
     };
 
     await set(companyRef, updatedProfile);

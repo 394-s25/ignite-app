@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { useProfile } from "../contexts/profileContext";
-import CompanySwipeCard from "../components/swipeCards/companySwipeCard";
-import {
-  listenToAllJobs,
-  readCompanyDataByCompanyId,
-} from "../db/firebaseService";
+import StudentSwipeCard from "../components/swipeCards/studentSwipeCard";
 import ActionButtons from "../components/swipeCards/actionButtons";
-import CompanyHeader from "../components/swipeCards/companyHeader";
-import peppa from "/peppa.jpg";
+import StudentHeader from "../components/swipeCards/studentHeader";
 import NavBar from "../components/NavBar";
+import { getDatabase, ref, get, set } from "firebase/database";
+import { db } from "../db/firebaseConfig";
+import { mapDescriptors, mapSkills } from "../db/mappingIds";
 
 const StudentSwipePage = () => {
   const navigate = useNavigate();
@@ -21,47 +19,64 @@ const StudentSwipePage = () => {
   const [rejected, setRejected] = useState([]);
 
   useEffect(() => {
-    // Redirect if not logged in or not an applicant
+    // Redirect if not logged in or not a student
     if (!authUser) {
       navigate("/");
       return;
     }
-    if (profileType !== "applicant") {
-      navigate("/companyswipe");
+    if (profileType !== "student") {
+      navigate("/studentswipe");
       return;
     }
 
-    // Fetch companies and jobs
-    const unsubscribe = listenToAllJobs(async (jobs) => {
-      const mappedJobs = await Promise.all(
-        jobs.map(async (job) => {
-          const company = await readCompanyDataByCompanyId(job.companyId);
-          return {
-            id: job.id,
-            companyId: job.companyId,
-            companyName: company?.name || "Unknown Company",
-            companyLogo: company?.logoURL || peppa,
-            companyDescription: company?.about || "",
-            roleName: job.title || "Open Role",
-            roleDescription: job.description || "",
-            roleSkills: job.skills || [],
-            contactInfo: job.contacts || "",
-          };
-        })
-      );
-      setCompanies(mappedJobs);
-    });
+    // Fetch companies from Firebase
+    const fetchCompanies = async () => {
+      try {
+        const companiesRef = ref(db, "companies");
+        const snapshot = await get(companiesRef);
 
-    return () => unsubscribe();
+        if (snapshot.exists()) {
+          const companiesData = [];
+          console.log(snapshot.val());
+
+          // Use Promise.all to wait for all async operations to complete
+          const companyPromises = Object.entries(snapshot.val()).map(
+            async ([key, company]) => {
+              const mappedSkills = await mapSkills({
+                skills: company.skills || [],
+              });
+
+              const mappedDescriptors = await mapDescriptors({
+                descriptors: company.descriptors || [],
+              });
+
+              return {
+                id: key,
+                companyName: company.name || "Anonymous",
+                companyBio: company.bio || "",
+                companySkills: mappedSkills || [],
+                companyDescriptors: mappedDescriptors || [],
+                contactInfo: company.email || "",
+              };
+            }
+          );
+
+          const resolvedCompanies = await Promise.all(companyPromises);
+          setCompanies(resolvedCompanies);
+        }
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      }
+    };
+
+    fetchCompanies();
   }, [authUser, profileType, navigate]);
 
   const handleAccept = async () => {
     if (companies.length > 0) {
-      const currentCompany = companies[0];
+      const currentCompanies = companies[0];
       try {
-        // TODO: Add like to database
-        // await addLike(authUser.uid, currentCompany.companyId, currentCompany.id);
-        setAccepted([...accepted, currentCompany]);
+        setAccepted([...accepted, currentCompanies]);
         setCompanies(companies.slice(1));
       } catch (error) {
         console.error("Error liking company:", error);
@@ -69,56 +84,47 @@ const StudentSwipePage = () => {
     }
   };
 
-  const handleReject = () => {
+  console.log(companies);
+
+  const handleReject = async () => {
     if (companies.length > 0) {
-      setRejected([...rejected, companies[0]]);
-      setCompanies(companies.slice(1));
+      const currentCompany = companies[0];
+      try {
+        setRejected([...rejected, currentCompany]);
+        setCompanies(companies.slice(1));
+      } catch (error) {
+        console.error("Error rejecting company:", error);
+      }
     }
   };
 
-  if (!authUser || profileType !== "applicant") {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div>
       <NavBar />
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          {companies.length > 0 ? (
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <CompanyHeader
-                companyName={companies[0].companyName}
-                roleName={companies[0].roleName}
-              />
-              <div className="p-6">
-                <CompanySwipeCard
-                  key={companies[0].id}
-                  companyDescription={companies[0].companyDescription}
-                  roleDescription={companies[0].roleDescription}
-                  roleSkills={companies[0].roleSkills}
-                  contactInfo={companies[0].contactInfo}
-                />
-              </div>
-              <div className="px-6 py-4 bg-gray-50">
-                <ActionButtons
-                  onAccept={handleAccept}
-                  onReject={handleReject}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="text-center bg-white shadow rounded-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                No more companies to review
-              </h2>
-              <p className="text-gray-600">
-                Check your "Liked By" page to see who wants to work with you!
-              </p>
-            </div>
-          )}
+      {companies.length > 0 ? (
+        <div className="md:mx-20 xl:mx-32 h-full text-left flex flex-col flex-grow overflow-hidden">
+          <StudentHeader studentName={companies[0].companyName} />
+          <div className="flex-grow overflow-hidden">
+            <StudentSwipeCard
+              key={companies[0].id}
+              studentBio={companies[0].companyBio}
+              lookingFor={companies[0].lookingFor}
+              studentSkills={companies[0].companySkills}
+              contactInfo={companies[0].contactInfo}
+            />
+          </div>
+          <ActionButtons onAccept={handleAccept} onReject={handleReject} />
         </div>
-      </div>
+      ) : (
+        <div className="text-center m-8 p-8 w-full">
+          <h2 className="text-2xl font-bold mb-4">
+            No more companies to review
+          </h2>
+          <p className="text-gray-700">
+            Check your "Liked By" page to see who wants to work with you!
+          </p>
+        </div>
+      )}
     </div>
   );
 };

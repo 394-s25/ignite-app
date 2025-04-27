@@ -101,27 +101,27 @@ export async function getSkillById(skillId) {
   }
 }
 
-export async function getPrefIdByName(prefName) {
-  const prefsRef = ref(db, "preferences/");
-  const prefQuery = query(prefsRef, orderByChild("pref"), equalTo(prefName));
-  return get(prefQuery)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const pref = snapshot.val();
-        const prefId = Object.keys(pref)[0];
-        console.log(`Retrieved ID for preference ${prefName}: ${prefId}`);
-        return prefId;
-      } else {
-        console.log(`No ID found for preference ${prefName}.`);
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error(
-        `Error in retrieving ID for preference ${prefName}: ${error}`
-      );
-    });
-}
+// export async function getPrefIdByName(prefName) {
+//   const prefsRef = ref(db, "preferences/");
+//   const prefQuery = query(prefsRef, orderByChild("pref"), equalTo(prefName));
+//   return get(prefQuery)
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         const pref = snapshot.val();
+//         const prefId = Object.keys(pref)[0];
+//         console.log(`Retrieved ID for preference ${prefName}: ${prefId}`);
+//         return prefId;
+//       } else {
+//         console.log(`No ID found for preference ${prefName}.`);
+//         return null;
+//       }
+//     })
+//     .catch((error) => {
+//       console.error(
+//         `Error in retrieving ID for preference ${prefName}: ${error}`
+//       );
+//     });
+// }
 
 export async function getPrefNameById(prefType, prefId) {
   const prefRef = ref(db, `preferences/${prefType}/${prefId}`);
@@ -142,175 +142,175 @@ export async function getPrefNameById(prefType, prefId) {
     });
 }
 
-export async function userFirstWrite(name, email, phoneNumber, userId) {
-  try {
-    const userRef = ref(db, "users/" + userId);
-    await set(userRef, {
-      username: name,
-      email: email,
-      phoneNumber: phoneNumber || "",
-      userId: userId,
-    });
-  } catch (error) {
-    console.error("Error writing data: ", error);
-  }
-}
+// export async function userFirstWrite(name, email, phoneNumber, userId) {
+//   try {
+//     const userRef = ref(db, "users/" + userId);
+//     await set(userRef, {
+//       username: name,
+//       email: email,
+//       phoneNumber: phoneNumber || "",
+//       userId: userId,
+//     });
+//   } catch (error) {
+//     console.error("Error writing data: ", error);
+//   }
+// }
 
-export async function userSecondWrite(userId, major, bio, skills) {
-  const userRef = ref(db, "users/" + userId);
+// export async function userSecondWrite(userId, major, bio, skills) {
+//   const userRef = ref(db, "users/" + userId);
 
-  return update(userRef, {
-    major: major,
-    bio: bio,
-    skills: skills,
-  })
-    .then(() => {
-      console.log("User second write successful.");
-    })
-    .catch((error) => {
-      console.error(`Error writing data: ${error}`);
-    });
-}
+//   return update(userRef, {
+//     major: major,
+//     bio: bio,
+//     skills: skills,
+//   })
+//     .then(() => {
+//       console.log("User second write successful.");
+//     })
+//     .catch((error) => {
+//       console.error(`Error writing data: ${error}`);
+//     });
+// }
 
-export async function writeUserData(
-  name,
-  email,
-  phoneNumber,
-  major,
-  bio,
-  lookingFor,
-  skills,
-  preferences
-) {
-  const hashedEmail = SHA256(email).toString();
+// export async function writeUserData(
+//   name,
+//   email,
+//   phoneNumber,
+//   major,
+//   bio,
+//   lookingFor,
+//   skills,
+//   preferences
+// ) {
+//   const hashedEmail = SHA256(email).toString();
 
-  return get(ref(db, "metadata/userCounter"))
-    .then((snapshot) => {
-      let userId = 80000;
+//   return get(ref(db, "metadata/userCounter"))
+//     .then((snapshot) => {
+//       let userId = 80000;
 
-      if (snapshot.exists()) {
-        userId = snapshot.val();
-      }
+//       if (snapshot.exists()) {
+//         userId = snapshot.val();
+//       }
 
-      return set(ref(db, "users/" + userId), {
-        username: name,
-        email: email,
-        phoneNumber: phoneNumber,
-        major: major,
-        bio: bio,
-        skills: skills,
-        preferences: preferences,
-        lookingFor: lookingFor,
-        userId: userId,
-      })
-        .then(() => {
-          return set(ref(db, "metadata/userCounter"), userId + 1);
-        })
-        .then(() => {
-          console.log("Data written successfully.");
-        });
-    })
-    .catch((error) => {
-      console.error("Error writing data: ", error);
-    });
-}
+//       return set(ref(db, "users/" + userId), {
+//         username: name,
+//         email: email,
+//         phoneNumber: phoneNumber,
+//         major: major,
+//         bio: bio,
+//         skills: skills,
+//         preferences: preferences,
+//         lookingFor: lookingFor,
+//         userId: userId,
+//       })
+//         .then(() => {
+//           return set(ref(db, "metadata/userCounter"), userId + 1);
+//         })
+//         .then(() => {
+//           console.log("Data written successfully.");
+//         });
+//     })
+//     .catch((error) => {
+//       console.error("Error writing data: ", error);
+//     });
+// }
 
-export async function writeCompanyData(
-  name,
-  introduction,
-  email,
-  matchedSkills
-) {
-  const hashedEmail = SHA256(email).toString();
+// export async function writeCompanyData(
+//   name,
+//   introduction,
+//   email,
+//   matchedSkills
+// ) {
+//   const hashedEmail = SHA256(email).toString();
 
-  // initialize the first ID as 1000
-  return get(ref(db, "metadata/companyCounter"))
-    .then((snapshot) => {
-      let companyId = 1000; // default starting value
+//   // initialize the first ID as 1000
+//   return get(ref(db, "metadata/companyCounter"))
+//     .then((snapshot) => {
+//       let companyId = 1000; // default starting value
 
-      // if already initialized, get the last one
-      if (snapshot.exists()) {
-        companyId = snapshot.val();
-      }
+//       // if already initialized, get the last one
+//       if (snapshot.exists()) {
+//         companyId = snapshot.val();
+//       }
 
-      //return set(ref(db, 'companies/' + hashedEmail), {  // hashed email is key
-      return set(ref(db, "companies/" + companyId), {
-        // company id is key
-        name: name,
-        introduction: introduction,
-        email: email,
-        matchedSkills: matchedSkills,
-        companyId: companyId, // incremental ID calculated for each new company
-      })
-        .then(() => {
-          // increment counter for next company
-          return set(ref(db, "metadata/companyCounter"), companyId + 1);
-        })
-        .then(() => {
-          console.log("Data written successfully.");
-          //return companyId;
-        });
-    })
-    .catch((error) => {
-      console.error("Error writing data: ", error);
-    });
-}
+//       //return set(ref(db, 'companies/' + hashedEmail), {  // hashed email is key
+//       return set(ref(db, "companies/" + companyId), {
+//         // company id is key
+//         name: name,
+//         introduction: introduction,
+//         email: email,
+//         matchedSkills: matchedSkills,
+//         companyId: companyId, // incremental ID calculated for each new company
+//       })
+//         .then(() => {
+//           // increment counter for next company
+//           return set(ref(db, "metadata/companyCounter"), companyId + 1);
+//         })
+//         .then(() => {
+//           console.log("Data written successfully.");
+//           //return companyId;
+//         });
+//     })
+//     .catch((error) => {
+//       console.error("Error writing data: ", error);
+//     });
+// }
 
-export async function readUserDataByEmail(email) {
-  const hashedEmail = SHA256(email).toString();
-  const userRef = ref(db, "users/" + hashedEmail);
-  return get(userRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-        console.log("Retrieved user data: ", user);
-        return user;
-      } else {
-        console.log("User does not exist");
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error("Error reading data: ", error);
-    });
-}
+// export async function readUserDataByEmail(email) {
+//   const hashedEmail = SHA256(email).toString();
+//   const userRef = ref(db, "users/" + hashedEmail);
+//   return get(userRef)
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         const user = snapshot.val();
+//         console.log("Retrieved user data: ", user);
+//         return user;
+//       } else {
+//         console.log("User does not exist");
+//         return null;
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error reading data: ", error);
+//     });
+// }
 
-export async function readUserDataByUserId(userId) {
-  const userRef = ref(db, "users/" + userId);
-  return get(userRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-        console.log("Retrieved user data: ", user);
-        return user;
-      } else {
-        console.log("User does not exist");
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error("Error reading data: ", error);
-    });
-}
+// export async function readUserDataByUserId(userId) {
+//   const userRef = ref(db, "users/" + userId);
+//   return get(userRef)
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         const user = snapshot.val();
+//         console.log("Retrieved user data: ", user);
+//         return user;
+//       } else {
+//         console.log("User does not exist");
+//         return null;
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error reading data: ", error);
+//     });
+// }
 
-export async function readCompanyDataByEmail(email) {
-  const hashedEmail = SHA256(email).toString();
-  const companyRef = ref(db, "companies/" + hashedEmail);
-  return get(companyRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const company = snapshot.val();
-        console.log("Retrieved company data: ", company);
-        return company;
-      } else {
-        console.log("Company does not exist");
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error("Error reading data: ", error);
-    });
-}
+// export async function readCompanyDataByEmail(email) {
+//   const hashedEmail = SHA256(email).toString();
+//   const companyRef = ref(db, "companies/" + hashedEmail);
+//   return get(companyRef)
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         const company = snapshot.val();
+//         console.log("Retrieved company data: ", company);
+//         return company;
+//       } else {
+//         console.log("Company does not exist");
+//         return null;
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error reading data: ", error);
+//     });
+// }
 
 export async function readCompanyDataByCompanyId(companyId) {
   const companyRef = ref(db, "companies/" + companyId);
@@ -330,53 +330,53 @@ export async function readCompanyDataByCompanyId(companyId) {
     });
 }
 
-// Company Post Jobs
-export async function postJob(
-  companyId,
-  jobTitle,
-  jobDescription,
-  jobSkills,
-  jobContacts
-) {
-  const companyJobsRef = ref(db, `jobs`);
-  const newJobRef = push(companyJobsRef);
-  return set(newJobRef, {
-    companyId: companyId,
-    title: jobTitle,
-    description: jobDescription,
-    skills: jobSkills,
-    contacts: jobContacts,
-  })
-    .then(() => {
-      console.log("Job posted successfully.");
-    })
-    .catch((error) => {
-      console.error("Error posting job: ", error);
-    });
-}
+// // Company Post Jobs
+// export async function postJob(
+//   companyId,
+//   jobTitle,
+//   jobDescription,
+//   jobSkills,
+//   jobContacts
+// ) {
+//   const companyJobsRef = ref(db, `jobs`);
+//   const newJobRef = push(companyJobsRef);
+//   return set(newJobRef, {
+//     companyId: companyId,
+//     title: jobTitle,
+//     description: jobDescription,
+//     skills: jobSkills,
+//     contacts: jobContacts,
+//   })
+//     .then(() => {
+//       console.log("Job posted successfully.");
+//     })
+//     .catch((error) => {
+//       console.error("Error posting job: ", error);
+//     });
+// }
 
-export async function getJobsByCompanyId(companyId) {
-  const jobsRef = ref(db, "jobs");
-  const jobsQuery = query(
-    jobsRef,
-    orderByChild("companyId"),
-    equalTo(companyId)
-  );
-  return get(jobsQuery)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const jobs = snapshot.val();
-        console.log("Retrieved jobs: ", jobs);
-        return jobs;
-      } else {
-        console.log("No jobs found for this company.");
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error("Error retrieving jobs: ", error);
-    });
-}
+// export async function getJobsByCompanyId(companyId) {
+//   const jobsRef = ref(db, "jobs");
+//   const jobsQuery = query(
+//     jobsRef,
+//     orderByChild("companyId"),
+//     equalTo(companyId)
+//   );
+//   return get(jobsQuery)
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         const jobs = snapshot.val();
+//         console.log("Retrieved jobs: ", jobs);
+//         return jobs;
+//       } else {
+//         console.log("No jobs found for this company.");
+//         return null;
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error retrieving jobs: ", error);
+//     });
+// }
 
 export function listenToAllJobs(callback) {
   const jobsRef = ref(db, "jobs");

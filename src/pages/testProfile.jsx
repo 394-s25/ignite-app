@@ -30,19 +30,17 @@ const TestProfile = () => {
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        // Fetch skills (only for applicants)
-        if (profileType === "applicant") {
-          const skillsSnapshot = await get(ref(db, "skills"));
-          if (skillsSnapshot.exists()) {
-            const skillsData = skillsSnapshot.val();
-            const formattedSkills = Object.entries(skillsData).map(
-              ([id, name]) => ({
-                id,
-                name,
-              })
-            );
-            setAvailableSkills(formattedSkills);
-          }
+        // Fetch skills (for both students and companies now)
+        const skillsSnapshot = await get(ref(db, "skills"));
+        if (skillsSnapshot.exists()) {
+          const skillsData = skillsSnapshot.val();
+          const formattedSkills = Object.entries(skillsData).map(
+            ([id, name]) => ({
+              id,
+              name,
+            })
+          );
+          setAvailableSkills(formattedSkills);
         }
 
         // Fetch descriptors (only for companies)
@@ -65,7 +63,7 @@ const TestProfile = () => {
   // Initialize edit data when profile changes
   useEffect(() => {
     if (profile) {
-      if (profileType === "applicant") {
+      if (profileType === "student") {
         setEditData({
           name: profile.name || "",
           bio: profile.bio || "",
@@ -76,7 +74,8 @@ const TestProfile = () => {
         setEditData({
           name: profile.name || "",
           about: profile.about || "",
-          descriptors: profile.descriptors || [], // Changed to array
+          descriptors: profile.descriptors || [],
+          skills: profile.skills || [], // Add skills for company
         });
       }
     }
@@ -126,7 +125,7 @@ const TestProfile = () => {
           <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">
-                {profileType === "applicant"
+                {profileType === "student"
                   ? "Student Profile"
                   : "Company Profile"}
               </h2>
@@ -142,8 +141,7 @@ const TestProfile = () => {
               // View Mode
               <>
                 <h2 className="text-xl font-semibold">{profile.name}</h2>
-                {profileType === "applicant" ? (
-                  // Applicant View
+                {profileType === "student" ? (
                   <>
                     <p className="mt-2">Bio: {profile.bio}</p>
                     <p className="mt-2">Major: {profile.major}</p>
@@ -178,6 +176,24 @@ const TestProfile = () => {
                         ))}
                       </div>
                     </div>
+                    <div className="mt-4">
+                      <h3 className="font-semibold">Required Skills:</h3>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {(profile.skills || []).map((skillId) => {
+                          const skill = availableSkills.find(
+                            (s) => s.id === skillId
+                          );
+                          return (
+                            <span
+                              key={skillId}
+                              className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
+                            >
+                              {skill ? skill.name : skillId}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </>
                 )}
               </>
@@ -196,8 +212,7 @@ const TestProfile = () => {
                   />
                 </div>
 
-                {profileType === "applicant" ? (
-                  // Applicant Edit Fields
+                {profileType === "student" ? (
                   <>
                     <div>
                       <label className="block mb-2">Bio:</label>
@@ -274,6 +289,25 @@ const TestProfile = () => {
                             </button>
                           )
                         )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block mb-2">Required Skills:</label>
+                      <div className="flex flex-wrap gap-2">
+                        {availableSkills.map((skill) => (
+                          <button
+                            key={skill.id}
+                            type="button"
+                            onClick={() => handleSkillToggle(skill.id)}
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              editData.skills.includes(skill.id)
+                                ? "bg-purple-600 text-white"
+                                : "bg-purple-100 text-purple-800"
+                            }`}
+                          >
+                            {skill.name}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </>
