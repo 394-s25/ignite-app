@@ -10,6 +10,7 @@ import LoginPage from "./pages/login.jsx";
 import TestProfile from "./pages/testProfile.jsx";
 import { AuthProvider } from "./contexts/authContext";
 import { ProfileProvider } from "./contexts/profileContext";
+import TestModalPage from "./pages/testModal.jsx";
 
 const App = () => {
   return (
@@ -24,12 +25,13 @@ const App = () => {
               <Route path="/companylikes" element={<CompanyLikes />} />
               <Route path="/studentlikes" element={<StudentLikes />} />
               <Route path="/editProfile" element={<TestProfile />} />
-              {/* <Route path="/testprofile" element={<TestProfile />} /> */}
+              <Route path="/testmodal" element={<TestModalPage />} />
             </Routes>
           </div>
         </Router>
       </ProfileProvider>
     </AuthProvider>
+
   );
 };
 

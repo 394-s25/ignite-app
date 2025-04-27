@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2374 591">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: NiceSL-Beta-Heavy, NiceSL-Beta;
+        font-size: 487.86px;
+        font-weight: 800;
+      }
+
+      .cls-2 {
+        fill: #8a1fff;
+      }
+
+      .cls-2, .cls-3, .cls-4 {
+        stroke-width: 0px;
+      }
+
+      .cls-3 {
+        fill: #c9aaff;
+      }
+
+      .cls-4 {
+        fill: #a06aff;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1" data-name="Layer 1">
+    <text class="cls-1" transform="translate(152.33 395.5)"><tspan x="0" y="0">ignite</tspan></text>
+  </g>
+  <g id="Layer_2" data-name="Layer 2">
+    <g>
+      <path class="cls-2" d="m2069.61,161.33h-186.17c-15.45,47.16-30.9,94.32-46.35,141.48h-102.45c-11.38,30.9-22.77,61.8-34.15,92.69h292.73"/>
+      <polygon class="cls-3" points="2252.52 395.5 2143.18 395.5 2217.65 161.33 2327 161.33 2252.52 395.5"/>
+      <polygon class="cls-4" points="2146.92 395.5 1993.21 395.5 2067.6 161.33 2221.32 161.33 2146.92 395.5"/>
+    </g>
+  </g>
+</svg>
