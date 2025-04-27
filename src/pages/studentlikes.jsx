@@ -1,66 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CompanyProfileCard from "../components/likedCards/companyProfileCard";
 import NavBar from "../components/NavBar";
-
-const initialCompanies = [
-  {
-    companyName: "Stripe",
-    industry: "Payments Infrastructure",
-    location: "San Francisco, CA",
-    logo: "https://logo.clearbit.com/stripe.com",
-  },
-  {
-    companyName: "Spotify",
-    industry: "Music Streaming",
-    location: "Stockholm, Sweden",
-    logo: "https://logo.clearbit.com/spotify.com",
-  },
-  {
-    companyName: "Netflix",
-    industry: "Entertainment",
-    location: "Los Gatos, CA",
-    logo: "https://logo.clearbit.com/netflix.com",
-  },
-  {
-    companyName: "Slack Technologies",
-    industry: "Team Collaboration",
-    location: "San Francisco, CA",
-    logo: "https://logo.clearbit.com/slack.com",
-  },
-  {
-    companyName: "Dropbox",
-    industry: "Cloud Storage",
-    location: "San Francisco, CA",
-    logo: "https://logo.clearbit.com/dropbox.com",
-  },
-  {
-    companyName: "Shopify",
-    industry: "E-commerce",
-    location: "Ottawa, Canada",
-    logo: "https://logo.clearbit.com/shopify.com",
-  },
-  {
-    companyName: "Airbnb",
-    industry: "Travel & Hospitality",
-    location: "San Francisco, CA",
-    logo: "https://logo.clearbit.com/airbnb.com",
-  },
-];
+import { db } from "../db/firebaseConfig"; 
+import { ref, get } from "firebase/database";
 
 const StudentLikes = () => {
-  const [companies, setCompanies] = useState(initialCompanies);
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const companiesRef = ref(db, "companies");
+        const snapshot = await get(companiesRef);
+
+        if (snapshot.exists()) {
+          const companiesData = snapshot.val();
+
+          const companiesList = Object.entries(companiesData).map(([companyId, company]) => ({
+            id: companyId,
+            companyName: company.name || "Unknown Company",
+            bio: company.bio || "No bio available",
+            skills: company.skills || [], 
+            descriptors: company.descriptors || {},
+            logo: "https://logo.clearbit.com/example.com", 
+          }));
+
+          setCompanies(companiesList);
+        } else {
+          console.log("No companies found.");
+        }
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
 
   const handleRemoveCompany = (companyToRemove) => {
     setCompanies((prev) =>
-      prev.filter(
-        (company) => company.companyName !== companyToRemove.companyName
-      )
+      prev.filter((company) => company.id !== companyToRemove.id)
     );
   };
 
+  if (loading) {
+    return <div className="text-center mt-20">Loading companies...</div>;
+  }
+
   return (
     <div>
-      <NavBar></NavBar>
+      <NavBar />
       <div className="min-h-screen bg-white py-10 px-4">
         <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
           Companies That Liked Me
