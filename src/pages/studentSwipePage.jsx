@@ -24,10 +24,6 @@ const StudentSwipePage = () => {
       navigate("/");
       return;
     }
-    if (profileType !== "student") {
-      navigate("/studentswipe");
-      return;
-    }
 
     // Fetch companies from Firebase
     const fetchCompanies = async () => {

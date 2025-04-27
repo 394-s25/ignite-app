@@ -20,14 +20,10 @@ const CompanySwipePage = () => {
 
   useEffect(() => {
     // Redirect if not logged in or not a company
-    if (!authUser) {
-      navigate("/");
-      return;
-    }
-    if (profileType !== "company") {
-      navigate("/studentswipe");
-      return;
-    }
+    // if (!authUser) {
+    //   navigate("/");
+    //   return;
+    // }
 
     // Fetch students from Firebase
     const fetchStudents = async () => {
