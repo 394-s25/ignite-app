@@ -14,7 +14,7 @@ const LoginPage = () => {
   useEffect(() => {
     // If user is logged in and has a profile type, redirect to appropriate page
     if (authUser && profile && profileType) {
-      navigate("/testprofile");
+      navigate("/editProfile");
     }
   }, [authUser, profile, profileType, navigate]);
 
@@ -36,7 +36,7 @@ const LoginPage = () => {
       setError("");
       // The getProfile function will create a new profile if one doesn't exist
       await getProfile(authUser.uid, authUser.displayName, type);
-      navigate("/testprofile");
+      navigate("/editProfile");
     } catch (error) {
       console.error("Profile creation error:", error);
       setError("Failed to create profile. Please try again.");

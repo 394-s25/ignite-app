@@ -3,6 +3,7 @@ import StudentSwipeCard from "../components/swipeCards/studentSwipeCard";
 import peppa from "/peppa.jpg";
 import ActionButtons from "../components/swipeCards/actionButtons";
 import StudentHeader from "../components/swipeCards/studentHeader";
+import NavBar from "../components/NavBar";
 
 const CompanySwipePage = () => {
   const [students, setStudents] = useState([
@@ -88,7 +89,8 @@ const CompanySwipePage = () => {
   console.log(accepted);
 
   return (
-    <div className="w-full h-screen max-h-screen flex flex-col md:flex-row bg-gray-50 justify-center md:items-right items-center overflow-hidden">
+    <div>
+      <NavBar />
       {students.length > 0 ? (
         <div className="md:mx-20 xl:mx-32 h-full text-left flex flex-col flex-grow overflow-hidden">
           <StudentHeader

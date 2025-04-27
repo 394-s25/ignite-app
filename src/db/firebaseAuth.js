@@ -80,7 +80,6 @@ const makeNewProfile = async (uid, name, type) => {
         bio: "",
         major: "",
         skills: [],
-        preferences: {},
       };
       await set(applicantRef, newApplicant);
       console.log(`created new applicant profile for ${name} with id ${uid}`);
@@ -91,7 +90,7 @@ const makeNewProfile = async (uid, name, type) => {
         uid: uid,
         name: `${name}'s Startup` || "Unknown Northwestern Startup",
         about: "",
-        description: {},
+        descriptors: [],
       };
       await set(companyRef, newCompany);
       console.log(`created new company profile for ${name} with id ${uid}`);
@@ -143,36 +142,16 @@ export const updateApplicantProfile = async (uid, profileData) => {
     // Validate skills - ensure they are valid IDs from the skills collection
     let skills = [];
     if (profileData.skills && Array.isArray(profileData.skills)) {
-      // Assuming skills are already validated IDs
       skills = profileData.skills;
     } else {
       skills = snapshot.val().skills || [];
-    }
-
-    // Validate preferences - ensure they are valid IDs from the preferences collection
-    // Preferences should be an object with keys: culture, opportunities, industry
-    let preferences = {};
-    if (profileData.preferences) {
-      const validCategories = ["culture", "opportunities", "industry"];
-      validCategories.forEach((category) => {
-        if (
-          profileData.preferences[category] &&
-          Array.isArray(profileData.preferences[category])
-        ) {
-          preferences[category] = profileData.preferences[category];
-        } else {
-          preferences[category] = snapshot.val().preferences?.[category] || [];
-        }
-      });
-    } else {
-      preferences = snapshot.val().preferences || {};
     }
 
     const updatedProfile = {
       ...snapshot.val(),
       ...plainTextFields,
       skills,
-      preferences,
+      // No descriptors for applicants
     };
 
     await set(applicantRef, updatedProfile);
@@ -194,34 +173,11 @@ export const updateCompanyProfile = async (uid, profileData) => {
       throw new Error("Company profile not found");
     }
 
-    // Validate and process plain text fields
-    const plainTextFields = {
-      name: profileData.name || snapshot.val().name,
-      about: profileData.about || snapshot.val().about,
-    };
-
-    // Validate description - ensure it contains valid subfields
-    let description = {};
-    if (profileData.description) {
-      const validCategories = ["culture", "opportunities", "industry"];
-      validCategories.forEach((category) => {
-        if (
-          profileData.description[category] &&
-          Array.isArray(profileData.description[category])
-        ) {
-          description[category] = profileData.description[category];
-        } else {
-          description[category] = snapshot.val().description?.[category] || [];
-        }
-      });
-    } else {
-      description = snapshot.val().description || {};
-    }
-
     const updatedProfile = {
       ...snapshot.val(),
-      ...plainTextFields,
-      description,
+      name: profileData.name || snapshot.val().name,
+      about: profileData.about || snapshot.val().about,
+      descriptors: profileData.descriptors || [],
     };
 
     await set(companyRef, updatedProfile);

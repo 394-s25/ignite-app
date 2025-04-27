@@ -156,16 +156,13 @@ export async function userFirstWrite(name, email, phoneNumber, userId) {
   }
 }
 
-export async function userSecondWrite(userId, major, bio, skills, preferences) {
-  // make sure to add the entry with the same key as userFirstWrite
-  const userRef = ref(db, "users/" + userId); // user id is key
+export async function userSecondWrite(userId, major, bio, skills) {
+  const userRef = ref(db, "users/" + userId);
 
   return update(userRef, {
-    // update the existing entry
     major: major,
     bio: bio,
-    skills: skills, // this is assuming that skills will be inputted into this function in index and not string format
-    preferences: preferences, // same w prefs ^^
+    skills: skills,
   })
     .then(() => {
       console.log("User second write successful.");
@@ -401,4 +398,27 @@ export function listenToAllJobs(callback) {
       console.error("Error retrieving jobs: ", error);
     }
   );
+}
+
+export async function getDescriptorNameById(descriptorType, descriptorId) {
+  const descriptorRef = ref(
+    db,
+    `descriptors/${descriptorType}/${descriptorId}`
+  );
+  return get(descriptorRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log(
+          `No descriptor ${descriptorType} found for ID ${descriptorId}.`
+        );
+        return null;
+      }
+    })
+    .catch((error) => {
+      console.error(
+        `Error in retrieving descriptor ${descriptorType} for ID ${descriptorId}: ${error}`
+      );
+    });
 }

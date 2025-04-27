@@ -67,3 +67,67 @@ export const mapPrefs = async (user) => {
     return {};
   }
 };
+
+// map ids to actual descriptors
+export const mapDescriptors = async (company) => {
+  if (!company?.descriptors) return {};
+  try {
+    const descriptors = {};
+
+    for (const [descriptorType, descriptorIds] of Object.entries(
+      company.descriptors
+    )) {
+      if (!Array.isArray(descriptorIds)) continue;
+
+      descriptors[descriptorType] = [];
+      for (const id of descriptorIds) {
+        const name = await getDescriptorNameById(descriptorType, id);
+        if (name) {
+          descriptors[descriptorType].push(name);
+        }
+      }
+    }
+    return descriptors;
+  } catch (error) {
+    console.error("Error loading descriptors:", error);
+    return {};
+  }
+};
+
+async function migrateDatabase() {
+  try {
+    // 1. Get all companies
+    const companiesSnapshot = await get(ref(db, "companies"));
+    if (!companiesSnapshot.exists()) return;
+
+    const companies = companiesSnapshot.val();
+
+    // 2. Update each company
+    for (const [companyId, company] of Object.entries(companies)) {
+      const updatedCompany = {
+        ...company,
+        descriptors: company.description || {
+          culture: [],
+          opportunities: [],
+          industry: [],
+        },
+      };
+      delete updatedCompany.description;
+
+      await set(ref(db, `companies/${companyId}`), updatedCompany);
+    }
+
+    // 3. Move preferences to descriptors
+    const prefsSnapshot = await get(ref(db, "preferences"));
+    if (prefsSnapshot.exists()) {
+      const prefs = prefsSnapshot.val();
+      await set(ref(db, "descriptors"), prefs);
+      // Optionally remove the old preferences
+      await set(ref(db, "preferences"), null);
+    }
+
+    console.log("Migration completed successfully");
+  } catch (error) {
+    console.error("Migration failed:", error);
+  }
+}

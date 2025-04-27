@@ -4,7 +4,7 @@ import {
   updateApplicantProfile,
   updateCompanyProfile,
 } from "../db/firebaseAuth";
-import { mapPrefs, mapSkills } from "../db/mappingIds";
+import { mapPrefs, mapSkills, mapDescriptors } from "../db/mappingIds";
 import { useAuth } from "./authContext";
 
 const ProfileContext = createContext();
@@ -13,17 +13,14 @@ export const useProfile = () => useContext(ProfileContext);
 export const ProfileProvider = ({ children }) => {
   const { authUser, setIsLoading } = useAuth();
   const [profile, setProfile] = useState(null);
-  const [profileType, setProfileType] = useState(null); // 'applicant' or 'company'
+  const [profileType, setProfileType] = useState(null);
   const [userSkills, setUserSkills] = useState([]);
-  const [userPrefs, setUserPrefs] = useState({});
 
-  // Initialize profile data upon login
   useEffect(() => {
     const initializeProfile = async () => {
       if (!authUser) {
         setProfile(null);
         setProfileType(null);
-        setUserPrefs({});
         setUserSkills([]);
         return;
       }
@@ -32,16 +29,13 @@ export const ProfileProvider = ({ children }) => {
         const userInfo = await getProfile(authUser.uid, authUser.displayName);
         if (userInfo) {
           setProfile(userInfo);
-          // Determine profile type based on which database reference exists
           setProfileType(
             userInfo.hasOwnProperty("major") ? "applicant" : "company"
           );
 
           if (userInfo.hasOwnProperty("major")) {
-            // Applicant-specific data
-            const mappedPrefs = await mapPrefs(userInfo);
+            // Applicant-specific data - only map skills
             const mappedSkills = await mapSkills(userInfo);
-            setUserPrefs(mappedPrefs);
             setUserSkills(mappedSkills);
           }
         }
@@ -56,7 +50,6 @@ export const ProfileProvider = ({ children }) => {
     initializeProfile();
   }, [authUser]);
 
-  // Update profile
   const updateProfile = async (profileData) => {
     if (!authUser) throw new Error("Not authenticated");
     if (!profileType) throw new Error("Profile type not determined");
@@ -70,7 +63,6 @@ export const ProfileProvider = ({ children }) => {
       setProfile(updatedProfile);
 
       if (profileType === "applicant") {
-        setUserPrefs(await mapPrefs(updatedProfile));
         setUserSkills(await mapSkills(updatedProfile));
       }
 
@@ -87,7 +79,6 @@ export const ProfileProvider = ({ children }) => {
         profile,
         profileType,
         userSkills: profileType === "applicant" ? userSkills : [],
-        userPrefs: profileType === "applicant" ? userPrefs : {},
         updateProfile,
       }}
     >

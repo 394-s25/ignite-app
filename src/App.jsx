@@ -23,8 +23,8 @@ const App = () => {
               <Route path="/companyswipe" element={<CompanySwipePage />} />
               <Route path="/companylikes" element={<CompanyLikes />} />
               <Route path="/studentlikes" element={<StudentLikes />} />
-              <Route path="/editProfile" element={<EditProfile />} />
-              <Route path="/testprofile" element={<TestProfile />} />
+              <Route path="/editProfile" element={<TestProfile />} />
+              {/* <Route path="/testprofile" element={<TestProfile />} /> */}
             </Routes>
           </div>
         </Router>

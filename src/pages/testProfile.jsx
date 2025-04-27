@@ -9,16 +9,11 @@ import { db } from "../db/firebaseConfig";
 const TestProfile = () => {
   const navigate = useNavigate();
   const { authUser, login, logout, isLoading: authLoading } = useAuth();
-  const { profile, profileType, userSkills, userPrefs, updateProfile } =
-    useProfile();
+  const { profile, profileType, userSkills, updateProfile } = useProfile();
 
   // State for available options
   const [availableSkills, setAvailableSkills] = useState([]);
-  const [availablePrefs, setAvailablePrefs] = useState({
-    culture: [],
-    opportunities: [],
-    industry: [],
-  });
+  const [availableDescriptors, setAvailableDescriptors] = useState({}); // Changed to flat object
 
   // State for edit mode
   const [editMode, setEditMode] = useState(false);
@@ -27,83 +22,65 @@ const TestProfile = () => {
     bio: "",
     major: "",
     skills: [],
-    preferences: {
-      culture: [],
-      opportunities: [],
-      industry: [],
-    },
     about: "",
-    description: {
-      culture: [],
-      opportunities: [],
-      industry: [],
-    },
+    descriptors: [], // Changed to array since it's just a list of descriptor IDs
   });
 
-  // Fetch available skills and preferences from the database
+  // Fetch available skills and descriptors from the database
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        // Fetch skills
-        const skillsSnapshot = await get(ref(db, "skills"));
-        if (skillsSnapshot.exists()) {
-          const skillsData = skillsSnapshot.val();
-          const formattedSkills = Object.entries(skillsData).map(
-            ([id, name]) => ({
-              id,
-              name,
-            })
-          );
-          setAvailableSkills(formattedSkills);
-        }
-
-        // Fetch preferences for each category
-        const prefCategories = ["culture", "opportunities", "industry"];
-        const prefsData = {};
-
-        for (const category of prefCategories) {
-          const prefSnapshot = await get(ref(db, `preferences/${category}`));
-          if (prefSnapshot.exists()) {
-            prefsData[category] = Object.entries(prefSnapshot.val()).map(
+        // Fetch skills (only for applicants)
+        if (profileType === "applicant") {
+          const skillsSnapshot = await get(ref(db, "skills"));
+          if (skillsSnapshot.exists()) {
+            const skillsData = skillsSnapshot.val();
+            const formattedSkills = Object.entries(skillsData).map(
               ([id, name]) => ({
                 id,
                 name,
               })
             );
+            setAvailableSkills(formattedSkills);
           }
         }
 
-        setAvailablePrefs(prefsData);
+        // Fetch descriptors (only for companies)
+        if (profileType === "company") {
+          const descriptorsSnapshot = await get(ref(db, "descriptors"));
+          if (descriptorsSnapshot.exists()) {
+            setAvailableDescriptors(descriptorsSnapshot.val());
+          }
+        }
       } catch (error) {
         console.error("Error fetching options:", error);
       }
     };
 
-    fetchOptions();
-  }, []);
+    if (profileType) {
+      fetchOptions();
+    }
+  }, [profileType]);
 
   // Initialize edit data when profile changes
   useEffect(() => {
     if (profile) {
-      setEditData({
-        name: profile.name || "",
-        bio: profile.bio || "",
-        major: profile.major || "",
-        skills: profile.skills || [],
-        preferences: profile.preferences || {
-          culture: [],
-          opportunities: [],
-          industry: [],
-        },
-        about: profile.about || "",
-        description: profile.description || {
-          culture: [],
-          opportunities: [],
-          industry: [],
-        },
-      });
+      if (profileType === "applicant") {
+        setEditData({
+          name: profile.name || "",
+          bio: profile.bio || "",
+          major: profile.major || "",
+          skills: profile.skills || [],
+        });
+      } else {
+        setEditData({
+          name: profile.name || "",
+          about: profile.about || "",
+          descriptors: profile.descriptors || [], // Changed to array
+        });
+      }
     }
-  }, [profile]);
+  }, [profile, profileType]);
 
   // Handle skill selection
   const handleSkillToggle = (skillId) => {
@@ -115,39 +92,13 @@ const TestProfile = () => {
     });
   };
 
-  // Handle preference selection
-  const handlePrefToggle = (category, prefId) => {
+  // Handle descriptor selection for companies
+  const handleDescriptorToggle = (descriptorId) => {
     setEditData((prev) => {
-      const categoryPrefs = prev.preferences[category] || [];
-      const updatedPrefs = categoryPrefs.includes(prefId)
-        ? categoryPrefs.filter((id) => id !== prefId)
-        : [...categoryPrefs, prefId];
-
-      return {
-        ...prev,
-        preferences: {
-          ...prev.preferences,
-          [category]: updatedPrefs,
-        },
-      };
-    });
-  };
-
-  // Handle description selection for companies
-  const handleDescriptionToggle = (category, prefId) => {
-    setEditData((prev) => {
-      const categoryDescs = prev.description[category] || [];
-      const updatedDescs = categoryDescs.includes(prefId)
-        ? categoryDescs.filter((id) => id !== prefId)
-        : [...categoryDescs, prefId];
-
-      return {
-        ...prev,
-        description: {
-          ...prev.description,
-          [category]: updatedDescs,
-        },
-      };
+      const descriptors = prev.descriptors.includes(descriptorId)
+        ? prev.descriptors.filter((id) => id !== descriptorId)
+        : [...prev.descriptors, descriptorId];
+      return { ...prev, descriptors };
     });
   };
 
@@ -168,273 +119,175 @@ const TestProfile = () => {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <NavBar />
+      {profile && (
+        <section className="p-8">
+          <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">
+                {profileType === "applicant"
+                  ? "Student Profile"
+                  : "Company Profile"}
+              </h2>
+              <button
+                onClick={() => setEditMode(!editMode)}
+                className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+              >
+                {editMode ? "Cancel" : "Edit Profile"}
+              </button>
+            </div>
 
-      {/* Profile Information */}
-      {authUser && (
-        <section className="mb-8 p-4 border rounded">
-          <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
-          {profile ? (
-            <div>
-              <p>Profile Type: {profileType}</p>
-              <p>Name: {profile.name}</p>
-
-              {/* Display Profile Information */}
-              {profileType === "applicant" ? (
-                <>
-                  <p>Major: {profile.major}</p>
-                  <p>Bio: {profile.bio}</p>
-                  <div className="mt-2">
-                    <h3 className="font-semibold">Skills:</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {userSkills.map((skill, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mt-2">
-                    <h3 className="font-semibold">Preferences:</h3>
-                    {Object.entries(userPrefs).map(([category, values]) => (
-                      <div key={category} className="mt-2">
-                        <h4 className="text-sm font-medium capitalize">
-                          {category}:
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {values.map((pref, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                            >
-                              {pref}
-                            </span>
-                          ))}
-                        </div>
+            {!editMode ? (
+              // View Mode
+              <>
+                <h2 className="text-xl font-semibold">{profile.name}</h2>
+                {profileType === "applicant" ? (
+                  // Applicant View
+                  <>
+                    <p className="mt-2">Bio: {profile.bio}</p>
+                    <p className="mt-2">Major: {profile.major}</p>
+                    <div className="mt-4">
+                      <h3 className="font-semibold">Skills:</h3>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {userSkills.map((skill, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
+                          >
+                            {skill}
+                          </span>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p>About: {profile.about}</p>
-                  <div className="mt-2">
-                    <h3 className="font-semibold">Company Description:</h3>
-                    {Object.entries(profile.description || {}).map(
-                      ([category, values]) => (
-                        <div key={category} className="mt-2">
-                          <h4 className="text-sm font-medium capitalize">
-                            {category}:
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {values.map((descId, index) => {
-                              const desc = availablePrefs[category]?.find(
-                                (p) => p.id === descId
-                              )?.name;
-                              return (
-                                <span
-                                  key={index}
-                                  className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                                >
-                                  {desc}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </>
-              )}
+                    </div>
+                  </>
+                ) : (
+                  // Company View
+                  <>
+                    <p className="mt-2">About: {profile.about}</p>
+                    <div className="mt-4">
+                      <h3 className="font-semibold">Company Descriptors:</h3>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {(profile.descriptors || []).map((descriptorId) => (
+                          <span
+                            key={descriptorId}
+                            className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+                          >
+                            {availableDescriptors[descriptorId] || descriptorId}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              // Edit Mode
+              <form onSubmit={handleUpdateProfile} className="space-y-6">
+                <div>
+                  <label className="block mb-2">Name:</label>
+                  <input
+                    type="text"
+                    value={editData.name}
+                    onChange={(e) =>
+                      setEditData({ ...editData, name: e.target.value })
+                    }
+                    className="border p-2 w-full rounded"
+                  />
+                </div>
 
-              {/* Edit Profile Form */}
-              <div className="mt-4">
-                <button
-                  onClick={() => setEditMode(!editMode)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  {editMode ? "Cancel Edit" : "Edit Profile"}
-                </button>
-
-                {editMode && (
-                  <form
-                    onSubmit={handleUpdateProfile}
-                    className="mt-4 space-y-4"
-                  >
-                    {/* Common Fields */}
+                {profileType === "applicant" ? (
+                  // Applicant Edit Fields
+                  <>
                     <div>
-                      <label className="block mb-2">Name:</label>
+                      <label className="block mb-2">Bio:</label>
+                      <textarea
+                        value={editData.bio}
+                        onChange={(e) =>
+                          setEditData({ ...editData, bio: e.target.value })
+                        }
+                        className="border p-2 w-full rounded"
+                        rows={4}
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2">Major:</label>
                       <input
                         type="text"
-                        value={editData.name}
+                        value={editData.major}
                         onChange={(e) =>
-                          setEditData({ ...editData, name: e.target.value })
+                          setEditData({ ...editData, major: e.target.value })
                         }
                         className="border p-2 w-full rounded"
                       />
                     </div>
-
-                    {/* Applicant-specific fields */}
-                    {profileType === "applicant" ? (
-                      <>
-                        <div>
-                          <label className="block mb-2">Bio:</label>
-                          <textarea
-                            value={editData.bio}
-                            onChange={(e) =>
-                              setEditData({ ...editData, bio: e.target.value })
-                            }
-                            className="border p-2 w-full rounded"
-                            rows={4}
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-2">Major:</label>
-                          <input
-                            type="text"
-                            value={editData.major}
-                            onChange={(e) =>
-                              setEditData({
-                                ...editData,
-                                major: e.target.value,
-                              })
-                            }
-                            className="border p-2 w-full rounded"
-                          />
-                        </div>
-
-                        {/* Skills Selection */}
-                        <div>
-                          <label className="block mb-2">Skills:</label>
-                          <div className="flex flex-wrap gap-2">
-                            {availableSkills.map((skill) => (
-                              <button
-                                key={skill.id}
-                                type="button"
-                                onClick={() => handleSkillToggle(skill.id)}
-                                className={`px-3 py-1 rounded-full text-sm ${
-                                  editData.skills.includes(skill.id)
-                                    ? "bg-purple-600 text-white"
-                                    : "bg-purple-100 text-purple-800"
-                                }`}
-                              >
-                                {skill.name}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Preferences Selection */}
-                        <div>
-                          <label className="block mb-2">Preferences:</label>
-                          {Object.entries(availablePrefs).map(
-                            ([category, prefs]) => (
-                              <div key={category} className="mt-2">
-                                <h4 className="text-sm font-medium capitalize">
-                                  {category}:
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {prefs.map((pref) => (
-                                    <button
-                                      key={pref.id}
-                                      type="button"
-                                      onClick={() =>
-                                        handlePrefToggle(category, pref.id)
-                                      }
-                                      className={`px-3 py-1 rounded-full text-sm ${
-                                        editData.preferences[
-                                          category
-                                        ]?.includes(pref.id)
-                                          ? "bg-blue-600 text-white"
-                                          : "bg-blue-100 text-blue-800"
-                                      }`}
-                                    >
-                                      {pref.name}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        {/* Company-specific fields */}
-                        <div>
-                          <label className="block mb-2">About:</label>
-                          <textarea
-                            value={editData.about}
-                            onChange={(e) =>
-                              setEditData({
-                                ...editData,
-                                about: e.target.value,
-                              })
-                            }
-                            className="border p-2 w-full rounded"
-                            rows={4}
-                          />
-                        </div>
-
-                        {/* Company Description Selection */}
-                        <div>
-                          <label className="block mb-2">
-                            Company Description:
-                          </label>
-                          {Object.entries(availablePrefs).map(
-                            ([category, prefs]) => (
-                              <div key={category} className="mt-2">
-                                <h4 className="text-sm font-medium capitalize">
-                                  {category}:
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {prefs.map((pref) => (
-                                    <button
-                                      key={pref.id}
-                                      type="button"
-                                      onClick={() =>
-                                        handleDescriptionToggle(
-                                          category,
-                                          pref.id
-                                        )
-                                      }
-                                      className={`px-3 py-1 rounded-full text-sm ${
-                                        editData.description[
-                                          category
-                                        ]?.includes(pref.id)
-                                          ? "bg-green-600 text-white"
-                                          : "bg-green-100 text-green-800"
-                                      }`}
-                                    >
-                                      {pref.name}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </>
-                    )}
-
-                    <button
-                      type="submit"
-                      className="bg-green-500 text-white px-4 py-2 rounded"
-                    >
-                      Save Changes
-                    </button>
-                  </form>
+                    <div>
+                      <label className="block mb-2">Skills:</label>
+                      <div className="flex flex-wrap gap-2">
+                        {availableSkills.map((skill) => (
+                          <button
+                            key={skill.id}
+                            type="button"
+                            onClick={() => handleSkillToggle(skill.id)}
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              editData.skills.includes(skill.id)
+                                ? "bg-purple-600 text-white"
+                                : "bg-purple-100 text-purple-800"
+                            }`}
+                          >
+                            {skill.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  // Company Edit Fields
+                  <>
+                    <div>
+                      <label className="block mb-2">About:</label>
+                      <textarea
+                        value={editData.about}
+                        onChange={(e) =>
+                          setEditData({ ...editData, about: e.target.value })
+                        }
+                        className="border p-2 w-full rounded"
+                        rows={4}
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2">Company Descriptors:</label>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.entries(availableDescriptors).map(
+                          ([id, name]) => (
+                            <button
+                              key={id}
+                              type="button"
+                              onClick={() => handleDescriptorToggle(id)}
+                              className={`px-3 py-1 rounded-full text-sm ${
+                                editData.descriptors.includes(id)
+                                  ? "bg-green-600 text-white"
+                                  : "bg-green-100 text-green-800"
+                              }`}
+                            >
+                              {name}
+                            </button>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </>
                 )}
-              </div>
-            </div>
-          ) : (
-            <p>No profile data available</p>
-          )}
+
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white px-4 py-2 rounded"
+                >
+                  Save Changes
+                </button>
+              </form>
+            )}
+          </div>
         </section>
       )}
     </div>

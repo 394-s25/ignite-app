@@ -74,6 +74,33 @@ const CompanyProfile = ({ profile, onUpdate }) => {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Company Descriptors
+            </label>
+            <div className="mt-2">
+              {Object.entries(editedProfile.descriptors || {}).map(
+                ([category, values]) => (
+                  <div key={category} className="mt-2">
+                    <h4 className="text-sm font-medium capitalize">
+                      {category}:
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {values.map((descriptorId, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+                        >
+                          {descriptorId}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
           <div className="flex justify-end space-x-3">
             <button
               type="button"
