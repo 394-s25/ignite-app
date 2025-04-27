@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import StudentProfileCard from "../components/likedCards/studentProfileCard";
+import NavBar from "../components/NavBar";
 
 const initialPeople = [
   {
@@ -54,7 +55,8 @@ const CompanyLikes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-10 px-4">
+    <div>
+      <NavBar />
       <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
         Students That Liked You
       </h1>

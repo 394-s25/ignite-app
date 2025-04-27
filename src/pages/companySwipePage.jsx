@@ -1,94 +1,96 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/authContext";
+import { useProfile } from "../contexts/profileContext";
 import StudentSwipeCard from "../components/swipeCards/studentSwipeCard";
-import peppa from "/peppa.jpg";
 import ActionButtons from "../components/swipeCards/actionButtons";
 import StudentHeader from "../components/swipeCards/studentHeader";
+import NavBar from "../components/NavBar";
+import { getDatabase, ref, get, set } from "firebase/database";
+import { db } from "../db/firebaseConfig";
+import { mapSkills } from "../db/mappingIds";
 
 const CompanySwipePage = () => {
-  const [students, setStudents] = useState([
-    {
-      studentName: "Peppa Pig",
-      studentPhoto: peppa,
-      studentMajor: "Computer Science",
-      studentBio:
-        "Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate!",
-      lookingFor:
-        "Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good!",
-      studentSkills: ["Python", "Communication", "NLP Experience", "Teamwork"],
-      contactInfo: "peppapig@u.northwestern.edu",
-    },
-    {
-      studentName: "George Curious",
-      studentMajor: "Cognitive Science & CS Minor",
-      studentBio:
-        "Always exploring how humans think and how tech can support them. I'm obsessed with design that makes people feel heard.",
-      lookingFor:
-        "Looking to join a mission-driven team focused on mental health, accessibility, or AI x HCI research.",
-      studentSkills: ["Figma", "React", "User Research", "Empathy"],
-      contactInfo: "georgecurious@u.northwestern.edu",
-    },
-    {
-      studentName: "Lola Loud",
-      studentMajor: "Communication Studies",
-      studentBio:
-        "A storyteller at heart, I'm passionate about branding, digital media, and making complex ideas accessible.",
-      lookingFor:
-        "Hoping to contribute to a startup that values inclusivity and strong narratives. Interested in marketing, UI writing, and creative strategy.",
-      studentSkills: [
-        "Content Strategy",
-        "Adobe Suite",
-        "Team Collaboration",
-        "Creativity",
-      ],
-      contactInfo: "lolaloud@u.northwestern.edu",
-    },
-    {
-      studentName: "Max Velocity",
-      studentMajor: "Mechanical Engineering",
-      studentBio:
-        "Builder. Tinkerer. Team player. I've prototyped everything from electric skateboards to solar-powered water purifiers.",
-      lookingFor:
-        "Excited to join a hardware or cleantech startup. Let's build something sustainable and scrappy together!",
-      studentSkills: ["CAD", "Arduino", "3D Printing", "Problem-Solving"],
-      contactInfo: "maxv@u.northwestern.edu",
-    },
-    {
-      studentName: "Sasha Green",
-      studentMajor: "Environmental Science & Data Science",
-      studentBio:
-        "My mission: use data to protect the planet. I've worked on climate dashboards and enjoy translating numbers into action.",
-      lookingFor:
-        "Looking to support startups in climate tech, sustainable fashion, or anything eco-focused. Let's make impact real.",
-      studentSkills: ["Python", "SQL", "Data Viz", "Climate Research"],
-      contactInfo: "sashagreen@u.northwestern.edu",
-    },
-  ]);
-
+  const navigate = useNavigate();
+  const { authUser } = useAuth();
+  const { profile, profileType } = useProfile();
+  const [students, setStudents] = useState([]);
   const [accepted, setAccepted] = useState([]);
   const [rejected, setRejected] = useState([]);
 
-  const handleAccept = () => {
+  useEffect(() => {
+    // Redirect if not logged in or not a company
+    if (!authUser) {
+      navigate("/");
+      return;
+    }
+    if (profileType !== "company") {
+      navigate("/studentswipe");
+      return;
+    }
+
+    // Fetch students from Firebase
+    const fetchStudents = async () => {
+      try {
+        const studentsRef = ref(db, "users");
+        const snapshot = await get(studentsRef);
+
+        if (snapshot.exists()) {
+          const studentsData = [];
+          console.log(snapshot.val());
+
+          // Convert object to array and filter for students
+          Object.entries(snapshot.val()).forEach(async ([key, student]) => {
+            // Map the skills before adding to studentsData
+            const mappedSkills = await mapSkills({
+              skills: student.skills || [],
+            });
+            studentsData.push({
+              id: key,
+              studentName: student.name || "Anonymous",
+              studentMajor: student.major || "Undeclared",
+              studentBio: student.bio || "",
+              studentSkills: mappedSkills || [],
+              contactInfo: student.email || "",
+            });
+          });
+          setStudents(studentsData);
+        }
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    };
+
+    fetchStudents();
+  }, [authUser, profileType, navigate]);
+
+  const handleAccept = async () => {
     if (students.length > 0) {
-      const updatedStudents = students.slice(1);
-      setAccepted([...accepted, students[0]]);
-      setStudents(updatedStudents);
+      const currentStudent = students[0];
+      try {
+        setAccepted([...accepted, currentStudent]);
+        setStudents(students.slice(1));
+      } catch (error) {
+        console.error("Error liking student:", error);
+      }
     }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (students.length > 0) {
-      const updatedStudents = students.slice(1);
-      setRejected([...rejected, students[0]]);
-      setStudents(updatedStudents);
+      const currentStudent = students[0];
+      try {
+        setRejected([...rejected, currentStudent]);
+        setStudents(students.slice(1));
+      } catch (error) {
+        console.error("Error rejecting student:", error);
+      }
     }
   };
-
-  console.log(students);
-  console.log(rejected);
-  console.log(accepted);
 
   return (
-    <div className="w-full h-screen max-h-screen flex flex-col md:flex-row bg-gray-50 justify-center md:items-right items-center overflow-hidden">
+    <div>
+      <NavBar />
       {students.length > 0 ? (
         <div className="md:mx-20 xl:mx-32 h-full text-left flex flex-col flex-grow overflow-hidden">
           <StudentHeader
