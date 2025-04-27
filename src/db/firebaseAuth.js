@@ -45,17 +45,36 @@ export const handleGoogleLogout = async () => {
   }
 };
 
-// get or create user profile
-export const getUserProfile = async (uid, name) => {
+// see if user is company/user, then fetch their profile; if new user [TODO]
+const checkProfile = async (uid, name) => {
   try {
-    const userRef = ref(db, `users/${uid}`);
-    const userSnapshot = await get(userRef);
+    const applicantRef = ref(db, `users/${uid}`);
+    const applicantSnapshot = await get(applicantRef);
+    const companyRef = ref(db, `companies/${uid}`);
+    const companySnapshot = await get(companyRef);
 
-    if (userSnapshot.exists()) {
-      console.log(`accessed profile for ${name} with id ${uid}`);
-      return userSnapshot.val();
+    if (applicantSnapshot.exists()) {
+      console.log(`accessed user profile for ${name} with id ${uid}`);
+      return applicantSnapshot.val();
+    } else if (companySnapshot.exists()) {
+      console.log(`accessed company profile for ${name} with id ${uid}`);
+      return companySnapshot.val();
     } else {
-      const newUser = {
+      console.log("new user");
+      return;
+    }
+  } catch (error) {
+    console.error("Error getting profile", error);
+    throw error;
+  }
+};
+
+// create new profile given type (company/user)
+const makeNewProfile = async (uid, name, type) => {
+  try {
+    if (type == "user") {
+      const applicantRef = ref(db, `users/${uid}`);
+      const newApplicant = {
         uid: uid,
         name: name || "Unknown Northwestern Student",
         bio: "",
@@ -63,36 +82,153 @@ export const getUserProfile = async (uid, name) => {
         skills: [],
         preferences: {},
       };
-      await set(userRef, newUser);
-      console.log(`created new profile for ${name} with id ${uid}`);
-      return newUser;
+      await set(applicantRef, newApplicant);
+      console.log(`created new applicant profile for ${name} with id ${uid}`);
+      return newApplicant;
+    } else if (type == "company") {
+      const companyRef = ref(db, `companies/${uid}`);
+      const newCompany = {
+        uid: uid,
+        name: `${name}'s Startup` || "Unknown Northwestern Startup",
+        about: "",
+        description: {},
+      };
+      await set(companyRef, newCompany);
+      console.log(`created new company profile for ${name} with id ${uid}`);
+      return newCompany;
+    } else {
+      throw new Error("Invalid type. Has to be either user or company.");
     }
   } catch (error) {
-    console.error("Error getting/creating profile:", error);
+    console.error("Error creating new profile:", error);
     throw error;
   }
 };
 
-// update user profile
-export const updateUserProfile = async (uid, profile) => {
+// consolidated get/create profile upon login, given type (company/user)
+export const getProfile = async (uid, displayName, type = null) => {
   try {
-    const userRef = ref(database, `users/${uid}`);
-    const snapshot = await get(userRef);
-
-    if (snapshot.exists()) {
-      const updatedProfile = {
-        ...snapshot.val(),
-        ...profile,
-      };
-
-      await set(userRef, updatedProfile);
-      console.log(`updated user profile with ${profile}`);
-      return updatedProfile;
-    } else {
-      throw new Error("User profile not found");
+    const existingProfile = await checkProfile(uid, displayName);
+    if (existingProfile) {
+      return existingProfile;
     }
+
+    if (type === "applicant" || type === "company") {
+      return await makeNewProfile(uid, displayName, type);
+    }
+    return null;
   } catch (error) {
-    console.error("Error updating profile:", error);
+    console.error("Error getting user profile:", error);
+    throw error;
+  }
+};
+
+// Update applicant profile with validation
+export const updateApplicantProfile = async (uid, profileData) => {
+  try {
+    const applicantRef = ref(db, `users/${uid}`);
+    const snapshot = await get(applicantRef);
+
+    if (!snapshot.exists()) {
+      throw new Error("Applicant profile not found");
+    }
+
+    // Validate and process plain text fields
+    const plainTextFields = {
+      name: profileData.name || snapshot.val().name,
+      bio: profileData.bio || snapshot.val().bio,
+      major: profileData.major || snapshot.val().major,
+    };
+
+    // Validate skills - ensure they are valid IDs from the skills collection
+    let skills = [];
+    if (profileData.skills && Array.isArray(profileData.skills)) {
+      // Assuming skills are already validated IDs
+      skills = profileData.skills;
+    } else {
+      skills = snapshot.val().skills || [];
+    }
+
+    // Validate preferences - ensure they are valid IDs from the preferences collection
+    // Preferences should be an object with keys: culture, opportunities, industry
+    let preferences = {};
+    if (profileData.preferences) {
+      const validCategories = ["culture", "opportunities", "industry"];
+      validCategories.forEach((category) => {
+        if (
+          profileData.preferences[category] &&
+          Array.isArray(profileData.preferences[category])
+        ) {
+          preferences[category] = profileData.preferences[category];
+        } else {
+          preferences[category] = snapshot.val().preferences?.[category] || [];
+        }
+      });
+    } else {
+      preferences = snapshot.val().preferences || {};
+    }
+
+    const updatedProfile = {
+      ...snapshot.val(),
+      ...plainTextFields,
+      skills,
+      preferences,
+    };
+
+    await set(applicantRef, updatedProfile);
+    console.log(`Updated applicant profile for ${updatedProfile.name}`);
+    return updatedProfile;
+  } catch (error) {
+    console.error("Error updating applicant profile:", error);
+    throw error;
+  }
+};
+
+// Update company profile with validation
+export const updateCompanyProfile = async (uid, profileData) => {
+  try {
+    const companyRef = ref(db, `companies/${uid}`);
+    const snapshot = await get(companyRef);
+
+    if (!snapshot.exists()) {
+      throw new Error("Company profile not found");
+    }
+
+    // Validate and process plain text fields
+    const plainTextFields = {
+      name: profileData.name || snapshot.val().name,
+      about: profileData.about || snapshot.val().about,
+    };
+
+    // Validate description - ensure it contains valid subfields
+    let description = {};
+    if (profileData.description) {
+      const validCategories = ["culture", "opportunities", "industry"];
+      validCategories.forEach((category) => {
+        if (
+          profileData.description[category] &&
+          Array.isArray(profileData.description[category])
+        ) {
+          description[category] = profileData.description[category];
+        } else {
+          description[category] = snapshot.val().description?.[category] || [];
+        }
+      });
+    } else {
+      description = snapshot.val().description || {};
+    }
+
+    const updatedProfile = {
+      ...snapshot.val(),
+      ...plainTextFields,
+      description,
+    };
+
+    await set(companyRef, updatedProfile);
+    console.log(`Updated company profile for ${updatedProfile.name}`);
+    return updatedProfile;
+  } catch (error) {
+    console.error("Error updating company profile:", error);
     throw error;
   }
 };
