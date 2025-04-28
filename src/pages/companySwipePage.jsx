@@ -1,77 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import StudentSwipeCard from "../components/swipeCards/studentSwipeCard";
 import peppa from "/peppa.jpg";
 import ActionButtons from "../components/swipeCards/actionButtons";
 import StudentHeader from "../components/swipeCards/studentHeader";
+import { likeStudent } from "../db/matchService";
+import { auth, db } from "../db/firebaseConfig";
+import { readUserDataByUserId } from "../db/firebaseService";
+import { listenToStudents } from "../db/firebaseService";
 
 const CompanySwipePage = () => {
-  const [students, setStudents] = useState([
-    {
-      studentName: "Peppa Pig",
-      studentPhoto: peppa,
-      studentMajor: "Computer Science",
-      studentBio:
-        "Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate! Hi, I'm Peppa! I love solving problems, coding, and chatting with new people. Let's connect and collaborate!",
-      lookingFor:
-        "Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good! Passionate about building tech that makes people smile. Previously worked on a chatbot for kids. Looking to join a startup focused on education, health, or social good!",
-      studentSkills: ["Python", "Communication", "NLP Experience", "Teamwork"],
-      contactInfo: "peppapig@u.northwestern.edu",
-    },
-    {
-      studentName: "George Curious",
-      studentMajor: "Cognitive Science & CS Minor",
-      studentBio:
-        "Always exploring how humans think and how tech can support them. I'm obsessed with design that makes people feel heard.",
-      lookingFor:
-        "Looking to join a mission-driven team focused on mental health, accessibility, or AI x HCI research.",
-      studentSkills: ["Figma", "React", "User Research", "Empathy"],
-      contactInfo: "georgecurious@u.northwestern.edu",
-    },
-    {
-      studentName: "Lola Loud",
-      studentMajor: "Communication Studies",
-      studentBio:
-        "A storyteller at heart, I'm passionate about branding, digital media, and making complex ideas accessible.",
-      lookingFor:
-        "Hoping to contribute to a startup that values inclusivity and strong narratives. Interested in marketing, UI writing, and creative strategy.",
-      studentSkills: [
-        "Content Strategy",
-        "Adobe Suite",
-        "Team Collaboration",
-        "Creativity",
-      ],
-      contactInfo: "lolaloud@u.northwestern.edu",
-    },
-    {
-      studentName: "Max Velocity",
-      studentMajor: "Mechanical Engineering",
-      studentBio:
-        "Builder. Tinkerer. Team player. I've prototyped everything from electric skateboards to solar-powered water purifiers.",
-      lookingFor:
-        "Excited to join a hardware or cleantech startup. Let's build something sustainable and scrappy together!",
-      studentSkills: ["CAD", "Arduino", "3D Printing", "Problem-Solving"],
-      contactInfo: "maxv@u.northwestern.edu",
-    },
-    {
-      studentName: "Sasha Green",
-      studentMajor: "Environmental Science & Data Science",
-      studentBio:
-        "My mission: use data to protect the planet. I've worked on climate dashboards and enjoy translating numbers into action.",
-      lookingFor:
-        "Looking to support startups in climate tech, sustainable fashion, or anything eco-focused. Let's make impact real.",
-      studentSkills: ["Python", "SQL", "Data Viz", "Climate Research"],
-      contactInfo: "sashagreen@u.northwestern.edu",
-    },
-  ]);
-
+  const [students, setStudents] = useState([]);
   const [accepted, setAccepted] = useState([]);
   const [rejected, setRejected] = useState([]);
+  const [currentCompany, setCurrentCompany] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleAccept = () => {
-    if (students.length > 0) {
-      const updatedStudents = students.slice(1);
-      setAccepted([...accepted, students[0]]);
-      setStudents(updatedStudents);
+  useEffect(() => {
+    listenToStudents((students) => {
+      setStudents(students);
+      setIsLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentCompany(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleAccept = async () => {
+    if (students.length > 0 && currentCompany) {
+      setIsLoading(true);
+
+      try {
+        const currentStudent = students[0];
+
+        // Update likes in firebase
+        await likeStudent(currentStudent.studentId, currentCompany.uid);
+
+        // Swiping page mechanism
+        const updatedStudents = students.slice(1);
+        setAccepted([...accepted, currentStudent]);
+        setStudents(updatedStudents);
+      } catch (error) {
+        console.error("Error liking student:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -92,20 +69,24 @@ const CompanySwipePage = () => {
       {students.length > 0 ? (
         <div className="md:mx-20 xl:mx-32 h-full text-left flex flex-col flex-grow overflow-hidden">
           <StudentHeader
-            studentName={students[0].studentName}
-            studentMajor={students[0].studentMajor}
-            studentPhoto={students[0].studentPhoto}
+            studentName={students[0].name}
+            studentMajor={students[0].major}
+            // studentPhoto={students[0].studentPhoto}
           />
           <div className="flex-grow overflow-hidden">
             <StudentSwipeCard
-              key={students[0].id}
-              studentBio={students[0].studentBio}
-              lookingFor={students[0].lookingFor}
-              studentSkills={students[0].studentSkills}
-              contactInfo={students[0].contactInfo}
+              key={students[0].studentId}
+              studentBio={students[0].bio}
+              // lookingFor={students[0].lookingFor}
+              studentSkills={students[0].skills}
+              // contactInfo={students[0].contactInfo}
             />
           </div>
-          <ActionButtons onAccept={handleAccept} onReject={handleReject} />
+          <ActionButtons
+            onAccept={handleAccept}
+            onReject={handleReject}
+            isLoading={isLoading}
+          />
         </div>
       ) : (
         <div className="text-center m-8 p-8 w-full">
