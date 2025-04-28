@@ -24,7 +24,7 @@ const NavBar = () => {
           to="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
-          <img src="/ignite.svg" className="h-14" alt="Ignite Logo" />
+          <img src="/ignite-01.png" className="h-13" alt="Ignite Logo" />
         </Link>
         <div className="hidden w-full md:block md:w-auto" id="navbar-default">
           <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0">
