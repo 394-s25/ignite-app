@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CompanyProfileCard from "../components/likedCards/companyProfileCard";
 import NavBar from "../components/NavBar";
-import { db } from "../db/firebaseConfig"; 
+import { db } from "../db/firebaseConfig";
 import { ref, get } from "firebase/database";
 
 const StudentLikes = () => {
@@ -17,14 +17,16 @@ const StudentLikes = () => {
         if (snapshot.exists()) {
           const companiesData = snapshot.val();
 
-          const companiesList = Object.entries(companiesData).map(([companyId, company]) => ({
-            id: companyId,
-            companyName: company.name || "Unknown Company",
-            bio: company.bio || "No bio available",
-            skills: company.skills || [], 
-            descriptors: company.descriptors || {},
-            logo: "https://logo.clearbit.com/example.com", 
-          }));
+          const companiesList = Object.entries(companiesData).map(
+            ([companyId, company]) => ({
+              id: companyId,
+              companyName: company.name || "Unknown Company",
+              bio: company.bio || "No bio available",
+              skills: company.skills || [],
+              descriptors: company.descriptors || {},
+              logo: "https://logo.clearbit.com/example.com",
+            })
+          );
 
           setCompanies(companiesList);
         } else {

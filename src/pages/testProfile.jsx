@@ -1,49 +1,46 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/authContext";
 import { useProfile } from "../contexts/profileContext";
-import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { ref, get } from "firebase/database";
 import { db } from "../db/firebaseConfig";
 
 const TestProfile = () => {
-  const navigate = useNavigate();
-  const { authUser, login, logout, isLoading: authLoading } = useAuth();
-  const { profile, profileType, userSkills, updateProfile } = useProfile();
+  const { isLoading } = useAuth();
+  const { profile, profileType, userSkills, userDescriptors, updateProfile } =
+    useProfile();
 
   // State for available options
   const [availableSkills, setAvailableSkills] = useState([]);
-  const [availableDescriptors, setAvailableDescriptors] = useState({}); // Changed to flat object
+  const [availableDescriptors, setAvailableDescriptors] = useState({});
 
   // State for edit mode
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({
+    // student
+    lookingFor: "",
+    major: "",
+    // company
+    role: "",
+    roleDesciption: "",
+    descriptors: [],
+    // both
     name: "",
     bio: "",
-    major: "",
+    contact: "",
     skills: [],
-    about: "",
-    descriptors: [], // Changed to array since it's just a list of descriptor IDs
   });
 
-  // Fetch available skills and descriptors from the database
+  // fetch all skills + descriptors
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        // Fetch skills (for both students and companies now)
         const skillsSnapshot = await get(ref(db, "skills"));
         if (skillsSnapshot.exists()) {
-          const skillsData = skillsSnapshot.val();
-          const formattedSkills = Object.entries(skillsData).map(
-            ([id, name]) => ({
-              id,
-              name,
-            })
-          );
-          setAvailableSkills(formattedSkills);
+          setAvailableSkills(skillsSnapshot.val());
         }
 
-        // Fetch descriptors (only for companies)
+        // fetch descriptors (only for companies)
         if (profileType === "company") {
           const descriptorsSnapshot = await get(ref(db, "descriptors"));
           if (descriptorsSnapshot.exists()) {
@@ -73,7 +70,7 @@ const TestProfile = () => {
       } else {
         setEditData({
           name: profile.name || "",
-          about: profile.about || "",
+          bio: profile.bio || "",
           descriptors: profile.descriptors || [],
           skills: profile.skills || [], // Add skills for company
         });
@@ -113,7 +110,7 @@ const TestProfile = () => {
     }
   };
 
-  if (authLoading) {
+  if (isLoading) {
     return <div className="p-4">Loading...</div>;
   }
 
@@ -162,16 +159,16 @@ const TestProfile = () => {
                 ) : (
                   // Company View
                   <>
-                    <p className="mt-2">About: {profile.about}</p>
+                    <p className="mt-2">Bio: {profile.bio}</p>
                     <div className="mt-4">
                       <h3 className="font-semibold">Company Descriptors:</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {(profile.descriptors || []).map((descriptorId) => (
+                        {userDescriptors.map((descriptor, index) => (
                           <span
-                            key={descriptorId}
+                            key={index}
                             className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
                           >
-                            {availableDescriptors[descriptorId] || descriptorId}
+                            {descriptor}
                           </span>
                         ))}
                       </div>
@@ -179,19 +176,14 @@ const TestProfile = () => {
                     <div className="mt-4">
                       <h3 className="font-semibold">Required Skills:</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {(profile.skills || []).map((skillId) => {
-                          const skill = availableSkills.find(
-                            (s) => s.id === skillId
-                          );
-                          return (
-                            <span
-                              key={skillId}
-                              className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-                            >
-                              {skill ? skill.name : skillId}
-                            </span>
-                          );
-                        })}
+                        {userSkills.map((skill, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
+                          >
+                            {skill}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   </>
@@ -239,18 +231,18 @@ const TestProfile = () => {
                     <div>
                       <label className="block mb-2">Skills:</label>
                       <div className="flex flex-wrap gap-2">
-                        {availableSkills.map((skill) => (
+                        {Object.entries(availableSkills).map(([id, name]) => (
                           <button
-                            key={skill.id}
+                            key={id}
                             type="button"
-                            onClick={() => handleSkillToggle(skill.id)}
+                            onClick={() => handleSkillToggle(id)}
                             className={`px-3 py-1 rounded-full text-sm ${
-                              editData.skills.includes(skill.id)
+                              editData.skills.includes(id)
                                 ? "bg-purple-600 text-white"
                                 : "bg-purple-100 text-purple-800"
                             }`}
                           >
-                            {skill.name}
+                            {name}
                           </button>
                         ))}
                       </div>
@@ -260,11 +252,11 @@ const TestProfile = () => {
                   // Company Edit Fields
                   <>
                     <div>
-                      <label className="block mb-2">About:</label>
+                      <label className="block mb-2">Bio:</label>
                       <textarea
-                        value={editData.about}
+                        value={editData.bio}
                         onChange={(e) =>
-                          setEditData({ ...editData, about: e.target.value })
+                          setEditData({ ...editData, bio: e.target.value })
                         }
                         className="border p-2 w-full rounded"
                         rows={4}
@@ -294,18 +286,18 @@ const TestProfile = () => {
                     <div>
                       <label className="block mb-2">Required Skills:</label>
                       <div className="flex flex-wrap gap-2">
-                        {availableSkills.map((skill) => (
+                        {Object.entries(availableSkills).map(([id, name]) => (
                           <button
-                            key={skill.id}
+                            key={id}
                             type="button"
-                            onClick={() => handleSkillToggle(skill.id)}
+                            onClick={() => handleSkillToggle(id)}
                             className={`px-3 py-1 rounded-full text-sm ${
-                              editData.skills.includes(skill.id)
+                              editData.skills.includes(id)
                                 ? "bg-purple-600 text-white"
                                 : "bg-purple-100 text-purple-800"
                             }`}
                           >
-                            {skill.name}
+                            {name}
                           </button>
                         ))}
                       </div>

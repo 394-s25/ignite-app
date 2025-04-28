@@ -22,7 +22,6 @@ export const handleGoogleLogin = async () => {
       console.error("Not a Northwestern email");
       return null;
     }
-    console.log(user);
     return {
       uid: user.uid,
       name: user.displayName,
@@ -45,7 +44,7 @@ export const handleGoogleLogout = async () => {
   }
 };
 
-// see if user is company/user, then fetch their profile; if new user [TODO]
+// see if user is company/user, then fetch their profile
 const checkProfile = async (uid, name) => {
   try {
     const studentRef = ref(db, `users/${uid}`);
@@ -54,7 +53,7 @@ const checkProfile = async (uid, name) => {
     const companySnapshot = await get(companyRef);
 
     if (studentSnapshot.exists()) {
-      console.log(`accessed user profile for ${name} with id ${uid}`);
+      console.log(`accessed student profile for ${name} with id ${uid}`);
       return studentSnapshot.val();
     } else if (companySnapshot.exists()) {
       console.log(`accessed company profile for ${name} with id ${uid}`);
@@ -133,25 +132,12 @@ export const updateStudentProfile = async (uid, profileData) => {
       throw new Error("student profile not found");
     }
 
-    // Validate and process plain text fields
-    const plainTextFields = {
-      name: profileData.name || snapshot.val().name,
-      bio: profileData.bio || snapshot.val().bio,
-      major: profileData.major || snapshot.val().major,
-    };
-
-    // Validate skills - ensure they are valid IDs from the skills collection
-    let skills = [];
-    if (profileData.skills && Array.isArray(profileData.skills)) {
-      skills = profileData.skills;
-    } else {
-      skills = snapshot.val().skills || [];
-    }
-
     const updatedProfile = {
       ...snapshot.val(),
-      ...plainTextFields,
-      skills,
+      name: profileData.name || snapshot.val().name,
+      bio: profileData.bio || snapshot.val().about,
+      major: profileData.major || snapshot.val().major,
+      skills: profileData.skills || [],
     };
 
     await set(studentRef, updatedProfile);
@@ -176,7 +162,7 @@ export const updateCompanyProfile = async (uid, profileData) => {
     const updatedProfile = {
       ...snapshot.val(),
       name: profileData.name || snapshot.val().name,
-      about: profileData.about || snapshot.val().about,
+      bio: profileData.bio || snapshot.val().bio,
       descriptors: profileData.descriptors || [],
       skills: profileData.skills || [],
     };

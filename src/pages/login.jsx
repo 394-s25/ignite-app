@@ -7,9 +7,9 @@ import { getProfile } from "../db/firebaseAuth";
 const LoginPage = () => {
   const { authUser, login } = useAuth();
   const { profile, profileType } = useProfile();
-  const navigate = useNavigate();
   const [showProfileTypeSelect, setShowProfileTypeSelect] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     // If user is logged in and has a profile type, redirect to appropriate page
@@ -20,14 +20,12 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      setError("");
       const result = await login();
       if (result) {
         setShowProfileTypeSelect(true);
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError(error.message);
     }
   };
 
