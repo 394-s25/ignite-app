@@ -11,6 +11,7 @@ import CompanyHeader from "../components/swipeCards/companyHeader";
 import peppa from "/peppa.jpg";
 import NavBar from "../components/NavBar";
 import { auth } from "../db/firebaseConfig";
+import { seenCompany } from "../db/seenService";
 
 const StudentSwipePage = () => {
   const [companies, setCompanies] = useState([]);
@@ -68,6 +69,9 @@ const StudentSwipePage = () => {
         const updatedCompanies = companies.slice(1);
         setAccepted([...accepted, currentCompany]);
         setCompanies(updatedCompanies);
+        console.log("Student object:", currentUser);
+        console.log("Company object:", companies[0]);
+        await seenCompany(currentUser.uid, currentCompany.companyId);
       } catch (error) {
         console.error("Error liking company:", error);
       } finally {
@@ -76,11 +80,12 @@ const StudentSwipePage = () => {
     }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (companies.length > 0) {
       const updatedCompanies = companies.slice(1);
       setRejected([...rejected, companies[0]]);
       setCompanies(updatedCompanies);
+      await seenCompany(currentUser.uid, companies[0].companyId);
     }
   };
 

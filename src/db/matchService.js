@@ -1,5 +1,5 @@
 import { db } from "./firebaseConfig";
-import { ref, get, update, runTransaction } from "firebase/database";
+import { ref, get, update } from "firebase/database";
 
 // For when a student likes a company
 export const likeCompany = async (studentId, companyId) => {

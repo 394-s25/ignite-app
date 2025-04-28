@@ -7,6 +7,7 @@ import { likeStudent } from "../db/matchService";
 import { auth, db } from "../db/firebaseConfig";
 import { readUserDataByUserId } from "../db/firebaseService";
 import { listenToStudents } from "../db/firebaseService";
+import { seenCompany, seenStudent } from "../db/seenService";
 
 const CompanySwipePage = () => {
   const [students, setStudents] = useState([]);
@@ -44,6 +45,7 @@ const CompanySwipePage = () => {
         const updatedStudents = students.slice(1);
         setAccepted([...accepted, currentStudent]);
         setStudents(updatedStudents);
+        await seenStudent(currentStudent.studentId, currentCompany.uid);
       } catch (error) {
         console.error("Error liking student:", error);
       } finally {
@@ -52,11 +54,12 @@ const CompanySwipePage = () => {
     }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (students.length > 0) {
       const updatedStudents = students.slice(1);
       setRejected([...rejected, students[0]]);
       setStudents(updatedStudents);
+      await seenStudent(students[0].studentId, currentCompany.uid);
     }
   };
 
