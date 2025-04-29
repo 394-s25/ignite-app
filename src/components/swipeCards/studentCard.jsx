@@ -7,23 +7,32 @@ import {
   CircleUserRound,
 } from "lucide-react";
 
-const StudentCard = ({ student }) => {
+const StudentCard = ({ student, matchScore }) => {
   return (
     <div className="h-full bg-white rounded-lg shadow-xs overflow-hidden flex flex-col">
       {/* Student Header */}
       <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 sm:h-12 sm:w-12 bg-violet-50 rounded-lg flex items-center justify-center">
-            <CircleUserRound className="w-5 h-5 sm:w-6 sm:h-6 text-violet-700" />
+        <div className="flex items-center justify-between">
+          {/* Student Info */}
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 bg-violet-50 rounded-lg flex items-center justify-center">
+              <CircleUserRound className="w-5 h-5 sm:w-6 sm:h-6 text-violet-700" />
+            </div>
+            <div>
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                {student.name}
+              </h1>
+              <h3 className="text-sm font-medium text-violet-600">
+                {student.major}
+              </h3>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg sm:text-xl font-bold text-gray-900">
-              {student.name}
-            </h1>
-            <h3 className="text-sm font-medium text-violet-600">
-              {student.major}
-            </h3>
-          </div>
+          {/* Match Score */}
+          {matchScore !== undefined && (
+            <div className="px-3 py-1 bg-violet-100 text-violet-800 rounded-full text-sm font-medium">
+              {Math.round(matchScore * 100)}% Match
+            </div>
+          )}
         </div>
       </div>
 

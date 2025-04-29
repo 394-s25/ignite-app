@@ -1,90 +1,67 @@
-import { getDatabase, ref, get, set, update } from "firebase/database";
-import { app } from "./firebaseConfig";
+import { getDatabase, ref, get } from "firebase/database";
+import { db } from "./firebaseConfig";
+import { fetchAllCompanies, fetchAllStudents } from "./firebaseService";
 
-const db = getDatabase(app);
+// calculate score between two profiles
+function calculateMatchScore(userSkills, targetSkills) {
+  if (!userSkills?.length || !targetSkills?.length) return 0;
 
-export async function getStudentSkills(studentId) {
-  try {
-    const skillsSnapshot = await get(ref(db, `users/${studentId}/skills`));
-    if (skillsSnapshot.exists()) {
-      return skillsSnapshot.val();
-    } else {
-      console.log("no student skills found");
-      return [];
+  // how many overlaps in skills
+  let matchingSkills = 0;
+  for (const skill of targetSkills) {
+    if (userSkills.has(skill)) {
+      matchingSkills++;
     }
-  } catch (error) {
-    console.error("error fetching student skill:", error);
-    return null;
   }
+  // score is ratio of matched skills to target skills
+  // if you have 5 skills and matched 3/3 to a target, you get 100 score essentially
+  return matchingSkills / targetSkills.size;
 }
 
-export async function getJobSkills(jobId) {
-  const skillsSnapshot = await get(ref(db, `jobs/${jobId}/skills`));
-  const jobSkills = skillsSnapshot.exists() ? skillsSnapshot.val() : [];
-  return jobSkills;
-}
+// get sorted companies for students
+export async function getCompaniesobs(studentId) {
+  try {
+    const studentRef = ref(db, `users/${studentId}`);
+    const studentSnapshot = await get(studentRef);
+    if (!studentSnapshot.exists()) {
+      throw new Error("Student not found");
+    }
+    const studentSkills = studentSnapshot.val().skills || [];
+    const allCompanies = await fetchAllCompanies();
 
-async function getUnseenJobs(studentId) {
-  const seenSnapshot = await get(ref(db, `seen/${studentId}`));
-  const seenIds = seenSnapshot.exists() ? Object.keys(seenSnapshot.val()) : []; // Changed to Object.keys()
+    const companies = Object.entries(allCompanies).map(([id, company]) => ({
+      id,
+      ...company,
+      matchScore: calculateMatchScore(studentSkills, company.skills || []),
+    }));
 
-  const jobsSnapshot = await get(ref(db, "jobs/"));
-  if (!jobsSnapshot.exists()) {
+    return companies.sort((a, b) => b.matchScore - a.matchScore);
+  } catch (error) {
+    console.error("Error getting sorted jobs:", error);
     return [];
   }
+}
 
-  let unseenJobs = [];
-  jobsSnapshot.forEach((child) => {
-    if (!seenIds.includes(child.key)) {
-      unseenJobs.push({
-        id: child.key,
-        ...child.val(),
-      });
+// get sorted students for companies
+export async function getSortedStudents(companyId) {
+  try {
+    const companyRef = ref(db, `companies/${companyId}`);
+    const companySnapshot = await get(companyRef);
+    if (!companySnapshot.exists()) {
+      throw new Error("Company not found");
     }
-  });
+    const companySkills = companySnapshot.val().skills || [];
 
-  return unseenJobs;
-}
+    const allStudents = await fetchAllStudents;
+    const students = Object.entries(allStudents).map(([id, student]) => ({
+      id,
+      ...student,
+      matchScore: calculateMatchScore(companySkills, student.skills || []),
+    }));
 
-async function calculateMatch(studentId, jobId) {
-  // Made this async
-  const studentSkills = await getStudentSkills(studentId); // Added await
-  const jobSkills = await getJobSkills(jobId); // Added await
-
-  if (!studentSkills || !jobSkills || jobSkills.length === 0) {
-    // Added length check
-    return 0;
+    return students.sort((a, b) => b.matchScore - a.matchScore);
+  } catch (error) {
+    console.error("Error getting sorted students:", error);
+    return [];
   }
-
-  const matchingSkills = studentSkills.filter((skill) =>
-    jobSkills.includes(skill)
-  );
-
-  const irrelevantSkills = studentSkills.filter(
-    (skill) => !jobSkills.includes(skill) // Simplified this check
-  );
-
-  // Avoid division by zero and use length property (not length())
-  return irrelevantSkills.length > 0
-    ? matchingSkills.length / irrelevantSkills.length
-    : matchingSkills.length;
-}
-
-export async function getSortedJobs(studentId) {
-  // Made this async
-  const allJobs = await getUnseenJobs(studentId); // Added await
-
-  // Need to use Promise.all for async operations in loop
-  const jobsWithScores = await Promise.all(
-    allJobs.map(async (job) => {
-      const matchScore = await calculateMatch(studentId, job.id);
-      return {
-        id: job.id, // Fixed variable name (was companyId)
-        matchScore,
-        ...job, // Changed from companyData to job
-      };
-    })
-  );
-
-  return jobsWithScores.sort((a, b) => b.matchScore - a.matchScore);
 }
