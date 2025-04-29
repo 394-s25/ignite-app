@@ -28,21 +28,6 @@ export function clearField(path) {
     });
 }
 
-// initialize prefs, given preftype
-export async function initializePrefs(prefArray, prefType) {
-  const prefsRef = ref(db, `preferences/${prefType}`);
-  prefArray.forEach((pref) => {
-    const newPrefRef = push(prefsRef);
-    set(newPrefRef, pref)
-      .then(() => {
-        console.log(`${pref} written successfully.`);
-      })
-      .catch((error) => {
-        console.error(`Could not write ${pref} to database: ${error}`);
-      });
-  });
-}
-
 // initialize skills
 export async function initializeSkills(skillsArray) {
   const skillsRef = ref(db, "skills/");
@@ -58,6 +43,224 @@ export async function initializeSkills(skillsArray) {
       });
   });
 }
+
+// initialize skills
+export async function initializeDescriptors(descriptorsArray) {
+  const descriptorRef = ref(db, "descriptors/");
+
+  descriptorsArray.forEach((desc) => {
+    const newDescriptorRef = push(descriptorRef);
+    set(newDescriptorRef, desc)
+      .then(() => {
+        console.log(`${desc} written successfully.`);
+      })
+      .catch((error) => {
+        console.error(`Could not write ${desc} to database: ${error}`);
+      });
+  });
+}
+
+export async function getSkillById(skillId) {
+  const skillRef = ref(db, `skills/${skillId}`);
+
+  try {
+    const snapshot = await get(skillRef);
+    if (snapshot.exists()) {
+      // console.log(snapshot.val()); // Returns the skill name (e.g., "Full-stack development")
+      return snapshot.val();
+    } else {
+      console.log("No skill found with that ID");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching skill:", error);
+    return null;
+  }
+}
+
+export async function getDescriptorById(descriptorId) {
+  const descriptorRef = ref(db, `descriptors/${descriptorId}`);
+
+  try {
+    const snapshot = await get(descriptorRef);
+    if (snapshot.exists()) {
+      // console.log(snapshot.val()); // Returns the skill name (e.g., "Full-stack development")
+      return snapshot.val();
+    } else {
+      console.log("No descriptor found with that ID");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching skill:", error);
+    return null;
+  }
+}
+
+// see if user is company/user, then fetch their profile
+const checkProfile = async (uid, name) => {
+  try {
+    const studentRef = ref(db, `users/${uid}`);
+    const studentSnapshot = await get(studentRef);
+    const companyRef = ref(db, `companies/${uid}`);
+    const companySnapshot = await get(companyRef);
+
+    if (studentSnapshot.exists()) {
+      console.log(`accessed student profile for ${name} with id ${uid}`);
+      return studentSnapshot.val();
+    } else if (companySnapshot.exists()) {
+      console.log(`accessed company profile for ${name} with id ${uid}`);
+      return companySnapshot.val();
+    } else {
+      console.log("new user");
+      return;
+    }
+  } catch (error) {
+    console.error("Error getting profile", error);
+    throw error;
+  }
+};
+
+// create new profile given type (company/user)
+const makeNewProfile = async (uid, name, email, type) => {
+  console.log(type);
+  try {
+    if (type == "student") {
+      const studentRef = ref(db, `users/${uid}`);
+      const newStudent = {
+        uid: uid,
+        name: name || "Unknown Northwestern Student",
+        email: email,
+        bio: "",
+        major: "",
+        lookingFor: "",
+        skills: [],
+      };
+      await set(studentRef, newStudent);
+      console.log(`created new student profile for ${name} with id ${uid}`);
+      return newStudent;
+    } else if (type == "company") {
+      const companyRef = ref(db, `companies/${uid}`);
+      const newCompany = {
+        uid: uid,
+        name: `${name}'s Startup` || "Unknown Northwestern Startup",
+        email: email,
+        bio: "",
+        descriptors: [],
+        role: "New Role",
+        roleDescription: `A new role has opened under ${name}`,
+        skills: [],
+      };
+      await set(companyRef, newCompany);
+      console.log(`created new company profile for ${name} with id ${uid}`);
+      return newCompany;
+    } else {
+      throw new Error("Invalid type. Has to be either user or company.");
+    }
+  } catch (error) {
+    console.error("Error creating new profile:", error);
+    throw error;
+  }
+};
+
+// consolidated get/create profile upon login, given type (company/user)
+export const getProfile = async (uid, displayName, email, type = null) => {
+  try {
+    const existingProfile = await checkProfile(uid, displayName);
+    if (existingProfile) {
+      return existingProfile;
+    }
+
+    if (type === "student" || type === "company") {
+      console.log("making new", type);
+      return await makeNewProfile(uid, displayName, email, type);
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    throw error;
+  }
+};
+
+export const updateStudentProfile = async (uid, profileData) => {
+  try {
+    const studentRef = ref(db, `users/${uid}`);
+    const snapshot = await get(studentRef);
+
+    if (!snapshot.exists()) {
+      throw new Error("student profile not found");
+    }
+
+    const updatedProfile = {
+      ...snapshot.val(),
+      name: profileData.name || snapshot.val().name,
+      bio: profileData.bio || snapshot.val().about,
+      major: profileData.major || snapshot.val().major,
+      skills: profileData.skills || [],
+    };
+
+    await set(studentRef, updatedProfile);
+    console.log(`Updated student profile for ${updatedProfile.name}`);
+    return updatedProfile;
+  } catch (error) {
+    console.error("Error updating student profile:", error);
+    throw error;
+  }
+};
+
+// Update company profile with validation
+export const updateCompanyProfile = async (uid, profileData) => {
+  try {
+    const companyRef = ref(db, `companies/${uid}`);
+    const snapshot = await get(companyRef);
+
+    if (!snapshot.exists()) {
+      throw new Error("Company profile not found");
+    }
+
+    const updatedProfile = {
+      ...snapshot.val(),
+      name: profileData.name || snapshot.val().name,
+      bio: profileData.bio || snapshot.val().bio,
+      descriptors: profileData.descriptors || [],
+      skills: profileData.skills || [],
+    };
+
+    await set(companyRef, updatedProfile);
+    console.log(`Updated company profile for ${updatedProfile.name}`);
+    return updatedProfile;
+  } catch (error) {
+    console.error("Error updating company profile:", error);
+    throw error;
+  }
+};
+
+export const fetchAllCompanies = async () => {
+  try {
+    const companiesRef = ref(db, "companies");
+    const snapshot = await get(companiesRef);
+
+    if (snapshot.exists()) {
+      console.log(snapshot.val());
+      return snapshot.val();
+    }
+  } catch (error) {
+    console.error("Error fetching companies");
+  }
+};
+
+export const fetchAllStudents = async () => {
+  try {
+    const studentsRef = ref(db, "users");
+    const snapshot = await get(studentsRef);
+
+    if (snapshot.exists()) {
+      console.log(snapshot.val());
+      return snapshot.val();
+    }
+  } catch (error) {
+    console.error("Error fetching students");
+  }
+};
 
 // export async function getSkillIdByName(skillName) {
 //   const skillsRef = ref(db, "skills/");
@@ -83,23 +286,108 @@ export async function initializeSkills(skillsArray) {
 //     });
 // }
 
-export async function getSkillById(skillId) {
-  const skillRef = ref(db, `skills/${skillId}`);
+// // initialize prefs, given preftype
+// export async function initializePrefs(prefArray, prefType) {
+//   const prefsRef = ref(db, `preferences/${prefType}`);
+//   prefArray.forEach((pref) => {
+//     const newPrefRef = push(prefsRef);
+//     set(newPrefRef, pref)
+//       .then(() => {
+//         console.log(`${pref} written successfully.`);
+//       })
+//       .catch((error) => {
+//         console.error(`Could not write ${pref} to database: ${error}`);
+//       });
+//   });
+// }
 
-  try {
-    const snapshot = await get(skillRef);
-    if (snapshot.exists()) {
-      // console.log(snapshot.val()); // Returns the skill name (e.g., "Full-stack development")
-      return snapshot.val();
-    } else {
-      console.log("No skill found with that ID");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching skill:", error);
-    return null;
-  }
-}
+// export async function readCompanyDataByCompanyId(companyId) {
+//   const companyRef = ref(db, "companies/" + companyId);
+//   return get(companyRef)
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         const company = snapshot.val();
+//         console.log("Retrieved company data: ", company);
+//         return company;
+//       } else {
+//         console.log("Company does not exist");
+//         return null;
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error reading data: ", error);
+//     });
+// }
+
+// // Company Post Jobs
+// export async function postJob(
+//   companyId,
+//   jobTitle,
+//   jobDescription,
+//   jobSkills,
+//   jobContacts
+// ) {
+//   const companyJobsRef = ref(db, `jobs`);
+//   const newJobRef = push(companyJobsRef);
+//   return set(newJobRef, {
+//     companyId: companyId,
+//     title: jobTitle,
+//     description: jobDescription,
+//     skills: jobSkills,
+//     contacts: jobContacts,
+//   })
+//     .then(() => {
+//       console.log("Job posted successfully.");
+//     })
+//     .catch((error) => {
+//       console.error("Error posting job: ", error);
+//     });
+// }
+
+// export async function getJobsByCompanyId(companyId) {
+//   const jobsRef = ref(db, "jobs");
+//   const jobsQuery = query(
+//     jobsRef,
+//     orderByChild("companyId"),
+//     equalTo(companyId)
+//   );
+//   return get(jobsQuery)
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         const jobs = snapshot.val();
+//         console.log("Retrieved jobs: ", jobs);
+//         return jobs;
+//       } else {
+//         console.log("No jobs found for this company.");
+//         return null;
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error retrieving jobs: ", error);
+//     });
+// }
+
+// export function listenToAllJobs(callback) {
+//   const jobsRef = ref(db, "jobs");
+
+//   onValue(
+//     jobsRef,
+//     (snapshot) => {
+//       if (snapshot.exists()) {
+//         const jobs = snapshot.val();
+//         console.log("Retrieved all jobs: ", jobs);
+//         const jobsList = Object.values(jobs);
+//         callback(jobsList);
+//       } else {
+//         console.log("No jobs found.");
+//         callback([]);
+//       }
+//     },
+//     (error) => {
+//       console.error("Error retrieving jobs: ", error);
+//     }
+//   );
+// }
 
 // export async function getPrefIdByName(prefName) {
 //   const prefsRef = ref(db, "preferences/");
@@ -123,24 +411,24 @@ export async function getSkillById(skillId) {
 //     });
 // }
 
-export async function getPrefNameById(prefType, prefId) {
-  const prefRef = ref(db, `preferences/${prefType}/${prefId}`);
-  return get(prefRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        console.log();
-        return snapshot.val();
-      } else {
-        console.log(`No prefence ${prefType} found for ID ${prefId}.`);
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error(
-        `Error in retrieving preference ${prefType} for ID ${prefId}: ${error}`
-      );
-    });
-}
+// export async function getPrefNameById(prefType, prefId) {
+//   const prefRef = ref(db, `preferences/${prefType}/${prefId}`);
+//   return get(prefRef)
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         console.log();
+//         return snapshot.val();
+//       } else {
+//         console.log(`No prefence ${prefType} found for ID ${prefId}.`);
+//         return null;
+//       }
+//     })
+//     .catch((error) => {
+//       console.error(
+//         `Error in retrieving preference ${prefType} for ID ${prefId}: ${error}`
+//       );
+//     });
+// }
 
 // export async function userFirstWrite(name, email, phoneNumber, userId) {
 //   try {
@@ -312,113 +600,25 @@ export async function getPrefNameById(prefType, prefId) {
 //     });
 // }
 
-export async function readCompanyDataByCompanyId(companyId) {
-  const companyRef = ref(db, "companies/" + companyId);
-  return get(companyRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const company = snapshot.val();
-        console.log("Retrieved company data: ", company);
-        return company;
-      } else {
-        console.log("Company does not exist");
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error("Error reading data: ", error);
-    });
-}
-
-// // Company Post Jobs
-// export async function postJob(
-//   companyId,
-//   jobTitle,
-//   jobDescription,
-//   jobSkills,
-//   jobContacts
-// ) {
-//   const companyJobsRef = ref(db, `jobs`);
-//   const newJobRef = push(companyJobsRef);
-//   return set(newJobRef, {
-//     companyId: companyId,
-//     title: jobTitle,
-//     description: jobDescription,
-//     skills: jobSkills,
-//     contacts: jobContacts,
-//   })
-//     .then(() => {
-//       console.log("Job posted successfully.");
-//     })
-//     .catch((error) => {
-//       console.error("Error posting job: ", error);
-//     });
-// }
-
-// export async function getJobsByCompanyId(companyId) {
-//   const jobsRef = ref(db, "jobs");
-//   const jobsQuery = query(
-//     jobsRef,
-//     orderByChild("companyId"),
-//     equalTo(companyId)
+// export async function getDescriptorNameById(descriptorType, descriptorId) {
+//   const descriptorRef = ref(
+//     db,
+//     `descriptors/${descriptorType}/${descriptorId}`
 //   );
-//   return get(jobsQuery)
+//   return get(descriptorRef)
 //     .then((snapshot) => {
 //       if (snapshot.exists()) {
-//         const jobs = snapshot.val();
-//         console.log("Retrieved jobs: ", jobs);
-//         return jobs;
+//         return snapshot.val();
 //       } else {
-//         console.log("No jobs found for this company.");
+//         console.log(
+//           `No descriptor ${descriptorType} found for ID ${descriptorId}.`
+//         );
 //         return null;
 //       }
 //     })
 //     .catch((error) => {
-//       console.error("Error retrieving jobs: ", error);
+//       console.error(
+//         `Error in retrieving descriptor ${descriptorType} for ID ${descriptorId}: ${error}`
+//       );
 //     });
 // }
-
-export function listenToAllJobs(callback) {
-  const jobsRef = ref(db, "jobs");
-
-  onValue(
-    jobsRef,
-    (snapshot) => {
-      if (snapshot.exists()) {
-        const jobs = snapshot.val();
-        console.log("Retrieved all jobs: ", jobs);
-        const jobsList = Object.values(jobs);
-        callback(jobsList);
-      } else {
-        console.log("No jobs found.");
-        callback([]);
-      }
-    },
-    (error) => {
-      console.error("Error retrieving jobs: ", error);
-    }
-  );
-}
-
-export async function getDescriptorNameById(descriptorType, descriptorId) {
-  const descriptorRef = ref(
-    db,
-    `descriptors/${descriptorType}/${descriptorId}`
-  );
-  return get(descriptorRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        return snapshot.val();
-      } else {
-        console.log(
-          `No descriptor ${descriptorType} found for ID ${descriptorId}.`
-        );
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error(
-        `Error in retrieving descriptor ${descriptorType} for ID ${descriptorId}: ${error}`
-      );
-    });
-}

@@ -1,10 +1,11 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { set } from "firebase/database";
 import {
   getProfile,
   updateStudentProfile,
   updateCompanyProfile,
-} from "../db/firebaseAuth";
-import { mapPrefs, mapSkills, mapDescriptors } from "../db/mappingIds";
+} from "../db/firebaseService";
+import { mapSkills, mapDescriptors } from "../db/mappingIds";
 import { useAuth } from "./authContext";
 
 const ProfileContext = createContext();
@@ -15,6 +16,7 @@ export const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [profileType, setProfileType] = useState(null);
   const [userSkills, setUserSkills] = useState([]);
+  const [userDescriptors, setUserDescriptors] = useState([]);
 
   useEffect(() => {
     const initializeProfile = async () => {
@@ -22,25 +24,32 @@ export const ProfileProvider = ({ children }) => {
         setProfile(null);
         setProfileType(null);
         setUserSkills([]);
+        setUserDescriptors([]);
         return;
       }
 
       try {
-        const userInfo = await getProfile(authUser.uid, authUser.displayName);
+        const userInfo = await getProfile(
+          authUser.uid,
+          authUser.displayName,
+          authUser.email
+        );
         if (userInfo) {
           setProfile(userInfo);
-          // Determine profile type based on profile fields
           const type = userInfo.major !== undefined ? "student" : "company";
           setProfileType(type);
           console.log("Profile type:", type);
 
           // Map skills for student profiles
-          if (type === "student" && userInfo.skills) {
+          if (userInfo.skills) {
             const mappedSkills = await mapSkills(userInfo);
             setUserSkills(mappedSkills);
           }
+          if (userInfo.descriptors) {
+            const mappedDescriptors = await mapDescriptors(userInfo);
+            setUserDescriptors(mappedDescriptors);
+          }
         }
-        console.log(`Initialized ${profileType} profile: ${userInfo?.name}`);
       } catch (error) {
         console.error("Error fetching profile data:", error);
       } finally {
@@ -51,6 +60,7 @@ export const ProfileProvider = ({ children }) => {
     initializeProfile();
   }, [authUser]);
 
+  // for users to edit their profiles (dependent on company/stude)
   const updateProfile = async (profileData) => {
     if (!authUser) throw new Error("Not authenticated");
     if (!profileType) throw new Error("Profile type not determined");
@@ -60,9 +70,10 @@ export const ProfileProvider = ({ children }) => {
         profileType === "student" ? updateStudentProfile : updateCompanyProfile;
       const updatedProfile = await updateFn(authUser.uid, profileData);
       setProfile(updatedProfile);
+      setUserSkills(await mapSkills(updatedProfile));
 
-      if (profileType === "student") {
-        setUserSkills(await mapSkills(updatedProfile));
+      if (profileType === "company") {
+        setUserDescriptors(await mapDescriptors(updatedProfile));
       }
 
       return updatedProfile;
@@ -77,7 +88,8 @@ export const ProfileProvider = ({ children }) => {
       value={{
         profile,
         profileType,
-        userSkills: profileType === "student" ? userSkills : [],
+        userSkills,
+        userDescriptors: profileType === "company" ? userDescriptors : [],
         updateProfile,
       }}
     >
