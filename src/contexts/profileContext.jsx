@@ -4,7 +4,7 @@ import {
   getProfile,
   updateStudentProfile,
   updateCompanyProfile,
-} from "../db/firebaseAuth";
+} from "../db/firebaseService";
 import { mapSkills, mapDescriptors } from "../db/mappingIds";
 import { useAuth } from "./authContext";
 
@@ -29,7 +29,11 @@ export const ProfileProvider = ({ children }) => {
       }
 
       try {
-        const userInfo = await getProfile(authUser.uid, authUser.displayName);
+        const userInfo = await getProfile(
+          authUser.uid,
+          authUser.displayName,
+          authUser.email
+        );
         if (userInfo) {
           setProfile(userInfo);
           const type = userInfo.major !== undefined ? "student" : "company";
@@ -46,7 +50,6 @@ export const ProfileProvider = ({ children }) => {
             setUserDescriptors(mappedDescriptors);
           }
         }
-        console.log(`Initialized ${profileType} profile: ${userInfo?.name}`);
       } catch (error) {
         console.error("Error fetching profile data:", error);
       } finally {
