@@ -262,6 +262,69 @@ export const fetchAllStudents = async () => {
   }
 };
 
+export const fetchExperienceByUser = async (uid) => {
+  try {
+    const experienceRef = ref(db, "experience");
+    const snapshot = await get(experienceRef);
+    if (snapshot.exists()) {
+      const allExperiences = snapshot.val();
+      // Map to include the experience id
+      const userExperiences = Object.entries(allExperiences)
+        .filter(([_, exp]) => exp.userId === uid)
+        .map(([id, exp]) => ({ ...exp, id }));
+      console.log(userExperiences);
+      return userExperiences;
+    } else {
+      console.log("No experiences found.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching experience:", error);
+    throw error;
+  }
+};
+
+export async function addExperience({
+  userId,
+  company,
+  startDate,
+  endDate,
+  jobTitle,
+  jobDescription,
+}) {
+  try {
+    const experiencesRef = ref(db, "experience");
+    const newExpRef = push(experiencesRef);
+    const experienceId = newExpRef.key;
+
+    await set(newExpRef, {
+      userId,
+      startDate,
+      endDate,
+      jobTitle,
+      jobDescription,
+      company,
+    });
+
+    console.log(`Experience added with ID: ${experienceId}`);
+    return experienceId;
+  } catch (error) {
+    console.error("Error adding experience:", error);
+    throw error;
+  }
+}
+
+export const deleteExperience = async (experienceId) => {
+  try {
+    const experienceRef = ref(db, `experience/${experienceId}`);
+    await remove(experienceRef);
+    console.log(`Experience with ID ${experienceId} deleted successfully.`);
+  } catch (error) {
+    console.error(`Error deleting experience with ID ${experienceId}:`, error);
+    throw error;
+  }
+};
+
 // export async function getSkillIdByName(skillName) {
 //   const skillsRef = ref(db, "skills/");
 //   const skillQuery = query(

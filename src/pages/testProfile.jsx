@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/authContext";
 import { useProfile } from "../contexts/profileContext";
+import ExperienceInput from "../components/userProfile/ExperienceInput";
 import NavBar from "../components/NavBar";
 import { ref, get } from "firebase/database";
 import { db } from "../db/firebaseConfig";
+import { deleteExperience } from "../db/firebaseService";
 
 const TestProfile = () => {
   const { isLoading } = useAuth();
-  const { profile, profileType, userSkills, userDescriptors, updateProfile } =
+  const { profile, profileType, userSkills, userDescriptors, updateProfile, userExperience } =
     useProfile();
 
   // State for available options
@@ -20,6 +22,7 @@ const TestProfile = () => {
     // student
     lookingFor: "",
     major: "",
+    experiences: [],
     // company
     role: "",
     roleDescription: "",
@@ -68,6 +71,7 @@ const TestProfile = () => {
           skills: profile.skills || [],
           email: profile.email || "",
           lookingFor: profile.lookingFor || "",
+          experiences: userExperience || []
         });
       } else {
         setEditData({
@@ -80,7 +84,8 @@ const TestProfile = () => {
         });
       }
     }
-  }, [profile, profileType]);
+  }, [profile, profileType, userExperience]);
+
 
   // Handle skill selection
   const handleSkillToggle = (skillId) => {
@@ -161,7 +166,27 @@ const TestProfile = () => {
                         ))}
                       </div>
                     </div>
-                  </>
+                    <h3 className="font-semibold">Experiences:</h3>
+                    {userExperience && userExperience.length > 0 && (
+                        <div className="space-y-4 mt-4">
+                          {userExperience.map((exp, idx) => (
+                            <div
+                              key={idx}
+                              className="border rounded-lg p-4 shadow-sm bg-gray-50"
+                            >
+                              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2">
+                                <span className="font-bold text-lg text-purple-800">{exp.company}</span>
+                                <span className="text-sm text-gray-500">
+                                  {exp.startDate} - {exp.endDate}
+                                </span>
+                              </div>
+                              <div className="font-semibold text-purple-700 mb-1">{exp.jobTitle || exp.role}</div>
+                              <div className="text-gray-700 text-sm">{exp.jobDescription || exp.details}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
                 ) : (
                   // Company View
                   <>
@@ -261,6 +286,48 @@ const TestProfile = () => {
                           </button>
                         ))}
                       </div>
+                    </div>
+                    <div>
+                      <label className="block mb-2">Experiences:</label>
+                      {/* List existing experiences */}
+                      {editData.experiences && editData.experiences.length > 0 && (
+                        <ul className="mb-2">
+                          {editData.experiences.map((exp, idx) => (
+                            <li key={idx} className="mb-2 border-b pb-2">
+                              <div>
+                                <strong>{exp.company}</strong> — {exp.role} ({exp.startDate} - {exp.endDate})
+                                <button
+                                  type="button"
+                                  className="ml-2 text-red-500"
+                                  onClick={async() => {
+                                    if (exp.id) {
+                                      await deleteExperience(exp.id);
+                                      setEditData((prev) => ({
+                                        ...prev,
+                                        experiences: prev.experiences.filter(
+                                          (e) => e.id !== exp.id
+                                        ),
+                                      }));
+                                    }
+                                  }}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                              <div className="text-sm">{exp.details}</div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {/* Add new experience form */}
+                      <ExperienceInput
+                        onAdd={(exp) =>
+                          setEditData((prev) => ({
+                            ...prev,
+                            experiences: [...(prev.experiences || []), exp],
+                          }))
+                        }
+                      />
                     </div>
                   </>
                 ) : (

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import './UserProfileCard.css';
 import { Pen } from "lucide-react";
+import { useUser } from '../../contexts/UserContext';
 
 const UserProfileCard = ({studentName, studentMajor, contactInfo}) => {
   const [profilePic, setProfilePic] = useState(null);
   const [location, setLocation] = useState('Evanston, IL');
+  const [user, setUser] = useUser();
   const handlePicChange = (e) => {
     const file = e.target.files[0];
     if (file) {
