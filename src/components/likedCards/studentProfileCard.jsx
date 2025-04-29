@@ -1,10 +1,29 @@
 import React, { useState } from "react";
+import { addVisitedStudent } from "../../db/firebaseService";
+import { useAuth } from "../../contexts/authContext";
 
 const StudentProfileCard = ({ person, onRemove }) => {
   const [liked, setLiked] = useState(false);
+  const companyId = useAuth().authUser?.uid;
+  console.log("Company ID:", companyId);
+  
+  const handleLike = async () => {
+    try {
+      await addVisitedStudent(companyId, person.id, true);
+      setLiked(true);
+    } catch (error) {
+      console.error("Error adding to visited list:", error);
+    }
+  };
 
-  const handleLike = () => setLiked(true);
-  const handleDecline = () => onRemove(person);
+  const handleDecline = async () => {
+    try {
+      await addVisitedStudent(companyId, person.id, false);
+      onRemove(person); // Remove the student card
+    } catch (error) {
+      console.error("Error adding to visited list:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col bg-purple-100 rounded-xl p-6 max-w-2xl mx-auto shadow-md hover:shadow-xl transform transition duration-300">

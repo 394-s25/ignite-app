@@ -329,6 +329,26 @@ export const deleteExperience = async (experienceId) => {
   }
 };
 
+export async function addVisitedStudent(companyid, studentid, isLiked) {
+  try {
+    // Reference to the specific path in the database
+    const visitedRef = ref(db, `companies/${companyid}/visited/${studentid}`);
+
+    // Write the isLiked value to the database
+    await set(visitedRef, { isLiked });
+
+    console.log(
+      `Visited student ${studentid} added to company ${companyid} with isLiked: ${isLiked}`
+    );
+  } catch (error) {
+    console.error(
+      `Error adding visited student ${studentid} to company ${companyid}:`,
+      error
+    );
+    throw error;
+  }
+}
+
 export function listenToStudents(callback) {
   const usersRef = ref(db, "users");
 
