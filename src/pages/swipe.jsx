@@ -130,7 +130,7 @@ const SwipePage = () => {
       <div className="flex-1 flex items-center justify-center p-2 md:p-4">
         {profileType === "student" ? (
           currentCompany ? (
-            <div className="w-full h-full max-h-[85vh] max-w-sm md:max-w-md mx-auto shadow-lg rounded-lg overflow-hidden flex flex-col">
+            <div className="w-full h-full max-h-[85vh] max-w-2xl md:max-w-3xl mx-auto overflow-hidden flex flex-col">
               <div className="flex-1 bg-white overflow-y-auto">
                 <CompanyCard key={currentCompany.id} company={currentCompany} />
               </div>
@@ -155,7 +155,7 @@ const SwipePage = () => {
             </div>
           )
         ) : currentStudent ? (
-          <div className="w-full h-full max-h-[85vh] max-w-sm md:max-w-md mx-auto shadow-lg rounded-lg overflow-hidden flex flex-col">
+          <div className="w-full h-full max-h-[85vh] max-w-2xl md:max-w-3xl mx-auto overflow-hidden flex flex-col">
             <div className="flex-1 bg-white overflow-y-auto">
               <StudentCard key={currentStudent.id} student={currentStudent} />
             </div>

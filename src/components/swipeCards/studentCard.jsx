@@ -9,49 +9,55 @@ import {
 
 const StudentCard = ({ student }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="h-full bg-white rounded-lg shadow-xs overflow-hidden flex flex-col">
       {/* Student Header */}
-      <div className="px-8 py-6 border-b border-gray-200">
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 bg-violet-50 rounded-lg flex items-center justify-center">
-            <CircleUserRound className="w-6 h-6 text-violet-700" />
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 sm:h-12 sm:w-12 bg-violet-50 rounded-lg flex items-center justify-center">
+            <CircleUserRound className="w-5 h-5 sm:w-6 sm:h-6 text-violet-700" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{student.major}</h1>
-            <h3 className="text-sm font-medium text-violet-600">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900">
               {student.name}
+            </h1>
+            <h3 className="text-sm font-medium text-violet-600">
+              {student.major}
             </h3>
           </div>
         </div>
       </div>
 
-      {/* student Content */}
-      <section className="p-8 flex flex-col gap-8">
-        {/* student Description */}
-        <div className="flex flex-col gap-3">
+      {/* Student Content */}
+      <section className="flex-1 p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+        {/* Student Description */}
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <PencilLine className="w-4 h-4 text-violet-600" />
             <h2 className="text-sm font-medium uppercase text-violet-600">
               About
             </h2>
           </div>
-          <p className="text-gray-700">{student.bio}</p>
+          <p className="text-sm sm:text-base text-gray-700 line-clamp-3">
+            {student.bio}
+          </p>
         </div>
 
-        {/* looking for */}
-        <div className="flex flex-col gap-3">
+        {/* Looking For */}
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <SearchCheck className="w-4 h-4 text-violet-600" />
             <h2 className="text-sm font-medium uppercase text-violet-600">
               Looking For
             </h2>
           </div>
-          <p className="text-gray-700">{student.lookingFor}</p>
+          <p className="text-sm sm:text-base text-gray-700 line-clamp-3">
+            {student.lookingFor}
+          </p>
         </div>
 
         {/* Skills if available */}
         {student.skills && student.skills.length > 0 && (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <Code className="w-4 h-4 text-violet-600" />
               <h2 className="text-sm font-medium uppercase text-violet-600">
@@ -62,7 +68,7 @@ const StudentCard = ({ student }) => {
               {student.skills.map((skill, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 bg-violet-50 text-violet-900 rounded-md text-sm font-medium"
+                  className="px-2 py-1 bg-violet-50 text-violet-900 rounded-md text-xs sm:text-sm font-medium"
                 >
                   {skill}
                 </span>
@@ -72,14 +78,14 @@ const StudentCard = ({ student }) => {
         )}
 
         {/* Contact Info */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-violet-600" />
             <h2 className="text-sm font-medium uppercase text-violet-600">
               Contact Information
             </h2>
           </div>
-          <p className="text-gray-700">{student.email}</p>
+          <p className="text-sm sm:text-base text-gray-700">{student.email}</p>
         </div>
       </section>
     </div>
