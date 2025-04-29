@@ -157,9 +157,10 @@ export const fetchCompanyMatches = async (companyId) => {
 
     const matchesWithStudentDetails = await Promise.all(
       companyMatches.map(async (studentId) => {
-        const studentRef = ref(db, `students/${studentId}`);
+        const studentRef = ref(db, `users/${studentId}`);
         const studentSnapshot = await get(studentRef);
         const studentData = studentSnapshot.val() || {};
+        console.log(studentData);
 
         return {
           studentId: studentId,

@@ -134,6 +134,8 @@ const makeNewProfile = async (uid, name, email, type) => {
         major: "",
         lookingFor: "",
         skills: [],
+        likes: [],
+        matches: [],
       };
       await set(studentRef, newStudent);
       console.log(`created new student profile for ${name} with id ${uid}`);
@@ -149,6 +151,8 @@ const makeNewProfile = async (uid, name, email, type) => {
         role: "New Role",
         roleDescription: `A new role has opened under ${name}`,
         skills: [],
+        likes: [],
+        matches: [],
       };
       await set(companyRef, newCompany);
       console.log(`created new company profile for ${name} with id ${uid}`);

@@ -31,6 +31,7 @@ const CompanyMatches = () => {
 
         const companyId = currentUser.uid;
         const matchesData = await fetchCompanyMatches(companyId);
+        console.log(matchesData);
 
         const formattedStudents = matchesData.map((student) => ({
           name: student.name || "Unknown Student",
