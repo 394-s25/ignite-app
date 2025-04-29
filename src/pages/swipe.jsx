@@ -8,7 +8,7 @@ import { mapSkills, mapDescriptors } from "../db/mappingIds";
 import StudentCard from "../components/swipeCards/studentCard";
 import NavBar from "../components/NavBar";
 import ActionButtons from "../components/swipeCards/actionButtons";
-import { getSortedJobs, getSortedStudents } from "../db/sorting";
+import { getSortedCompanies, getSortedStudents } from "../db/sorting";
 
 const SwipePage = () => {
   const navigate = useNavigate();

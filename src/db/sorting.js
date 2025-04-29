@@ -9,7 +9,7 @@ function calculateMatchScore(userSkills, targetSkills) {
   // how many overlaps in skills
   let matchingSkills = 0;
   for (const skill of targetSkills) {
-    if (userSkills.has(skill)) {
+    if (userSkills.includes(skill)) {
       matchingSkills++;
     }
   }
@@ -19,7 +19,7 @@ function calculateMatchScore(userSkills, targetSkills) {
 }
 
 // get sorted companies for students
-export async function getCompaniesobs(studentId) {
+export async function getSortedCompanies(studentId) {
   try {
     const studentRef = ref(db, `users/${studentId}`);
     const studentSnapshot = await get(studentRef);
