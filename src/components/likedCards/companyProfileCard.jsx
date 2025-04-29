@@ -3,14 +3,13 @@ import { ref, get } from "firebase/database";
 import { db } from "../../db/firebaseConfig"; 
 import MatchedModal from "../matchedModal";
 import { useProfile } from "../../contexts/profileContext";
-// import Confetti from "react-confetti";
+import Confetti from "react-confetti";
 
 const CompanyProfileCard = ({ company, onRemove }) => {
   const [liked, setLiked] = useState(false);
   const [skillNames, setSkillNames] = useState([]);
   const [modalVisibility, setModalVisibility] = useState(false);
   const { profile, profileType, userSkills } = useProfile();
-  const [width, height] = useWindowSize();
 
   const handleLike = () => {
     setLiked(true);
@@ -115,6 +114,8 @@ const CompanyProfileCard = ({ company, onRemove }) => {
         {modalVisibility && (
           <>
             <div className="fixed inset-0 flex items-center justify-center z-50">
+              <Confetti className="z-40" confettiSource={{x: window.innerWidth / 2, y: window.innerHeight / 6, w: 0, h:0}} width={window.innerWidth} height={window.innerHeight} numberOfPieces={30} recycle={false} tweenDuration = {200} gravity = {0.25}/>
+              
               <MatchedModal company={company} position="job placeholder" person={profile} onClose={ handleCloseModal } onUnmatch={ handleUnmatch }/>
             </div>
           </>
