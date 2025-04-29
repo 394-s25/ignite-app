@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   PencilLine,
   SearchCheck,
   Code,
   Mail,
   CircleUserRound,
+  Briefcase,
 } from "lucide-react";
+import { fetchExperienceByUser } from "../../db/firebaseService";
 
 const StudentCard = ({ student, matchScore }) => {
+  const [experiences, setExperiences] = useState([]);
+
+  // Fetch experiences when the component mounts
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      try {
+        const userExperiences = await fetchExperienceByUser(student.id);
+        setExperiences(userExperiences);
+      } catch (error) {
+        console.error("Error fetching experiences:", error);
+      }
+    };
+
+    fetchExperiences();
+  }, [student.id]);
+
   return (
     <div className="h-full bg-white rounded-lg shadow-xs overflow-hidden flex flex-col">
       {/* Student Header */}
@@ -81,6 +99,35 @@ const StudentCard = ({ student, matchScore }) => {
                 >
                   {skill}
                 </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Experiences */}
+        {experiences.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-violet-600" />
+              <h2 className="text-sm font-medium uppercase text-violet-600">
+                Experiences
+              </h2>
+            </div>
+            <div className="flex flex-col gap-4">
+              {experiences.map((exp, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 bg-violet-50 rounded-md shadow-sm border border-violet-100"
+                >
+                  <h3 className="text-sm font-bold text-violet-800">
+                    {exp.company}
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    {exp.startDate} - {exp.endDate}
+                  </p>
+                  <p className="text-sm text-gray-700">{exp.jobTitle}</p>
+                  <p className="text-sm text-gray-700">{exp.jobDescription}</p>
+                </div>
               ))}
             </div>
           </div>

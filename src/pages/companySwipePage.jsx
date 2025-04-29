@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import StudentSwipeCard from "../components/swipeCards/studentSwipeCard";
-import peppa from "/peppa.jpg";
+import StudentCard from "../components/swipeCards/studentCard";
 import ActionButtons from "../components/swipeCards/actionButtons";
 import StudentHeader from "../components/swipeCards/studentHeader";
 import { likeStudent } from "../db/matchService";
@@ -77,7 +76,7 @@ const CompanySwipePage = () => {
             // studentPhoto={students[0].studentPhoto}
           />
           <div className="flex-grow overflow-hidden">
-            <StudentSwipeCard
+            <StudentCard
               key={students[0].studentId}
               studentBio={students[0].bio}
               // lookingFor={students[0].lookingFor}
