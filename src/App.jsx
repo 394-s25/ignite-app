@@ -7,6 +7,8 @@ import StudentLikes from "./pages/studentlikes.jsx";
 import EditProfile from "./pages/editProfile.jsx";
 import LoginPage from "./pages/login.jsx";
 import TestModalPage from "./pages/testModal.jsx";
+import StudentMatches from "./pages/studentMatches.jsx";
+import CompanyMatches from "./pages/companyMatches.jsx";
 
 const App = () => {
   return (
@@ -18,10 +20,11 @@ const App = () => {
           <Route path="/companyswipe" element={<CompanySwipePage />} />
           <Route path="/companylikes" element={<CompanyLikes />} />
           <Route path="/studentlikes" element={<StudentLikes />} />
+          <Route path="/companymatches" element={<CompanyMatches />} />
+          <Route path="/studentmatches" element={<StudentMatches />} />
           <Route path="/editProfile" element={<EditProfile />} />
           <Route path="/testmodal" element={<TestModalPage />} />
         </Routes>
-
       </div>
     </Router>
   );

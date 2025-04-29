@@ -117,3 +117,59 @@ export const createMatch = async (studentId, companyId) => {
     throw error;
   }
 };
+
+// Fetches student's matches
+export const fetchStudentMatches = async (studentId) => {
+  try {
+    const studentRef = ref(db, `users/${studentId}`);
+
+    const studentSnapshot = await get(studentRef);
+    const studentData = studentSnapshot.val() || {};
+    const studentMatches = studentData.matches || [];
+
+    const matchesWithCompanyDetails = await Promise.all(
+      studentMatches.map(async (companyId) => {
+        const companyRef = ref(db, `companies/${companyId}`);
+        const companySnapshot = await get(companyRef);
+        const companyData = companySnapshot.val() || {};
+
+        return {
+          companyId: companyId,
+          ...companyData,
+        };
+      })
+    );
+    return matchesWithCompanyDetails;
+  } catch (error) {
+    console.error("Fetching student matches failed:", error);
+    throw error;
+  }
+};
+
+// Fetches company's matches
+export const fetchCompanyMatches = async (companyId) => {
+  try {
+    const companyRef = ref(db, `companies/${companyId}`);
+
+    const companySnapshot = await get(companyRef);
+    const companyData = companySnapshot.val() || {};
+    const companyMatches = companyData.matches || [];
+
+    const matchesWithStudentDetails = await Promise.all(
+      companyMatches.map(async (studentId) => {
+        const studentRef = ref(db, `students/${studentId}`);
+        const studentSnapshot = await get(studentRef);
+        const studentData = studentSnapshot.val() || {};
+
+        return {
+          studentId: studentId,
+          ...studentData,
+        };
+      })
+    );
+    return matchesWithStudentDetails;
+  } catch (error) {
+    console.error("Fetching company matches failed:", error);
+    throw error;
+  }
+};
