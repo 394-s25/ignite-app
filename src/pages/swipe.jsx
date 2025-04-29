@@ -3,7 +3,6 @@ import { useAuth } from "../contexts/authContext";
 import { useProfile } from "../contexts/profileContext";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { fetchAllCompanies, fetchAllStudents } from "../db/firebaseService";
 import { mapSkills, mapDescriptors } from "../db/mappingIds";
 import StudentCard from "../components/swipeCards/studentCard";
 import NavBar from "../components/NavBar";
@@ -23,7 +22,6 @@ const SwipePage = () => {
       if (!authUser?.uid) return;
 
       const sortedCompanies = await getSortedCompanies(authUser.uid);
-
       const companiesPromises = sortedCompanies.map(async (company) => {
         const mappedSkills = await mapSkills({
           skills: company.skills || [],
@@ -59,7 +57,7 @@ const SwipePage = () => {
       if (!authUser?.uid) return;
 
       const sortedStudents = await getSortedStudents(authUser.uid);
-
+      console.log(sortedStudents);
       const studentsPromises = sortedStudents.map(async (student) => {
         const mappedSkills = await mapSkills({
           skills: student.skills || [],

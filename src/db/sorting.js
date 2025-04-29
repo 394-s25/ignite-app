@@ -15,7 +15,7 @@ function calculateMatchScore(userSkills, targetSkills) {
   }
   // score is ratio of matched skills to target skills
   // if you have 5 skills and matched 3/3 to a target, you get 100 score essentially
-  return matchingSkills / targetSkills.size;
+  return matchingSkills / targetSkills.length;
 }
 
 // get sorted companies for students
@@ -52,7 +52,7 @@ export async function getSortedStudents(companyId) {
     }
     const companySkills = companySnapshot.val().skills || [];
 
-    const allStudents = await fetchAllStudents;
+    const allStudents = await fetchAllStudents();
     const students = Object.entries(allStudents).map(([id, student]) => ({
       id,
       ...student,
