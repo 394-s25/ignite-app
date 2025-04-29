@@ -10,6 +10,8 @@ import { AuthProvider } from "./contexts/authContext";
 import { ProfileProvider } from "./contexts/profileContext";
 import TestModalPage from "./pages/testModal.jsx";
 import SwipePage from "./pages/swipe.jsx";
+import CompanyMatches from "./pages/companyMatches.jsx";
+import StudentMatches from "./pages/studentMatches.jsx";
 
 const App = () => {
   return (
@@ -21,6 +23,9 @@ const App = () => {
               <Route path="/" element={<LoginPage />} />
               <Route path="/swipe" element={<SwipePage />} />
               {/* <Route path="/companyswipe" element={<CompanySwipePage />} /> */}
+              {/* <Route path="/studentwipe" element={<StudentSwipePage />} /> */}
+              <Route path="/companyMatches" element={<CompanyMatches />} />
+              <Route path="/studentMatches" element={<StudentMatches />} />
               <Route path="/companylikes" element={<CompanyLikes />} />
               <Route path="/studentlikes" element={<StudentLikes />} />
               <Route path="/editProfile" element={<TestProfile />} />

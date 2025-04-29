@@ -262,6 +262,60 @@ export const fetchAllStudents = async () => {
   }
 };
 
+export function listenToStudents(callback) {
+  const usersRef = ref(db, "users");
+
+  onValue(
+    usersRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+        console.log("Retrieved all students: ", users);
+
+        const studentsList = Object.keys(users).map((userId) => ({
+          studentId: userId,
+          ...users[userId],
+        }));
+
+        callback(studentsList);
+      } else {
+        console.log("No students found.");
+        callback([]);
+      }
+    },
+    (error) => {
+      console.error("Error retrieving students: ", error);
+    }
+  );
+}
+
+export function listenToCompanies(callback) {
+  const companiesRef = ref(db, "companies");
+
+  onValue(
+    companiesRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const companies = snapshot.val();
+        console.log("Retrieved all companies: ", companies);
+
+        const companiesList = Object.keys(companies).map((companyId) => ({
+          companyId: companyId,
+          ...companies[companyId],
+        }));
+
+        callback(companiesList);
+      } else {
+        console.log("No companies found.");
+        callback([]);
+      }
+    },
+    (error) => {
+      console.error("Error retrieving companies: ", error);
+    }
+  );
+}
+
 // export async function getSkillIdByName(skillName) {
 //   const skillsRef = ref(db, "skills/");
 //   const skillQuery = query(
