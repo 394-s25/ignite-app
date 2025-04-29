@@ -96,6 +96,172 @@ export async function getDescriptorById(descriptorId) {
   }
 }
 
+// see if user is company/user, then fetch their profile
+const checkProfile = async (uid, name) => {
+  try {
+    const studentRef = ref(db, `users/${uid}`);
+    const studentSnapshot = await get(studentRef);
+    const companyRef = ref(db, `companies/${uid}`);
+    const companySnapshot = await get(companyRef);
+
+    if (studentSnapshot.exists()) {
+      console.log(`accessed student profile for ${name} with id ${uid}`);
+      return studentSnapshot.val();
+    } else if (companySnapshot.exists()) {
+      console.log(`accessed company profile for ${name} with id ${uid}`);
+      return companySnapshot.val();
+    } else {
+      console.log("new user");
+      return;
+    }
+  } catch (error) {
+    console.error("Error getting profile", error);
+    throw error;
+  }
+};
+
+// create new profile given type (company/user)
+const makeNewProfile = async (uid, name, email, type) => {
+  console.log(type);
+  try {
+    if (type == "student") {
+      const studentRef = ref(db, `users/${uid}`);
+      const newStudent = {
+        uid: uid,
+        name: name || "Unknown Northwestern Student",
+        email: email,
+        bio: "",
+        major: "",
+        lookingFor: "",
+        skills: [],
+      };
+      await set(studentRef, newStudent);
+      console.log(`created new student profile for ${name} with id ${uid}`);
+      return newStudent;
+    } else if (type == "company") {
+      const companyRef = ref(db, `companies/${uid}`);
+      const newCompany = {
+        uid: uid,
+        name: `${name}'s Startup` || "Unknown Northwestern Startup",
+        email: email,
+        bio: "",
+        descriptors: [],
+        role: "New Role",
+        roleDescription: `A new role has opened under ${name}`,
+        skills: [],
+      };
+      await set(companyRef, newCompany);
+      console.log(`created new company profile for ${name} with id ${uid}`);
+      return newCompany;
+    } else {
+      throw new Error("Invalid type. Has to be either user or company.");
+    }
+  } catch (error) {
+    console.error("Error creating new profile:", error);
+    throw error;
+  }
+};
+
+// consolidated get/create profile upon login, given type (company/user)
+export const getProfile = async (uid, displayName, email, type = null) => {
+  try {
+    const existingProfile = await checkProfile(uid, displayName);
+    if (existingProfile) {
+      return existingProfile;
+    }
+
+    if (type === "student" || type === "company") {
+      console.log("making new", type);
+      return await makeNewProfile(uid, displayName, email, type);
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    throw error;
+  }
+};
+
+export const updateStudentProfile = async (uid, profileData) => {
+  try {
+    const studentRef = ref(db, `users/${uid}`);
+    const snapshot = await get(studentRef);
+
+    if (!snapshot.exists()) {
+      throw new Error("student profile not found");
+    }
+
+    const updatedProfile = {
+      ...snapshot.val(),
+      name: profileData.name || snapshot.val().name,
+      bio: profileData.bio || snapshot.val().about,
+      major: profileData.major || snapshot.val().major,
+      skills: profileData.skills || [],
+    };
+
+    await set(studentRef, updatedProfile);
+    console.log(`Updated student profile for ${updatedProfile.name}`);
+    return updatedProfile;
+  } catch (error) {
+    console.error("Error updating student profile:", error);
+    throw error;
+  }
+};
+
+// Update company profile with validation
+export const updateCompanyProfile = async (uid, profileData) => {
+  try {
+    const companyRef = ref(db, `companies/${uid}`);
+    const snapshot = await get(companyRef);
+
+    if (!snapshot.exists()) {
+      throw new Error("Company profile not found");
+    }
+
+    const updatedProfile = {
+      ...snapshot.val(),
+      name: profileData.name || snapshot.val().name,
+      bio: profileData.bio || snapshot.val().bio,
+      descriptors: profileData.descriptors || [],
+      skills: profileData.skills || [],
+    };
+
+    await set(companyRef, updatedProfile);
+    console.log(`Updated company profile for ${updatedProfile.name}`);
+    return updatedProfile;
+  } catch (error) {
+    console.error("Error updating company profile:", error);
+    throw error;
+  }
+};
+
+export const fetchAllCompanies = async () => {
+  try {
+    const companiesRef = ref(db, "companies");
+    const snapshot = await get(companiesRef);
+
+    if (snapshot.exists()) {
+      console.log(snapshot.val());
+      return snapshot.val();
+    }
+  } catch (error) {
+    console.error("Error fetching companies");
+  }
+};
+
+export const fetchAllStudents = async () => {
+  try {
+    const studentsRef = ref(db, "users");
+    const snapshot = await get(studentsRef);
+
+    if (snapshot.exists()) {
+      console.log(snapshot.val());
+      return snapshot.val();
+    }
+  } catch (error) {
+    console.error("Error fetching students");
+  }
+};
+
 // export async function getSkillIdByName(skillName) {
 //   const skillsRef = ref(db, "skills/");
 //   const skillQuery = query(

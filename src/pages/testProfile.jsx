@@ -22,7 +22,7 @@ const TestProfile = () => {
     major: "",
     // company
     role: "",
-    roleDesciption: "",
+    roleDescription: "",
     descriptors: [],
     // both
     name: "",
@@ -66,13 +66,17 @@ const TestProfile = () => {
           bio: profile.bio || "",
           major: profile.major || "",
           skills: profile.skills || [],
+          email: profile.email || "",
+          lookingFor: profile.lookingFor || "",
         });
       } else {
         setEditData({
           name: profile.name || "",
           bio: profile.bio || "",
           descriptors: profile.descriptors || [],
-          skills: profile.skills || [], // Add skills for company
+          role: profile.role || "",
+          roleDescription: profile.roleDescription || "",
+          skills: profile.skills || [],
         });
       }
     }
@@ -141,7 +145,9 @@ const TestProfile = () => {
                 {profileType === "student" ? (
                   <>
                     <p className="mt-2">Bio: {profile.bio}</p>
+                    <p className="mt-2">Email: {profile.email}</p>
                     <p className="mt-2">Major: {profile.major}</p>
+                    <p className="mt-2">Looking For: {profile.lookingFor}</p>
                     <div className="mt-4">
                       <h3 className="font-semibold">Skills:</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -160,6 +166,7 @@ const TestProfile = () => {
                   // Company View
                   <>
                     <p className="mt-2">Bio: {profile.bio}</p>
+                    <p className="mt-2">Email: {profile.email}</p>
                     <div className="mt-4">
                       <h3 className="font-semibold">Company Descriptors:</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -172,6 +179,14 @@ const TestProfile = () => {
                           </span>
                         ))}
                       </div>
+                    </div>
+                    <div className="mt-10">
+                      <h2 className="text-xl font-semibold">
+                        Open Role: {profile.role}
+                      </h2>
+                      <p className="mt-2">
+                        Role Description: {profile.roleDescription}
+                      </p>
                     </div>
                     <div className="mt-4">
                       <h3 className="font-semibold">Required Skills:</h3>
