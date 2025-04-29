@@ -56,7 +56,7 @@ const CompanyProfileCard = ({ company, onRemove }) => {
       <div className="flex flex-col bg-purple-100 rounded-xl p-6 max-w-2xl mx-auto shadow-md hover:shadow-xl transform transition duration-300">
         <div className="flex items-center gap-4 mb-4">
           <img
-            src={company.logo || "https://via.placeholder.com/80"}
+            src={`https://picsum.photos/seed/${encodeURIComponent(company.companyName)}/200/300`}
             alt={`${company.companyName} logo`}
             className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
           />
