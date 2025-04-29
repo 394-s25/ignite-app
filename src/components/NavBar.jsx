@@ -5,8 +5,8 @@ import { useNavigate, Link } from "react-router-dom";
 
 const NavBar = () => {
   const { logout, authUser } = useAuth();
-  const { profileType } = useProfile();
   const navigate = useNavigate();
+  const { profileType } = useProfile();
 
   const handleLogout = async () => {
     try {
@@ -37,11 +37,13 @@ const NavBar = () => {
               </Link>
             </li>
             <li>
-              <Link
-                to="/studentlikes"
+            <Link
+                to={profileType === "company" ? "/companylikes" : "/studentlikes"}
                 className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-purple-800 md:p-0 md:dark:hover:text-purple-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
               >
-                Companies that Liked Me
+                {profileType === "company"
+                  ? "Students that Liked Me"
+                  : "Companies that Liked Me"}
               </Link>
             </li>
             <li>
