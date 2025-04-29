@@ -8,6 +8,7 @@ import StudentCard from "../components/swipeCards/studentCard";
 import NavBar from "../components/NavBar";
 import ActionButtons from "../components/swipeCards/actionButtons";
 import { getSortedCompanies, getSortedStudents } from "../db/sorting";
+import { likeCompany, likeStudent } from "../db/matchService";
 
 const SwipePage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ const SwipePage = () => {
   const { profileType } = useProfile();
   const [companies, setCompanies] = useState([]);
   const [students, setStudents] = useState([]);
+  const [accepted, setAccepted] = useState([]);
+  //   const [currentUser, setCurrentUser] = useState(null);
+  const [rejected, setRejected] = useState([]);
 
   const getCompanies = async () => {
     setIsLoading(true);
@@ -95,15 +99,78 @@ const SwipePage = () => {
     }
   }, [authUser, profileType, navigate]);
 
-  const handleAccept = () => {
+  /// lIKING STUDENTS (COMPANY SIDE)
+  //   const handleAccept = async () => {
+  //       if (students.length > 0 && currentCompany) {
+  //         setIsLoading(true);
+
+  //         try {
+  //           const currentStudent = students[0];
+
+  //           // Update likes in firebase
+  //           await likeStudent(currentStudent.studentId, currentCompany.uid);
+
+  //           // Swiping page mechanism
+  //           const updatedStudents = students.slice(1);
+  //           setAccepted([...accepted, currentStudent]);
+  //           setStudents(updatedStudents);
+  //           await seenStudent(currentStudent.studentId, currentCompany.uid);
+  //         } catch (error) {
+  //           console.error("Error liking student:", error);
+  //         } finally {
+  //           setIsLoading(false);
+  //         }
+  //       }
+  //     };
+
+  // LIKING COMPANIES (SUTDENT SIDE)
+  //   const handleAccept = async () => {
+  //     if (companies.length > 0 && currentUser) {
+  //       setIsLoading(true);
+
+  //       try {
+  //         const currentCompany = companies[0];
+
+  //         // Update likes in firebase
+  //         await likeCompany(currentUser.uid, currentCompany.companyId);
+
+  //         // Swiping page mechanism
+  //         const updatedCompanies = companies.slice(1);
+  //         setAccepted([...accepted, currentCompany]);
+  //         setCompanies(updatedCompanies);
+  //         console.log("Student object:", currentUser);
+  //         console.log("Company object:", companies[0]);
+  //         await seenCompany(currentUser.uid, currentCompany.companyId);
+  //       } catch (error) {
+  //         console.error("Error liking company:", error);
+  //       } finally {
+  //         setIsLoading(false);
+  //       }
+  //     }
+  //   };
+
+  const handleAccept = async () => {
     if (profileType === "student" && companies.length > 0) {
+      setIsLoading(true);
       const currentCompany = companies[0];
-      console.log(`${currentCompany.id} accepted`); // TODO: SEEN FUNCTIONALITY + LIKES
-      setCompanies(companies.slice(1)); // Remove the first company from the array
-    } else if (profileType !== "student" && students.length > 0) {
+      //   Update likes in firebase
+      await likeCompany(authUser.uid, currentCompany.id);
+      const updatedCompanies = companies.slice(1);
+      setAccepted([...accepted, currentCompany]);
+      setCompanies(updatedCompanies);
+      //   console.log("Student object:", currentUser);
+      //   console.log("Company object:", companies[0]);
+      //   await seenCompany(authUser.uid, currentCompany.id);
+      setIsLoading(false);
+    } else if (profileType === "company" && students.length > 0) {
+      setIsLoading(true);
       const currentStudent = students[0];
-      console.log(`${currentStudent.id} accepted`);
-      setStudents(students.slice(1)); // Remove the first student from the array
+      await likeStudent(currentStudent.id, authUser.uid);
+      const updatedStudents = students.slice(1);
+      setAccepted([...accepted, currentStudent]);
+      setStudents(updatedStudents);
+      //   await seenStudent(currentStudent.id, authUser.uid);
+      setIsLoading(false);
     }
   };
 

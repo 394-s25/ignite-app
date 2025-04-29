@@ -56,7 +56,7 @@ export async function getSortedStudents(companyId) {
     const students = Object.entries(allStudents).map(([id, student]) => ({
       id,
       ...student,
-      matchScore: calculateMatchScore(companySkills, student.skills || []),
+      matchScore: calculateMatchScore(student.skills, companySkills || []),
     }));
 
     return students.sort((a, b) => b.matchScore - a.matchScore);
