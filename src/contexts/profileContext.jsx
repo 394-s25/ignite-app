@@ -7,6 +7,7 @@ import {
 } from "../db/firebaseService";
 import { mapSkills, mapDescriptors } from "../db/mappingIds";
 import { useAuth } from "./authContext";
+import { fetchExperienceByUser } from "../db/firebaseService";
 
 const ProfileContext = createContext();
 export const useProfile = () => useContext(ProfileContext);
@@ -17,6 +18,7 @@ export const ProfileProvider = ({ children }) => {
   const [profileType, setProfileType] = useState(null);
   const [userSkills, setUserSkills] = useState([]);
   const [userDescriptors, setUserDescriptors] = useState([]);
+  const [userExperience, setUserExperience] = useState([]);
 
   useEffect(() => {
     const initializeProfile = async () => {
@@ -25,6 +27,7 @@ export const ProfileProvider = ({ children }) => {
         setProfileType(null);
         setUserSkills([]);
         setUserDescriptors([]);
+        setUserExperience([]);
         return;
       }
 
@@ -49,6 +52,14 @@ export const ProfileProvider = ({ children }) => {
             const mappedDescriptors = await mapDescriptors(userInfo);
             setUserDescriptors(mappedDescriptors);
           }
+
+          // Get user experience for student profiles
+          if (type === "student") {
+            const experience = await fetchExperienceByUser(authUser.uid);
+            setUserExperience(experience || []);
+          } else {
+            setUserExperience([]);
+          }
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -71,6 +82,8 @@ export const ProfileProvider = ({ children }) => {
       const updatedProfile = await updateFn(authUser.uid, profileData);
       setProfile(updatedProfile);
       setUserSkills(await mapSkills(updatedProfile));
+      const experience = await fetchExperienceByUser(authUser.uid);
+      setUserExperience(experience || []);
 
       if (profileType === "company") {
         setUserDescriptors(await mapDescriptors(updatedProfile));
@@ -90,6 +103,7 @@ export const ProfileProvider = ({ children }) => {
         profileType,
         userSkills,
         userDescriptors: profileType === "company" ? userDescriptors : [],
+        userExperience: profileType === "student" ? userExperience : [],
         updateProfile,
       }}
     >
