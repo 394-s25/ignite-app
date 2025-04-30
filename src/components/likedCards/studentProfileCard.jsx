@@ -1,10 +1,31 @@
-import React, { useState } from "react";
-import { addVisitedStudent } from "../../db/firebaseService";
+import React, { useState, useEffect } from "react";
+import { addVisitedStudent, fetchExperienceByUser } from "../../db/firebaseService";
+import { mapSkills } from "../../db/mappingIds";
 import { useAuth } from "../../contexts/authContext";
 
 const StudentProfileCard = ({ person, onRemove }) => {
   const [liked, setLiked] = useState(false);
+  const [experiences, setExperiences] = useState([]);
+  const [skills, setSkills] = useState([]);
   const companyId = useAuth().authUser?.uid;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log("Fetching data for:", person.name);
+        console.log("Person:", person);
+        const userExperiences = await fetchExperienceByUser(person.uid);
+        console.log("Fetched experiences:", userExperiences);
+        setExperiences(userExperiences);
+        const mappedSkills = await mapSkills(person);
+        setSkills(mappedSkills || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [person]);
 
   const handleLike = async () => {
     try {
@@ -64,8 +85,46 @@ const StudentProfileCard = ({ person, onRemove }) => {
         </div>
       )}
 
+      {/* Skills Section */}
+      {skills.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-purple-800 mb-4">Skills</h3>
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill, idx) => (
+              <span
+                key={idx}
+                className="px-3 py-1 bg-violet-50 text-violet-700 rounded-full text-sm font-medium"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Experience Section */}
+      {experiences.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-purple-800 mb-4">Experience</h3>
+          <div className="space-y-4">
+            {experiences.map((exp, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-500"
+              >
+                <h4 className="text-md font-bold text-purple-700">{exp.company}</h4>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">{exp.jobTitle}</span> ({exp.startDate} - {exp.endDate})
+                </p>
+                <p className="text-sm text-gray-700 mt-2">{exp.jobDescription}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Bottom: Buttons */}
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end gap-3 mt-4">
         {liked ? (
           <a
             className="px-6 py-2 text-xl rounded bg-blue-600 text-white hover:bg-blue-700 transition"

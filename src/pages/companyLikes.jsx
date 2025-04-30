@@ -23,6 +23,8 @@ const CompanyLikes = () => {
           email: user.email || null,
           bio: user.bio || null,
           link: user.link || null,
+          skills: user.skills || [],
+          uid: user.uid || null,
           image: "https://via.placeholder.com/80" 
         }));
 
