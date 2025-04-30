@@ -200,6 +200,9 @@ export const updateStudentProfile = async (uid, profileData) => {
       bio: profileData.bio || snapshot.val().about,
       major: profileData.major || snapshot.val().major,
       skills: profileData.skills || [],
+      link: profileData.link || snapshot.val().link,
+      lookingFor: profileData.lookingFor || snapshot.val().lookingFor,
+      email: profileData.email || snapshot.val().email,
     };
 
     await set(studentRef, updatedProfile);
@@ -227,6 +230,11 @@ export const updateCompanyProfile = async (uid, profileData) => {
       bio: profileData.bio || snapshot.val().bio,
       descriptors: profileData.descriptors || [],
       skills: profileData.skills || [],
+      link: profileData.link || snapshot.val().link,
+      role: profileData.role || snapshot.val().role,
+      roleDescription:
+        profileData.roleDescription || snapshot.val().roleDescription,
+      email: profileData.email || snapshot.val().email,
     };
 
     await set(companyRef, updatedProfile);
@@ -455,8 +463,6 @@ export async function removeStudentLike(companyId, studentId) {
     throw error;
   }
 }
-
-
 
 // export async function getSkillIdByName(skillName) {
 //   const skillsRef = ref(db, "skills/");
