@@ -43,7 +43,7 @@ const CompanyLikes = () => {
     <div>
       <NavBar />
       <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
-        Students That Liked You
+        Students That Liked Me
       </h1>
       <div className="space-y-6">
         {people.map((person) => (
