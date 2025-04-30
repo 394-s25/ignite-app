@@ -1,32 +1,56 @@
 import { db } from "./firebaseConfig";
 import { ref, get, update } from "firebase/database";
 
-// For when a student likes a company
+// Old implementation, adds liked company's id to student's likes field. For when a student likes a company.
+// export const likeCompany = async (studentId, companyId) => {
+//   try {
+//     const studentRef = ref(db, `users/${studentId}`);
+
+//     const studentSnapshot = await get(studentRef);
+//     const studentData = studentSnapshot.val() || {};
+//     const likes = studentData.likes || [];
+
+//     if (!likes.includes(companyId)) {
+//       likes.push(companyId);
+
+//       await update(ref(db, `users/${studentId}`), {
+//         likes: likes,
+//       });
+//     }
+
+//     return checkForMatch(studentId, companyId);
+//   } catch (error) {
+//     console.error("Error liking company", error);
+//     throw error;
+//   }
+// };
+
+// Old implementation, adds liked student's id to company's likes field. For when a company likes a student
+// export const likeStudent = async (studentId, companyId) => {
+//   try {
+//     const companyRef = ref(db, `companies/${companyId}`);
+
+//     const companySnapshot = await get(companyRef);
+//     const companyData = companySnapshot.val() || {};
+//     const likes = companyData.likes || [];
+
+//     if (!likes.includes(studentId)) {
+//       likes.push(studentId);
+
+//       await update(ref(db, `companies/${companyId}`), {
+//         likes: likes,
+//       });
+//     }
+
+//     return checkForMatch(studentId, companyId);
+//   } catch (error) {
+//     console.error("Liking student failed", error);
+//     throw error;
+//   }
+// };
+
+// For when a student likes a company. Adds the id of the student who liked the company to the company's likes field.
 export const likeCompany = async (studentId, companyId) => {
-  try {
-    const studentRef = ref(db, `users/${studentId}`);
-
-    const studentSnapshot = await get(studentRef);
-    const studentData = studentSnapshot.val() || {};
-    const likes = studentData.likes || [];
-
-    if (!likes.includes(companyId)) {
-      likes.push(companyId);
-
-      await update(ref(db, `users/${studentId}`), {
-        likes: likes,
-      });
-    }
-
-    return checkForMatch(studentId, companyId);
-  } catch (error) {
-    console.error("Error liking company", error);
-    throw error;
-  }
-};
-
-// For when a company likes a student
-export const likeStudent = async (studentId, companyId) => {
   try {
     const companyRef = ref(db, `companies/${companyId}`);
 
@@ -44,7 +68,68 @@ export const likeStudent = async (studentId, companyId) => {
 
     return checkForMatch(studentId, companyId);
   } catch (error) {
+    console.error("Liking company failed", error);
+    throw error;
+  }
+};
+
+// For when a company likes a student. Adds the id of the company who liked the student to the student's likes field.
+export const likeStudent = async (studentId, companyId) => {
+  try {
+    const studentRef = ref(db, `users/${studentId}`);
+
+    const studentSnapshot = await get(studentRef);
+    const studentData = studentSnapshot.val() || {};
+    const likes = studentData.likes || [];
+
+    if (!likes.includes(companyId)) {
+      likes.push(companyId);
+
+      await update(ref(db, `users/${studentId}`), {
+        likes: likes,
+      });
+    }
+
+    return checkForMatch(studentId, companyId);
+  } catch (error) {
     console.error("Liking student failed", error);
+    throw error;
+  }
+};
+
+// Used specifically to remove like fields from both student and company upon matching
+export const matchAndUnlike = async (studentId, companyId) => {
+  try {
+    const studentRef = ref(db, `users/${studentId}`);
+    const companyRef = ref(db, `companies/${companyId}`);
+
+    const studentSnapshot = await get(studentRef);
+    const companySnapshot = await get(companyRef);
+
+    if (!companySnapshot.exists() || !studentSnapshot.exists()) {
+      return false;
+    }
+
+    const companyData = companySnapshot.val() || {};
+    const studentData = studentSnapshot.val() || {};
+
+    const companyLikes = companyData.likes || [];
+    const studentLikes = studentData.likes || [];
+
+    const updatedCompanyLikes = companyLikes.filter((id) => id !== studentId);
+    const updatedStudentLikes = studentLikes.filter((id) => id !== companyId);
+
+    await update(ref(db, `companies/${companyId}`), {
+      likes: updatedCompanyLikes,
+    });
+
+    await update(ref(db, `users/${studentId}`), {
+      likes: updatedStudentLikes,
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Failed to match and unlike student and company:", error);
     throw error;
   }
 };
@@ -110,6 +195,9 @@ export const createMatch = async (studentId, companyId) => {
         matches: companyMatches,
       });
     }
+
+    // Remove each other from likes field
+    matchAndUnlike(studentId, companyId);
 
     return true;
   } catch (error) {
