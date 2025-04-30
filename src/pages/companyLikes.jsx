@@ -2,40 +2,64 @@ import React, { useEffect, useState } from "react";
 import StudentProfileCard from "../components/likedCards/studentProfileCard";
 import NavBar from "../components/NavBar";
 import { ref, get } from "firebase/database";
-import { db } from "../db/firebaseConfig";
+import { db, auth } from "../db/firebaseConfig";
 
 const CompanyLikes = () => {
   const [people, setPeople] = useState([]);
+  const [companyId, setCompanyId] = useState(null);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setCompanyId(user.uid);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const fetchLikedStudents = async () => {
+      if (!companyId) return;
+
       try {
-        const snapshot = await get(ref(db, "users"));
-        if (!snapshot.exists()) return;
+        // Get liked student IDs
+        const companySnapshot = await get(ref(db, `companies/${companyId}`));
+        if (!companySnapshot.exists()) return;
 
-        const rawData = snapshot.val();
+        const companyData = companySnapshot.val();
+        const likedIds = companyData.likes || [];
 
-        const usersList = Object.entries(rawData).map(([id, user]) => ({
-          id,
-          name: user.name || "Unnamed",
-          major: user.major || "Undeclared",
-          gradYear: user.gradYear || null,
-          email: user.email || null,
-          bio: user.bio || null,
-          link: user.link || null,
-          skills: user.skills || [],
-          uid: user.uid || null,
-          image: "https://via.placeholder.com/80" 
-        }));
+        // Fetch student data for each ID
+        const userSnapshot = await get(ref(db, "users"));
+        if (!userSnapshot.exists()) return;
 
-        setPeople(usersList);
+        const allUsers = userSnapshot.val();
+
+        const likedUsers = likedIds
+          .map((id) => {
+            const user = allUsers[id];
+            if (!user) return null;
+            return {
+              id,
+              name: user.name || "Unnamed",
+              major: user.major || "Undeclared",
+              gradYear: user.gradYear || null,
+              email: user.email || null,
+              bio: user.bio || null,
+              link: user.link || null,
+              image: "https://randomuser.me/api/portraits/lego/1.jpg",
+            };
+          })
+          .filter((u) => u !== null);
+
+        setPeople(likedUsers);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching liked students:", error);
       }
     };
 
-    fetchUsers();
-  }, []);
+    fetchLikedStudents();
+  }, [companyId]);
 
   const handleRemove = (personToRemove) => {
     setPeople((prev) => prev.filter((p) => p.id !== personToRemove.id));
@@ -45,7 +69,7 @@ const CompanyLikes = () => {
     <div>
       <NavBar />
       <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
-        Students That Liked Me
+        Students That Liked You
       </h1>
       <div className="space-y-6">
         {people.map((person) => (
@@ -53,6 +77,7 @@ const CompanyLikes = () => {
             key={person.id}
             person={person}
             onRemove={handleRemove}
+            showActions={true}
           />
         ))}
       </div>

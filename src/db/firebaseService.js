@@ -136,7 +136,6 @@ const makeNewProfile = async (uid, name, email, type) => {
         skills: [],
         likes: [],
         matches: [],
-        link: "",
       };
       await set(studentRef, newStudent);
       console.log(`created new student profile for ${name} with id ${uid}`);
@@ -154,7 +153,6 @@ const makeNewProfile = async (uid, name, email, type) => {
         skills: [],
         likes: [],
         matches: [],
-        link: "",
       };
       await set(companyRef, newCompany);
       console.log(`created new company profile for ${name} with id ${uid}`);
@@ -202,9 +200,6 @@ export const updateStudentProfile = async (uid, profileData) => {
       bio: profileData.bio || snapshot.val().about,
       major: profileData.major || snapshot.val().major,
       skills: profileData.skills || [],
-      lookingFor: profileData.lookingFor || snapshot.val().lookingFor,
-      email: profileData.email || snapshot.val().email,
-      link: profileData.link || snapshot.val().link,
     };
 
     await set(studentRef, updatedProfile);
@@ -232,11 +227,6 @@ export const updateCompanyProfile = async (uid, profileData) => {
       bio: profileData.bio || snapshot.val().bio,
       descriptors: profileData.descriptors || [],
       skills: profileData.skills || [],
-      role: profileData.role || snapshot.val().role,
-      roleDescription:
-        profileData.roleDescription || snapshot.val().roleDescription,
-      email: profileData.email || snapshot.val().email,
-      link: profileData.link || snapshot.val().link,
     };
 
     await set(companyRef, updatedProfile);
@@ -412,6 +402,61 @@ export function listenToCompanies(callback) {
     }
   );
 }
+// // Removes a studentId from a company's likes and matches array, added by irving
+// export async function removeStudentLike(companyId, studentId) {
+//   try {
+//     const companyRef = ref(db, `companies/${companyId}`);
+//     const snapshot = await get(companyRef);
+
+//     if (!snapshot.exists()) {
+//       throw new Error("Company not found");
+//     }
+
+//     const companyData = snapshot.val();
+//     const currentLikes = companyData.likes || [];
+
+//     const updatedLikes = currentLikes.filter((id) => id !== studentId);
+
+//     await update(companyRef, { likes: updatedLikes });
+//     console.log(`Removed ${studentId} from company ${companyId}'s likes`);
+//   } catch (error) {
+//     console.error("Error removing student from likes:", error);
+//     throw error;
+//   }
+// }
+
+// Removes a studentId from a company's likes and matches arrays
+export async function removeStudentLike(companyId, studentId) {
+  try {
+    const companyRef = ref(db, `companies/${companyId}`);
+    const snapshot = await get(companyRef);
+
+    if (!snapshot.exists()) {
+      throw new Error("Company not found");
+    }
+
+    const companyData = snapshot.val();
+    const currentLikes = companyData.likes || [];
+    const currentMatches = companyData.matches || [];
+
+    const updatedLikes = currentLikes.filter((id) => id !== studentId);
+    const updatedMatches = currentMatches.filter((id) => id !== studentId);
+
+    await update(companyRef, {
+      likes: updatedLikes,
+      matches: updatedMatches,
+    });
+
+    console.log(
+      `Removed ${studentId} from company ${companyId}'s likes and matches`
+    );
+  } catch (error) {
+    console.error("Error removing student from likes/matches:", error);
+    throw error;
+  }
+}
+
+
 
 // export async function getSkillIdByName(skillName) {
 //   const skillsRef = ref(db, "skills/");
