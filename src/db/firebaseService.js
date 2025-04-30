@@ -136,6 +136,7 @@ const makeNewProfile = async (uid, name, email, type) => {
         skills: [],
         likes: [],
         matches: [],
+        link: "",
       };
       await set(studentRef, newStudent);
       console.log(`created new student profile for ${name} with id ${uid}`);
@@ -153,6 +154,7 @@ const makeNewProfile = async (uid, name, email, type) => {
         skills: [],
         likes: [],
         matches: [],
+        link: "",
       };
       await set(companyRef, newCompany);
       console.log(`created new company profile for ${name} with id ${uid}`);
@@ -200,6 +202,9 @@ export const updateStudentProfile = async (uid, profileData) => {
       bio: profileData.bio || snapshot.val().about,
       major: profileData.major || snapshot.val().major,
       skills: profileData.skills || [],
+      lookingFor: profileData.lookingFor || snapshot.val().lookingFor,
+      email: profileData.email || snapshot.val().email,
+      link: profileData.link || snapshot.val().link,
     };
 
     await set(studentRef, updatedProfile);
@@ -227,6 +232,11 @@ export const updateCompanyProfile = async (uid, profileData) => {
       bio: profileData.bio || snapshot.val().bio,
       descriptors: profileData.descriptors || [],
       skills: profileData.skills || [],
+      role: profileData.role || snapshot.val().role,
+      roleDescription:
+        profileData.roleDescription || snapshot.val().roleDescription,
+      email: profileData.email || snapshot.val().email,
+      link: profileData.link || snapshot.val().link,
     };
 
     await set(companyRef, updatedProfile);

@@ -157,26 +157,20 @@ const SwipePage = () => {
       <div className="flex-1 flex items-center justify-center p-2 md:p-4">
         {profileType === "student" ? (
           currentCompany ? (
-            <div className="w-full h-full max-h-[85vh] max-w-3xl md:max-w-4xl mx-auto overflow-hidden flex flex-col">
-              <div className="flex-1 bg-white overflow-y-auto">
-                <CompanyCard
-                  key={currentCompany.id}
-                  company={currentCompany}
-                  matchScore={currentCompany.matchScore}
-                />
-              </div>
-              <div className="bg-white">
-                <ActionButtons
-                  onAccept={handleAccept}
-                  onReject={handleReject}
-                />
-              </div>
+            <div className="w-full h-full max-h-[85vh] max-w-3xl md:max-w-4xl mx-auto overflow-hidden">
+              <CompanyCard
+                key={currentCompany.id}
+                company={currentCompany}
+                matchScore={currentCompany.matchScore}
+                onAccept={handleAccept}
+                onReject={handleReject}
+              />
             </div>
           ) : (
-            <div className="text-center p-6 bg-white rounded-lg shadow-md">
+            <div className="text-center p-6 bg-white shadow-xs rounded-lg ">
               <p className="text-lg text-gray-600">
-                No more companies to display. Check your Like Me page to see who
-                wants to work with you!
+                No more companies to display. <br /> Check your Liked Me page to
+                see who wants to work with you!
               </p>
               <button
                 onClick={() => getCompanies()}
@@ -187,23 +181,20 @@ const SwipePage = () => {
             </div>
           )
         ) : currentStudent ? (
-          <div className="w-full h-full max-h-[85vh] max-w-3xl md:max-w-4xl mx-auto overflow-hidden flex flex-col">
-            <div className="flex-1 bg-white overflow-y-auto">
-              <StudentCard
-                key={currentStudent.id}
-                student={currentStudent}
-                matchScore={currentStudent.matchScore}
-              />
-            </div>
-            <div className="bg-white">
-              <ActionButtons onAccept={handleAccept} onReject={handleReject} />
-            </div>
+          <div className="w-full h-full max-h-[85vh] max-w-3xl md:max-w-4xl mx-auto overflow-hidden">
+            <StudentCard
+              key={currentStudent.id}
+              student={currentStudent}
+              matchScore={currentStudent.matchScore}
+              onAccept={handleAccept}
+              onReject={handleReject}
+            />
           </div>
         ) : (
-          <div className="text-center p-6 bg-white rounded-lg shadow-md">
+          <div className="text-center p-6 bg-white rounded-lg shadow-xs">
             <p className="text-lg text-gray-600">
-              No more students to display. Check your Like Me page to see who
-              wants to work with you!
+              No more students to display. <br /> Check your Liked Me page to
+              see who wants to work with you!
             </p>
             <button
               onClick={() => getStudents()}

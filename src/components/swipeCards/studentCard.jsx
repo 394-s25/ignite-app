@@ -10,8 +10,9 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { fetchExperienceByUser } from "../../db/firebaseService";
+import ActionButtons from "./actionButtons";
 
-const StudentCard = ({ student, matchScore }) => {
+const StudentCard = ({ student, matchScore, onAccept, onReject }) => {
   const [experiences, setExperiences] = useState([]);
 
   // Fetch experiences when the component mounts
@@ -59,28 +60,24 @@ const StudentCard = ({ student, matchScore }) => {
       </div>
 
       {/* Quick Info Section */}
-      <div className="p-4 sm:p-6 border-b border-gray-100">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* About */}
-          <div className="flex items-start gap-3">
-            <PencilLine className="w-5 h-5 text-violet-600 mt-0.5" />
-            <div>
-              <h2 className="text-sm font-semibold text-gray-800 mb-1">
-                About
-              </h2>
-              <p className="text-sm text-gray-700">{student.bio}</p>
-            </div>
+      <div className="p-4 sm:p-6 border-b border-gray-100 space-y-4">
+        {/* About */}
+        <div className="flex items-start gap-3">
+          <PencilLine className="w-5 h-5 text-violet-600 mt-0.5" />
+          <div className="flex-1">
+            <h2 className="text-sm font-semibold text-gray-800 mb-1">About</h2>
+            <p className="text-sm text-gray-700">{student.bio}</p>
           </div>
+        </div>
 
-          {/* Looking For */}
-          <div className="flex items-start gap-3">
-            <SearchCheck className="w-5 h-5 text-violet-600 mt-0.5" />
-            <div>
-              <h2 className="text-sm font-semibold text-gray-800 mb-1">
-                Looking For
-              </h2>
-              <p className="text-sm text-gray-700">{student.lookingFor}</p>
-            </div>
+        {/* Looking For */}
+        <div className="flex items-start gap-3">
+          <SearchCheck className="w-5 h-5 text-violet-600 mt-0.5" />
+          <div className="flex-1">
+            <h2 className="text-sm font-semibold text-gray-800 mb-1">
+              Looking For
+            </h2>
+            <p className="text-sm text-gray-700">{student.lookingFor}</p>
           </div>
         </div>
       </div>
@@ -143,6 +140,11 @@ const StudentCard = ({ student, matchScore }) => {
         <p className="text-violet-600 font-medium flex items-center gap-1">
           {student.email}
         </p>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="mt-auto">
+        <ActionButtons onAccept={onAccept} onReject={onReject} />
       </div>
     </div>
   );

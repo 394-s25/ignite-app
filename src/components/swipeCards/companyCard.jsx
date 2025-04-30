@@ -8,8 +8,9 @@ import {
   PencilLine,
   SearchCheck,
 } from "lucide-react";
+import ActionButtons from "./actionButtons";
 
-const CompanyCard = ({ company, matchScore }) => {
+const CompanyCard = ({ company, matchScore, onAccept, onReject }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-scroll flex flex-col h-full border border-gray-100">
       {/* Header with company info and match score */}
@@ -41,40 +42,30 @@ const CompanyCard = ({ company, matchScore }) => {
       </div>
 
       {/* Quick Info Section */}
-      <div className="p-4 sm:p-6 border-b border-gray-100">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* About */}
-          <div className="flex items-start gap-3">
-            <PencilLine className="w-5 h-5 text-violet-600 mt-0.5" />
-            <div>
-              <h2 className="text-sm font-semibold text-gray-800 mb-1">
-                About
-              </h2>
-              <p className="text-sm text-gray-700">{company.bio}</p>
-            </div>
-          </div>
+      <div className="p-4 sm:p-6 border-b border-gray-100 space-y-4">
+        {/* About */}
+        <div className="flex items-center gap-2 mb-3">
+          <PencilLine className="w-5 h-5 text-violet-600" />
+          <h2 className="font-semibold text-gray-800">About</h2>
+        </div>
+        <p className="text-sm text-gray-700">{company.bio}</p>
 
-          {/* Company Descriptors */}
-          <div className="flex items-start gap-3">
-            <div>
-              {company.descriptors && company.descriptors.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {company.descriptors.map((descriptor, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-1 bg-violet-50 text-violet-700 rounded-full text-xs font-medium"
-                    >
-                      {descriptor}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-700">
-                  No descriptors available
-                </p>
-              )}
+        {/* Company Descriptors */}
+        <div className="flex items-start gap-3">
+          {company.descriptors && company.descriptors.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {company.descriptors.map((descriptor, idx) => (
+                <span
+                  key={idx}
+                  className="px-2 py-1 bg-violet-50 text-violet-700 rounded-full text-xs font-medium"
+                >
+                  {descriptor}
+                </span>
+              ))}
             </div>
-          </div>
+          ) : (
+            <p className="text-sm text-gray-700">No descriptors available</p>
+          )}
         </div>
       </div>
 
@@ -112,6 +103,11 @@ const CompanyCard = ({ company, matchScore }) => {
         <p className="text-violet-600 font-medium flex items-center gap-1">
           {company.email}
         </p>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="mt-auto">
+        <ActionButtons onAccept={onAccept} onReject={onReject} />
       </div>
     </div>
   );
