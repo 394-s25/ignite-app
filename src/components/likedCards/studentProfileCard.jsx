@@ -4,16 +4,20 @@ import { useAuth } from "../../contexts/authContext";
 import { ref, get, set } from "firebase/database";
 import { db } from "../../db/firebaseConfig";
 import { removeStudentLike } from "../../db/firebaseService";
+import Confetti from "react-confetti";
+import MatchedModal from "../matchedModal";
 
 
 const StudentProfileCard = ({ person, onRemove, showActions = true }) => {
   const [liked, setLiked] = useState(false);
+  const [modalVisibility, setModalVisibility] = useState(false);
   const companyId = useAuth().authUser?.uid;
 
   const handleLike = async () => {
     try {
       await addVisitedStudent(companyId, person.id, true);
       setLiked(true);
+      setModalVisibility(true);
     } catch (error) {
       console.error("Error adding to visited list:", error);
     }
@@ -28,6 +32,12 @@ const StudentProfileCard = ({ person, onRemove, showActions = true }) => {
       console.error("Error processing decline:", error);
     }
   };
+
+  const handleCloseModal = () => setModalVisibility(false);
+  const handleUnmatch = () => {
+    setModalVisibility(false);
+    handleDecline();
+  }
 
   return (
     <div className="flex flex-col bg-purple-100 rounded-xl p-6 max-w-2xl mx-auto shadow-md hover:shadow-xl transform transition duration-300">
@@ -70,45 +80,44 @@ const StudentProfileCard = ({ person, onRemove, showActions = true }) => {
       )}
 
       {/* Bottom: Buttons */}
-      <div className="flex justify-end gap-3">
-        {showActions ? (
-          liked ? (
-            <a
-              className="px-6 py-2 text-xl rounded bg-blue-600 text-white hover:bg-blue-700 transition"
-              href="https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Schedule Interview
-            </a>
-          ) : (
-            <>
-              <button
-                onClick={handleLike}
-                className="px-4 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition"
-              >
-                Like
-              </button>
-              <button
-                onClick={handleDecline}
-                className="px-4 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition"
-              >
-                Decline
-              </button>
-            </>
-          )
-        ) : (
+      <div className="flex justify-end gap-3 mt-4">
+        {liked ? (
           <a
-            className="px-6 py-2 text-xl rounded bg-blue-600 text-white hover:bg-blue-700 transition"
-            href="https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"
+            className="px-6 py-2 text-xl rounded-2xl bg-purple-700 text-white active:bg-purple-700 hover:bg-purple-400 font-semibold"
+            href={person.link}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             Schedule Interview
           </a>
+        ) : (
+          <>
+            <button
+              onClick={handleLike}
+              className="px-4 py-1 rounded-2xl bg-green-500 text-white hover:bg-green-600 transition"
+            >
+              Like
+            </button>
+            <button
+              onClick={handleDecline}
+              className="px-4 py-1 rounded-2xl bg-red-500 text-white hover:bg-red-600 transition"
+            >
+              Decline
+            </button>
+          </>
+        )}
+        </div>
+
+        {modalVisibility && (
+          <>
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <Confetti className="z-40" confettiSource={{x: window.innerWidth / 2, y: window.innerHeight / 6, w: 0, h:0}} width={window.innerWidth} height={window.innerHeight} numberOfPieces={30} recycle={false} tweenDuration = {200} gravity = {0.25}/>
+              
+              <MatchedModal type="student" company={null} position="job placeholder" skills={null} person={person} onClose={ handleCloseModal } onUnmatch={ handleUnmatch }/>
+            </div>
+          </>
         )}
       </div>
-    </div>
   );
 };
 
