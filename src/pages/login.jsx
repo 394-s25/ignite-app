@@ -6,7 +6,7 @@ import { getProfile } from "../db/firebaseService";
 
 const LoginPage = () => {
   const { authUser, login } = useAuth();
-  const { profile, profileType } = useProfile();
+  const { profile, profileType, setProfile, setProfileType } = useProfile();
   const [showProfileTypeSelect, setShowProfileTypeSelect] = useState(false);
   const navigate = useNavigate();
 
@@ -37,10 +37,14 @@ const LoginPage = () => {
         authUser.email,
         type
       );
-      console.log(temp);
+      setProfile(temp);
+      setProfileType(type);
+      // console.log("Profile created:", type);
+      setShowProfileTypeSelect(type)
+      // update profile in context
       navigate("/editProfile");
     } catch (error) {
-      console.error("Profile creation error");
+      console.error("Profile creation error", error);
     }
   };
 
