@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { addVisitedStudent } from "../../db/firebaseService";
 import { useAuth } from "../../contexts/authContext";
+import { likeStudent } from "../../db/matchService";
 
-const StudentProfileCard = ({ person, onRemove }) => {
+const StudentProfileCard = ({ person, companyId, onRemove }) => {
   const [liked, setLiked] = useState(false);
   const companyId = useAuth().authUser?.uid;
 
   const handleLike = async () => {
     try {
       await addVisitedStudent(companyId, person.id, true);
-      setLiked(true);
+      // setLiked(true);
+      await likeStudent(person.id, companyId);
     } catch (error) {
       console.error("Error adding to visited list:", error);
     }

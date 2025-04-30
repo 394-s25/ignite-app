@@ -6,15 +6,16 @@ import { useProfile } from "../../contexts/profileContext";
 import Confetti from "react-confetti";
 import { likeCompany } from "../../db/matchService";
 
-const CompanyProfileCard = ({ company, onRemove }) => {
+const CompanyProfileCard = ({ studentId, company, onRemove }) => {
   const [liked, setLiked] = useState(false);
   const [skillNames, setSkillNames] = useState([]);
   const [modalVisibility, setModalVisibility] = useState(false);
   const { profile, profileType, userSkills } = useProfile();
 
   const handleLike = () => {
-    setLiked(true);
+    likeCompany(studentId, company.id);
     setModalVisibility(true);
+    onRemove(company);
   };
   const handleDecline = () => onRemove(company);
   const handleCloseModal = () => setModalVisibility(false);

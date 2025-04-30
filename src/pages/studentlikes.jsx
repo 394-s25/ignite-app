@@ -1,73 +1,84 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CompanyProfileLikedCard from "../components/likedCards/companyProfileLikedCard";
 import NavBar from "../components/NavBar";
-import { db } from "../db/firebaseConfig";
 import { ref, get } from "firebase/database";
+import { db, auth } from "../db/firebaseConfig";
 
 const StudentLikes = () => {
   const [companies, setCompanies] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [studentId, setStudentId] = useState(null);
 
   useEffect(() => {
-    const fetchCompanies = async () => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setStudentId(user.uid);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const fetchLikedCompanies = async () => {
+      if (!studentId) return;
+
       try {
-        const companiesRef = ref(db, "companies");
-        const snapshot = await get(companiesRef);
+        // Get liked company IDs
+        const studentSnapshot = await get(ref(db, `users/${studentId}`));
+        if (!studentSnapshot.exists()) return;
 
-        if (snapshot.exists()) {
-          const companiesData = snapshot.val();
+        const studentData = studentSnapshot.val();
+        const likedIds = studentData.likes || [];
 
-          const companiesList = Object.entries(companiesData).map(
-            ([companyId, company]) => ({
-              id: companyId,
+        // Fetch company data for each ID
+        const companiesSnapshot = await get(ref(db, "companies"));
+        if (!companiesSnapshot.exists()) return;
+
+        const allCompanies = companiesSnapshot.val();
+
+        const likedCompanies = likedIds
+          .map((id) => {
+            const company = allCompanies[id];
+            if (!company) return null;
+            return {
+              id,
               companyName: company.name || "Unknown Company",
               bio: company.bio || "No bio available",
               skills: company.skills || [],
               descriptors: company.descriptors || {},
               logo: "https://logo.clearbit.com/example.com",
-            })
-          );
+            };
+          })
+          .filter((c) => c !== null);
 
-          setCompanies(companiesList);
-        } else {
-          console.log("No companies found.");
-        }
+        setCompanies(likedCompanies);
       } catch (error) {
-        console.error("Error fetching companies:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching liked companies:", error);
       }
     };
 
-    fetchCompanies();
-  }, []);
+    fetchLikedCompanies();
+  }, [studentId]);
 
-  const handleRemoveCompany = (companyToRemove) => {
-    setCompanies((prev) =>
-      prev.filter((company) => company.id !== companyToRemove.id)
-    );
+  const handleRemove = (companyToRemove) => {
+    setCompanies((prev) => prev.filter((c) => c.id !== companyToRemove.id));
   };
-
-  if (loading) {
-    return <div className="text-center mt-20">Loading companies...</div>;
-  }
 
   return (
     <div>
       <NavBar />
-      <div className="min-h-screen bg-white py-10 px-4">
-        <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
-          Companies That Liked Me
-        </h1>
-        <div className="space-y-6">
-          {companies.map((company, index) => (
-            <CompanyProfileLikedCard
-              key={index}
-              company={company}
-              onRemove={handleRemoveCompany}
-            />
-          ))}
-        </div>
+      <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
+        Companies That I Liked
+      </h1>
+      <div className="space-y-6">
+        {companies.map((company) => (
+          <CompanyProfileLikedCard
+            key={company.id}
+            company={company}
+            studentId={studentId}
+            onRemove={handleRemove}
+            showActions={true}
+          />
+        ))}
       </div>
     </div>
   );
