@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import StudentProfileCard from "../components/likedCards/studentProfileCard";
+import StudentProfileMatchedCard from "../components/matchedCards/studentProfileMatchedCard";
 import NavBar from "../components/NavBar";
 import { auth } from "../db/firebaseConfig";
 import { fetchCompanyMatches } from "../db/matchService";
@@ -90,12 +90,7 @@ const CompanyMatches = () => {
         <div className="space-y-6">
           {students &&
             students.map((student, index) => (
-              <StudentProfileCard
-                key={index}
-                person={student}
-                onRemove={handleRemoveStudent}
-                showActions={false}
-              />
+              <StudentProfileMatchedCard key={index} person={student} />
             ))}
         </div>
       </div>
