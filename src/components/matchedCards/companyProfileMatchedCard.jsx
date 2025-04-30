@@ -80,7 +80,7 @@ const CompanyProfileMatchedCard = ({ company }) => {
         <div className="flex justify-end gap-3 mt-4">
           <a
             className="px-6 py-2 text-xl rounded-2xl bg-purple-700 text-white active:bg-purple-700 hover:bg-purple-400 font-semibold"
-            href="https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"
+            href={company.link || "https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"}
             target="_blank"
             rel="noopener noreferrer"
           >

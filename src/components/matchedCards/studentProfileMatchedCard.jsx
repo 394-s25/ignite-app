@@ -56,7 +56,7 @@ const StudentProfileCard = ({ person }) => {
       <div className="flex justify-end gap-3">
         <a
           className="px-6 py-2 text-xl rounded bg-blue-600 text-white hover:bg-blue-700 transition"
-          href="https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"
+          href={person.link || "https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"}
           target="_blank"
           rel="noreferrer"
         >
