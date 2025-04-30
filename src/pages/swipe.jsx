@@ -9,7 +9,7 @@ import NavBar from "../components/NavBar";
 import ActionButtons from "../components/swipeCards/actionButtons";
 import { getSortedCompanies, getSortedStudents } from "../db/sorting";
 import { likeCompany, likeStudent } from "../db/matchService";
-import { seenStudent } from "../db/seenService";
+import { seenStudent, seenCompany } from "../db/seenService";
 
 const SwipePage = () => {
   const navigate = useNavigate();
@@ -161,7 +161,7 @@ const SwipePage = () => {
       setCompanies(updatedCompanies);
       //   console.log("Student object:", currentUser);
       //   console.log("Company object:", companies[0]);
-      //   await seenCompany(authUser.uid, currentCompany.id);
+      await seenCompany(authUser.uid, currentCompany.id, "accepted");
       setIsLoading(false);
     } else if (profileType === "company" && students.length > 0) {
       setIsLoading(true);
@@ -178,6 +178,7 @@ const SwipePage = () => {
   const handleReject = async () => {
     if (profileType === "student" && companies.length > 0) {
       const currentCompany = companies[0];
+      await seenCompany(authUser.uid, currentCompany.id, "rejected");
       console.log(`${currentCompany.id} rejected`); // TODO: SEEN FUNCTIONALITY + LIKES
       setCompanies(companies.slice(1)); // Remove the first company from the array
     } else if (profileType !== "student" && students.length > 0) {

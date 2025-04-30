@@ -26,21 +26,27 @@ export async function getSortedCompanies(studentId) {
     if (!studentSnapshot.exists()) {
       throw new Error("Student not found");
     }
-    const studentSkills = studentSnapshot.val().skills || [];
-    const allCompanies = await fetchAllCompanies();
 
-    const companies = Object.entries(allCompanies).map(([id, company]) => ({
-      id,
-      ...company,
-      matchScore: calculateMatchScore(studentSkills, company.skills || []),
-    }));
+    const studentData = studentSnapshot.val();
+    const studentSkills = studentData.skills || [];
+    const seenCompanies = studentData.seen || {};
+
+    const allCompanies = await fetchAllCompanies();
+    const companies = Object.entries(allCompanies)
+      .filter(([id]) => !seenCompanies[id])
+      .map(([id, company]) => ({
+        id,
+        ...company,
+        matchScore: calculateMatchScore(studentSkills, company.skills || []),
+      }));
 
     return companies.sort((a, b) => b.matchScore - a.matchScore);
   } catch (error) {
-    console.error("Error getting sorted jobs:", error);
+    console.error("Error getting sorted companies:", error);
     return [];
   }
 }
+
 export async function getSortedStudents(companyId) {
   try {
     const companyRef = ref(db, `companies/${companyId}`);
