@@ -9,7 +9,7 @@ import MatchedModal from "../matchedModal";
 import { likeStudent } from "../../db/matchService";
 
 const StudentProfileLikedCard = ({ person, onRemove, showActions = true }) => {
-  // const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(false);
   const [modalVisibility, setModalVisibility] = useState(false);
   const companyId = useAuth().authUser?.uid;
 
