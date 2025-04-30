@@ -20,7 +20,7 @@ const SwipePage = () => {
   const [accepted, setAccepted] = useState([]);
   //   const [currentUser, setCurrentUser] = useState(null);
   const [rejected, setRejected] = useState([]);
-  
+
   const getCompanies = async () => {
     setIsLoading(true);
     try {
@@ -100,56 +100,6 @@ const SwipePage = () => {
     }
   }, [authUser, profileType, navigate]);
 
-  /// lIKING STUDENTS (COMPANY SIDE)
-  //   const handleAccept = async () => {
-  //       if (students.length > 0 && currentCompany) {
-  //         setIsLoading(true);
-
-  //         try {
-  //           const currentStudent = students[0];
-
-  //           // Update likes in firebase
-  //           await likeStudent(currentStudent.studentId, currentCompany.uid);
-
-  //           // Swiping page mechanism
-  //           const updatedStudents = students.slice(1);
-  //           setAccepted([...accepted, currentStudent]);
-  //           setStudents(updatedStudents);
-  //           await seenStudent(currentStudent.studentId, currentCompany.uid);
-  //         } catch (error) {
-  //           console.error("Error liking student:", error);
-  //         } finally {
-  //           setIsLoading(false);
-  //         }
-  //       }
-  //     };
-
-  // LIKING COMPANIES (SUTDENT SIDE)
-  //   const handleAccept = async () => {
-  //     if (companies.length > 0 && currentUser) {
-  //       setIsLoading(true);
-
-  //       try {
-  //         const currentCompany = companies[0];
-
-  //         // Update likes in firebase
-  //         await likeCompany(currentUser.uid, currentCompany.companyId);
-
-  //         // Swiping page mechanism
-  //         const updatedCompanies = companies.slice(1);
-  //         setAccepted([...accepted, currentCompany]);
-  //         setCompanies(updatedCompanies);
-  //         console.log("Student object:", currentUser);
-  //         console.log("Company object:", companies[0]);
-  //         await seenCompany(currentUser.uid, currentCompany.companyId);
-  //       } catch (error) {
-  //         console.error("Error liking company:", error);
-  //       } finally {
-  //         setIsLoading(false);
-  //       }
-  //     }
-  //   };
-
   const handleAccept = async () => {
     if (profileType === "student" && companies.length > 0) {
       setIsLoading(true);
@@ -159,6 +109,7 @@ const SwipePage = () => {
       const updatedCompanies = companies.slice(1);
       setAccepted([...accepted, currentCompany]);
       setCompanies(updatedCompanies);
+      //   await seenCompany(authUser.uid, currentCompany.id);
       //   console.log("Student object:", currentUser);
       //   console.log("Company object:", companies[0]);
       await seenCompany(authUser.uid, currentCompany.id, "accepted");
@@ -206,7 +157,7 @@ const SwipePage = () => {
       <div className="flex-1 flex items-center justify-center p-2 md:p-4">
         {profileType === "student" ? (
           currentCompany ? (
-            <div className="w-full h-full max-h-[85vh] max-w-2xl md:max-w-3xl mx-auto overflow-hidden flex flex-col">
+            <div className="w-full h-full max-h-[85vh] max-w-3xl md:max-w-4xl mx-auto overflow-hidden flex flex-col">
               <div className="flex-1 bg-white overflow-y-auto">
                 <CompanyCard
                   key={currentCompany.id}
@@ -236,7 +187,7 @@ const SwipePage = () => {
             </div>
           )
         ) : currentStudent ? (
-          <div className="w-full h-full max-h-[85vh] max-w-2xl md:max-w-3xl mx-auto overflow-hidden flex flex-col">
+          <div className="w-full h-full max-h-[85vh] max-w-3xl md:max-w-4xl mx-auto overflow-hidden flex flex-col">
             <div className="flex-1 bg-white overflow-y-auto">
               <StudentCard
                 key={currentStudent.id}
