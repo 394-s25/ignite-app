@@ -67,7 +67,7 @@ const StudentLikes = () => {
     <div>
       <NavBar />
       <h1 className="text-4xl font-extrabold text-purple-700 text-center mb-10 drop-shadow-md">
-        Companies That I Liked
+        Companies That Liked You
       </h1>
       <div className="space-y-6">
         {companies.map((company) => (
