@@ -1,57 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import StudentProfileCard from "../components/likedCards/studentProfileCard";
 import NavBar from "../components/NavBar";
-
-const initialPeople = [
-  {
-    name: "Emma Johnson",
-    gradYear: "2025",
-    major: "Computer Science",
-    image: "https://randomuser.me/api/portraits/women/65.jpg",
-  },
-  {
-    name: "Liam Thompson",
-    gradYear: "2024",
-    major: "Music Technology",
-    image: "https://randomuser.me/api/portraits/men/45.jpg",
-  },
-  {
-    name: "Sophia Martinez",
-    gradYear: "2023",
-    major: "Film and Media Studies",
-    image: "https://randomuser.me/api/portraits/women/72.jpg",
-  },
-  {
-    name: "Noah Kim",
-    gradYear: "2024",
-    major: "Human-Computer Interaction",
-    image: "https://randomuser.me/api/portraits/men/36.jpg",
-  },
-  {
-    name: "Ava Patel",
-    gradYear: "2025",
-    major: "Information Systems",
-    image: "https://randomuser.me/api/portraits/women/21.jpg",
-  },
-  {
-    name: "Jackson Lee",
-    gradYear: "2023",
-    major: "Business and Tech",
-    image: "https://randomuser.me/api/portraits/men/12.jpg",
-  },
-  {
-    name: "Mia Nguyen",
-    gradYear: "2022",
-    major: "Hospitality and Tourism",
-    image: "https://randomuser.me/api/portraits/women/33.jpg",
-  },
-];
+import { ref, get } from "firebase/database";
+import { db } from "../db/firebaseConfig";
 
 const CompanyLikes = () => {
-  const [people, setPeople] = useState(initialPeople);
+  const [people, setPeople] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const snapshot = await get(ref(db, "users"));
+        if (!snapshot.exists()) return;
+
+        const rawData = snapshot.val();
+
+        const usersList = Object.entries(rawData).map(([id, user]) => ({
+          id,
+          name: user.name || "Unnamed",
+          major: user.major || "Undeclared",
+          gradYear: user.gradYear || null,
+          email: user.email || null,
+          bio: user.bio || null,
+          link: user.link || null,
+          image: "https://via.placeholder.com/80" // Placeholder image; you can replace this
+        }));
+
+        setPeople(usersList);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const handleRemove = (personToRemove) => {
-    setPeople((prev) => prev.filter((p) => p.name !== personToRemove.name));
+    setPeople((prev) => prev.filter((p) => p.id !== personToRemove.id));
   };
 
   return (
@@ -61,9 +46,9 @@ const CompanyLikes = () => {
         Students That Liked You
       </h1>
       <div className="space-y-6">
-        {people.map((person, index) => (
+        {people.map((person) => (
           <StudentProfileCard
-            key={index}
+            key={person.id}
             person={person}
             onRemove={handleRemove}
           />
