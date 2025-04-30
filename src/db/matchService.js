@@ -2,28 +2,33 @@ import { db } from "./firebaseConfig";
 import { ref, get, update } from "firebase/database";
 
 // For when a student likes a company
-export const likeCompany = async (studentId, companyId) => {
-  try {
-    const studentRef = ref(db, `users/${studentId}`);
+// export const likeCompany = async (studentId, companyId) => {
+//   try {
+//     const companyRef = ref(db, `companies/${companyId}`);
 
-    const studentSnapshot = await get(studentRef);
-    const studentData = studentSnapshot.val() || {};
-    const likes = studentData.likes || [];
 
-    if (!likes.includes(companyId)) {
-      likes.push(companyId);
+//     const companySnapshot = await get(companyRef);
+//     const companyData = companySnapshot.val() || {};
+//     const likes = companyData.likes || [];
 
-      await update(ref(db, `users/${studentId}`), {
-        likes: likes,
-      });
-    }
 
-    return checkForMatch(studentId, companyId);
-  } catch (error) {
-    console.error("Error liking company", error);
-    throw error;
-  }
-};
+//     if (!likes.includes(studentId)) {
+//       likes.push(studentId);
+
+
+//       await update(ref(db, `companies/${companyId}`), {
+//         likes: likes,
+//       });
+//     }
+
+
+//     return checkForMatch(studentId, companyId);
+//   } catch (error) {
+//     console.error("Liking company failed", error);
+//     throw error;
+//   }
+// };
+
 
 // For when a company likes a student
 export const likeStudent = async (studentId, companyId) => {
@@ -48,6 +53,34 @@ export const likeStudent = async (studentId, companyId) => {
     throw error;
   }
 };
+
+export const likeCompany = async (studentId, companyId) => {
+  try {
+    const companyRef = ref(db, `companies/${companyId}`);
+
+
+    const companySnapshot = await get(companyRef);
+    const companyData = companySnapshot.val() || {};
+    const likes = companyData.likes || [];
+
+
+    if (!likes.includes(studentId)) {
+      likes.push(studentId);
+
+
+      await update(ref(db, `companies/${companyId}`), {
+        likes: likes,
+      });
+    }
+
+
+    return checkForMatch(studentId, companyId);
+  } catch (error) {
+    console.error("Liking company failed", error);
+    throw error;
+  }
+};
+
 
 // Check if student and company liked each other
 export const checkForMatch = async (studentId, companyId) => {

@@ -94,6 +94,7 @@ const CompanyMatches = () => {
                 key={index}
                 person={student}
                 onRemove={handleRemoveStudent}
+                showActions={false}
               />
             ))}
         </div>
