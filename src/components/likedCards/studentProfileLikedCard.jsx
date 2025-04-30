@@ -39,14 +39,20 @@ const StudentProfileCard = ({ person, onRemove }) => {
             Major: {person.major || "Undeclared"}
           </p>
           {person.gradYear && (
-            <p className="text-sm text-purple-700">Grad Year: {person.gradYear}</p>
+            <p className="text-sm text-purple-700">
+              Grad Year: {person.gradYear}
+            </p>
           )}
           {person.email && (
             <p className="text-sm text-purple-700">Email: {person.email}</p>
           )}
           {person.link && (
             <a
-              href={person.link.startsWith("http") ? person.link : `https://${person.link}`}
+              href={
+                person.link.startsWith("http")
+                  ? person.link
+                  : `https://${person.link}`
+              }
               target="_blank"
               rel="noreferrer"
               className="text-sm text-blue-700 underline hover:text-blue-900 transition"
@@ -66,31 +72,18 @@ const StudentProfileCard = ({ person, onRemove }) => {
 
       {/* Bottom: Buttons */}
       <div className="flex justify-end gap-3">
-        {liked ? (
-          <a
-            className="px-6 py-2 text-xl rounded bg-blue-600 text-white hover:bg-blue-700 transition"
-            href="https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Schedule Interview
-          </a>
-        ) : (
-          <>
-            <button
-              onClick={handleLike}
-              className="px-4 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition"
-            >
-              Like
-            </button>
-            <button
-              onClick={handleDecline}
-              className="px-4 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition"
-            >
-              Decline
-            </button>
-          </>
-        )}
+        <button
+          onClick={handleLike}
+          className="px-4 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition"
+        >
+          Like
+        </button>
+        <button
+          onClick={handleDecline}
+          className="px-4 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition"
+        >
+          Decline
+        </button>
       </div>
     </div>
   );
