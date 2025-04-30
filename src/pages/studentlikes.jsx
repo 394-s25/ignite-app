@@ -22,6 +22,8 @@ const StudentLikes = () => {
               id: companyId,
               companyName: company.name || "Unknown Company",
               bio: company.bio || "No bio available",
+              role: company.role,
+              link: company.link,
               skills: company.skills || [],
               descriptors: company.descriptors || {},
               logo: "https://logo.clearbit.com/example.com",

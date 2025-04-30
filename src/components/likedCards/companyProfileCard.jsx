@@ -87,7 +87,7 @@ const CompanyProfileCard = ({ company, onRemove }) => {
         {liked ? (
           <a
             className="px-6 py-2 text-xl rounded-2xl bg-purple-700 text-white active:bg-purple-700 hover:bg-purple-400 font-semibold"
-            href="https://calendly.com/sophiafresquez2026-u/30min?month=2025-04"
+            href={company.link}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -116,7 +116,7 @@ const CompanyProfileCard = ({ company, onRemove }) => {
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <Confetti className="z-40" confettiSource={{x: window.innerWidth / 2, y: window.innerHeight / 6, w: 0, h:0}} width={window.innerWidth} height={window.innerHeight} numberOfPieces={30} recycle={false} tweenDuration = {200} gravity = {0.25}/>
               
-              <MatchedModal company={company} position="job placeholder" person={profile} onClose={ handleCloseModal } onUnmatch={ handleUnmatch }/>
+              <MatchedModal company={company} position="job placeholder" skills={skillNames} person={profile} onClose={ handleCloseModal } onUnmatch={ handleUnmatch }/>
             </div>
           </>
         )}

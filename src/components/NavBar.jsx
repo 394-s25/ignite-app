@@ -88,8 +88,8 @@ const NavBar = () => {
               className="font-semibold text-gray-900 py-2 px-3 rounded hover:text-violet-700 hover:bg-violet-100 md:hover:bg-transparent"
             >
               {profileType === "company"
-                ? "My Students Matches"
-                : "My Companies Matches"}
+                ? "Matched Students"
+                : "Matched Companies"}
             </Link>
             <Link
               to="/editProfile"
