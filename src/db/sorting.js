@@ -41,8 +41,6 @@ export async function getSortedCompanies(studentId) {
     return [];
   }
 }
-
-// get sorted students for companies
 export async function getSortedStudents(companyId) {
   try {
     const companyRef = ref(db, `companies/${companyId}`);
@@ -50,14 +48,19 @@ export async function getSortedStudents(companyId) {
     if (!companySnapshot.exists()) {
       throw new Error("Company not found");
     }
-    const companySkills = companySnapshot.val().skills || [];
+
+    const companyData = companySnapshot.val();
+    const companySkills = companyData.skills || [];
+    const seenStudents = companyData.seen || {};
 
     const allStudents = await fetchAllStudents();
-    const students = Object.entries(allStudents).map(([id, student]) => ({
-      id,
-      ...student,
-      matchScore: calculateMatchScore(student.skills, companySkills || []),
-    }));
+    const students = Object.entries(allStudents)
+      .filter(([id]) => !seenStudents[id])
+      .map(([id, student]) => ({
+        id,
+        ...student,
+        matchScore: calculateMatchScore(student.skills, companySkills || []),
+      }));
 
     return students.sort((a, b) => b.matchScore - a.matchScore);
   } catch (error) {

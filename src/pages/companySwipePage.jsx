@@ -36,7 +36,6 @@ const CompanySwipePage = () => {
 
       try {
         const currentStudent = students[0];
-
         // Update likes in firebase
         await likeStudent(currentStudent.studentId, currentCompany.uid);
 
@@ -44,6 +43,7 @@ const CompanySwipePage = () => {
         const updatedStudents = students.slice(1);
         setAccepted([...accepted, currentStudent]);
         setStudents(updatedStudents);
+        console.log("seen student started")
         await seenStudent(currentStudent.studentId, currentCompany.uid);
       } catch (error) {
         console.error("Error liking student:", error);

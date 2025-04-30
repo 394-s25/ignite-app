@@ -24,22 +24,19 @@ export const seenCompany = async (studentId, companyId) => {
   }
 };
 
-// For when a company has seen a student
-export const seenStudent = async (studentId, companyId) => {
+export const seenStudent = async (studentId, companyId, status) => {
   try {
     const companyRef = ref(db, `companies/${companyId}`);
-    2;
     const companySnapshot = await get(companyRef);
     const companyData = companySnapshot.val() || {};
-    const companySeen = companyData.seen || [];
+    const companySeen = companyData.seen || {};
 
-    if (!companySeen.includes(studentId)) {
-      companySeen.push(studentId);
-      await update(companyRef, {
-        seen: companySeen,
-      });
-    }
+    companySeen[studentId] = { status };
+    await update(companyRef, {
+      seen: companySeen,
+    });
 
+    console.log("Company seen field updated successfully", companySeen);
     return true;
   } catch (error) {
     console.error("Failed to add student to company's seen field", error);

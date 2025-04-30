@@ -9,6 +9,7 @@ import NavBar from "../components/NavBar";
 import ActionButtons from "../components/swipeCards/actionButtons";
 import { getSortedCompanies, getSortedStudents } from "../db/sorting";
 import { likeCompany, likeStudent } from "../db/matchService";
+import { seenStudent } from "../db/seenService";
 
 const SwipePage = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const SwipePage = () => {
   const [accepted, setAccepted] = useState([]);
   //   const [currentUser, setCurrentUser] = useState(null);
   const [rejected, setRejected] = useState([]);
-
+  
   const getCompanies = async () => {
     setIsLoading(true);
     try {
@@ -169,12 +170,12 @@ const SwipePage = () => {
       const updatedStudents = students.slice(1);
       setAccepted([...accepted, currentStudent]);
       setStudents(updatedStudents);
-      //   await seenStudent(currentStudent.id, authUser.uid);
+      await seenStudent(currentStudent.id, authUser.uid, "accepted");
       setIsLoading(false);
     }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (profileType === "student" && companies.length > 0) {
       const currentCompany = companies[0];
       console.log(`${currentCompany.id} rejected`); // TODO: SEEN FUNCTIONALITY + LIKES
@@ -182,6 +183,7 @@ const SwipePage = () => {
     } else if (profileType !== "student" && students.length > 0) {
       const currentStudent = students[0];
       console.log(`${currentStudent.id} rejected`);
+      await seenStudent(currentStudent.id, authUser.uid, "rejected");
       setStudents(students.slice(1)); // Remove the first student from the array
     }
   };

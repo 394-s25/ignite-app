@@ -1,6 +1,7 @@
 import { X, Check } from "lucide-react";
 
 const ActionButtons = ({ onReject, onAccept }) => {
+  console.log("onAccept:", onAccept);
   return (
     <div className="p-4 sm:p-6 border-t border-gray-200 bg-white flex justify-between">
       <button
