@@ -47,7 +47,6 @@ const TestProfile = () => {
     lookingFor: "",
     major: "",
     experiences: [],
-    link: "",
     // company
     role: "",
     roleDescription: "",
@@ -57,6 +56,7 @@ const TestProfile = () => {
     bio: "",
     email: "",
     skills: [],
+    link: "",
   });
 
   // fetch all skills + descriptors
@@ -138,6 +138,7 @@ const TestProfile = () => {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
+      console.log("edit data", editData);
       await updateProfile(editData);
       setEditMode(false);
     } catch (error) {

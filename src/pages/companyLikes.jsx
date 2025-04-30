@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import StudentProfileCard from "../components/likedCards/studentProfileCard";
+import StudentProfileLikedCard from "../components/likedCards/studentProfileLikedCard";
 import NavBar from "../components/NavBar";
 import { ref, get } from "firebase/database";
 import { db, auth } from "../db/firebaseConfig";
@@ -73,9 +73,10 @@ const CompanyLikes = () => {
       </h1>
       <div className="space-y-6">
         {people.map((person) => (
-          <StudentProfileCard
+          <StudentProfileLikedCard
             key={person.id}
             person={person}
+            companyId={companyId}
             onRemove={handleRemove}
             showActions={true}
           />
