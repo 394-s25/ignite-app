@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import CompanyProfileCard from "../components/likedCards/companyProfileCard";
+import CompanyProfileMatchedCard from "../components/matchedCards/companyProfileMatchedCard";
 import NavBar from "../components/NavBar";
 import { auth } from "../db/firebaseConfig";
 import { fetchStudentMatches } from "../db/matchService";
@@ -53,14 +53,6 @@ const StudentMatches = () => {
     loadMatches();
   }, [currentUser]);
 
-  const handleRemoveCompany = (companyToRemove) => {
-    setCompanies((prev) =>
-      prev.filter(
-        (company) => company.companyName !== companyToRemove.companyName
-      )
-    );
-  };
-
   return (
     <div>
       <NavBar></NavBar>
@@ -90,11 +82,7 @@ const StudentMatches = () => {
         <div className="space-y-6">
           {companies &&
             companies.map((company, index) => (
-              <CompanyProfileCard
-                key={index}
-                company={company}
-                onRemove={handleRemoveCompany}
-              />
+              <CompanyProfileMatchedCard key={index} company={company} />
             ))}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import StudentProfileCard from "../components/likedCards/studentProfileCard";
+import StudentProfileLikedCard from "../components/likedCards/studentProfileLikedCard";
 import NavBar from "../components/NavBar";
 import { ref, get } from "firebase/database";
 import { db } from "../db/firebaseConfig";
@@ -23,7 +23,7 @@ const CompanyLikes = () => {
           email: user.email || null,
           bio: user.bio || null,
           link: user.link || null,
-          image: "https://via.placeholder.com/80" 
+          image: "https://via.placeholder.com/80",
         }));
 
         setPeople(usersList);
@@ -47,7 +47,7 @@ const CompanyLikes = () => {
       </h1>
       <div className="space-y-6">
         {people.map((person) => (
-          <StudentProfileCard
+          <StudentProfileLikedCard
             key={person.id}
             person={person}
             onRemove={handleRemove}
