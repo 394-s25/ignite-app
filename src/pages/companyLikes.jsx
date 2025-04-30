@@ -23,7 +23,7 @@ const CompanyLikes = () => {
           email: user.email || null,
           bio: user.bio || null,
           link: user.link || null,
-          image: "https://via.placeholder.com/80" // Placeholder image; you can replace this
+          image: "https://via.placeholder.com/80" 
         }));
 
         setPeople(usersList);
