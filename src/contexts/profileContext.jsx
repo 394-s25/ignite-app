@@ -30,7 +30,6 @@ export const ProfileProvider = ({ children }) => {
         setUserExperience([]);
         return;
       }
-
       try {
         const userInfo = await getProfile(
           authUser.uid,
@@ -100,7 +99,9 @@ export const ProfileProvider = ({ children }) => {
     <ProfileContext.Provider
       value={{
         profile,
+        setProfile,
         profileType,
+        setProfileType,
         userSkills,
         userDescriptors: profileType === "company" ? userDescriptors : [],
         userExperience: profileType === "student" ? userExperience : [],

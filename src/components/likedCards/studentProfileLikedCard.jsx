@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { addVisitedStudent } from "../../db/firebaseService";
 import { useAuth } from "../../contexts/authContext";
+import { ref, get, set } from "firebase/database";
+import { db } from "../../db/firebaseConfig";
+import { removeStudentLike } from "../../db/firebaseService";
 import { likeStudent } from "../../db/matchService";
 
-const StudentProfileCard = ({ person, companyId, onRemove }) => {
-  const [liked, setLiked] = useState(false);
+const StudentProfileLikedCard = ({ person, onRemove, showActions = true }) => {
+  // const [liked, setLiked] = useState(false);
   const companyId = useAuth().authUser?.uid;
 
   const handleLike = async () => {
@@ -20,9 +23,10 @@ const StudentProfileCard = ({ person, companyId, onRemove }) => {
   const handleDecline = async () => {
     try {
       await addVisitedStudent(companyId, person.id, false);
-      onRemove(person);
+      await removeStudentLike(companyId, person.id);
+      onRemove?.(person); // optional chaining to avoid error if not passed
     } catch (error) {
-      console.error("Error adding to visited list:", error);
+      console.error("Error processing decline:", error);
     }
   };
 
@@ -91,4 +95,4 @@ const StudentProfileCard = ({ person, companyId, onRemove }) => {
   );
 };
 
-export default StudentProfileCard;
+export default StudentProfileLikedCard;

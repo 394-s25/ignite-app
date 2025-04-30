@@ -1,32 +1,8 @@
 import { db } from "./firebaseConfig";
 import { ref, get, update } from "firebase/database";
 
-// Old implementation, adds liked company's id to student's likes field. For when a student likes a company.
+// For when a student likes a company
 // export const likeCompany = async (studentId, companyId) => {
-//   try {
-//     const studentRef = ref(db, `users/${studentId}`);
-
-//     const studentSnapshot = await get(studentRef);
-//     const studentData = studentSnapshot.val() || {};
-//     const likes = studentData.likes || [];
-
-//     if (!likes.includes(companyId)) {
-//       likes.push(companyId);
-
-//       await update(ref(db, `users/${studentId}`), {
-//         likes: likes,
-//       });
-//     }
-
-//     return checkForMatch(studentId, companyId);
-//   } catch (error) {
-//     console.error("Error liking company", error);
-//     throw error;
-//   }
-// };
-
-// Old implementation, adds liked student's id to company's likes field. For when a company likes a student
-// export const likeStudent = async (studentId, companyId) => {
 //   try {
 //     const companyRef = ref(db, `companies/${companyId}`);
 
@@ -44,7 +20,7 @@ import { ref, get, update } from "firebase/database";
 
 //     return checkForMatch(studentId, companyId);
 //   } catch (error) {
-//     console.error("Liking student failed", error);
+//     console.error("Liking company failed", error);
 //     throw error;
 //   }
 // };
